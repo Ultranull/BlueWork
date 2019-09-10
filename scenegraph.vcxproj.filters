@@ -51,6 +51,12 @@
     <ClCompile Include="src\tools\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tools\Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tools\App.h">
@@ -543,6 +549,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\tools\VertexArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

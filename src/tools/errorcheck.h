@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <string>
 
+void getError(int line);
+#define _getError() getError(__LINE__)
+
+#ifndef GETERROR
+#define GETERROR
 void getError(int line) {
 	GLenum err(glGetError());
 	while (err != GL_NO_ERROR) {
@@ -16,8 +21,8 @@ void getError(int line) {
 		case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;
 		case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
 		}
-		printf("GL_%s : %d", error.c_str(), line);
+		printf("GL_%s : %d\n", error.c_str(), line);
 		err = glGetError();
 	}
 }
-#define _getError() getError(__LINE__)
+#endif // !GETERROR

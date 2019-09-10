@@ -17,20 +17,26 @@
 #include "tools/FrameBuffer.h"
 #include "tools/VertexArray.h"
 
+#include "tools/errorcheck.h"
+
+#include "Node.h"
+
 using namespace glm;
 using namespace std;
 
 Mesh loadOBJ(string fn);
 
+struct {
+	// spec defines
+}Engine;
 
-struct Transform {
+struct Transform{
 	vec3 position_m = vec3(0);
 	vec3 scale_m = vec3(1);
 	quat rotation_m;
-	mat4 parent = mat4(1);
 
 	mat4 Model() {
-		return parent*T()*R()*S();
+		return T()*R()*S();
 	}
 
 	mat4 T() {
@@ -46,7 +52,17 @@ struct Transform {
 struct Geometry {
 	GLuint topology;
 	int size,instances=1;
-	VertexArray vaObject; // make it a pointer, pass around a mem loc
+	VertexArray* vaObject; // make it a pointer, pass around a mem loc
+	
+	void drawArrays() {
+		vaObject->bind();
+		glDrawArrays(topology, 0, size);
+		vaObject->unbind();
+	}
+
+	void cleanup() {
+		vaObject->cleanup();
+	}
 };
 struct Material {
 	Texture diffuseMap;
@@ -63,81 +79,201 @@ struct Material {
 		color(col), specular(spec), shininess(shine) {
 	}
 
-	void bind(Transform t) {
-		shader.bind();
-		shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0));
+	void bind() {
+		shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0)); // add to spec: diffuse map always tex0
 		shader.setUniform("material.specular", &specular);
 		shader.setUniform("material.color", &color);
 		shader.setUniform("material.shininess", shininess);
-		shader.setUniform("model", &t.Model());
+	}
+
+	void cleanup() {
+		shader.cleanup();
+		diffuseMap.cleanup();
 	}
 
 };
 
-struct Light {
-	struct attunation {
-		float quadratic=0;
-		float linear=0;
-		float constant=0;
-		float padd = 0;
-	};
-	struct Point {
-		glm::vec4 ambient;
-		glm::vec4 color;
-		glm::vec4 specular;
-		attunation att;
-		glm::vec4 position;
 
-	};
-	struct Directional {
-		glm::vec4 ambient;
-		glm::vec4 color;
-		glm::vec4 specular;
-		attunation att;
-		glm::vec4 direction;
-	};
-};
 
-struct Entity {
-	static const unsigned int INSTANCED = 0b1;
+struct Entity: public Node{
+	static const unsigned int INSTANCED = 0b1;// maybe spec
 	static const unsigned int INDEXED = 0b10;
 
 	Transform transform;
 	Geometry geometry;
 	Material material;
 
-	unsigned int params=0;
+	unsigned int flags=0;
+
 
 	Entity() {}
-	Entity(Geometry geom, Material mat) :geometry(geom), material(mat) {}
+	Entity(Geometry geom, Material mat) :
+		geometry(geom), material(mat),Node(NodeType::ENTITY) {}
 
-	void render() {
-		material.bind(transform);
-		geometry.vaObject.bind();
-		switch (params) {
-		case Entity::INDEXED: {
-			glDrawElements(geometry.topology, geometry.size, GL_UNSIGNED_INT, (void*)0);
-		}break;
-		case Entity::INSTANCED: {
-			glDrawArraysInstanced(geometry.topology, 0, geometry.size, geometry.instances);
-		}break;
-		case (Entity::INDEXED | Entity::INSTANCED): {
-			glDrawElementsInstanced(geometry.topology, geometry.size, GL_UNSIGNED_INT, (void*)0, geometry.instances);
-		}break;
-		default: {
-			glDrawArrays(geometry.topology, 0, geometry.size);
-		}
-		}
-		geometry.vaObject.unbind();
+	void cleanup() {
+		Node::cleanup();
+		geometry.cleanup();
+		material.cleanup();
 	}
 
 };
 
-/*
-	
-	lights and objects dont share mats
+struct Dummy : public Node {
+	Transform transform;
+	Dummy():
+		Node(NodeType::DUMMY){}
 
-* */
+	void cleanup() {
+		Node::cleanup();
+	}
+
+};
+struct attunation {
+	float quadratic = 0;
+	float linear = 0;
+	float constant = 0;
+	float padd = 0;
+};
+struct Point{
+	glm::vec4 ambient;
+	glm::vec4 color;
+	glm::vec4 specular;
+	attunation att;
+	glm::vec4 position;
+
+
+};
+
+struct Light : public Node {
+	Point source;
+	Light() :Light(Point{}) {}
+	Light(Point p) :
+		Node(NodeType::LIGHT),source(p) {}
+	void cleanup() {
+		Node::cleanup();
+	}
+};
+
+struct Renderer {
+	UniformBuffer lights;
+	vector<Point> lightbuf;
+
+	Node* scene;
+
+	void cleanup() {
+		lights.cleanup();
+		scene->cleanup();
+	}
+
+	void collectLights(Node* root,mat4 transform) {
+
+		mat4 parent = mat4(1);
+		switch (root->getType()) {
+		case NodeType::DUMMY: {
+			parent = (reinterpret_cast<Dummy*>(root))->transform.Model();
+		}break;
+		case NodeType::ENTITY: {
+			parent = (reinterpret_cast<Entity*>(root))->transform.Model();
+		}break;
+		case NodeType::LIGHT: {
+			Point light = reinterpret_cast<Light*>(root)->source;
+			parent = glm::translate(vec3(light.position));
+			light.position = transform * light.position;
+			lightbuf.push_back(light);
+		}break;
+		}
+
+		for (int i = 0; i < root->getNumberOfChildren(); i++)
+			collectLights(root->child(i), transform * parent);
+	}
+
+	void setup(Node* root) {
+		scene = root;
+		lightbuf.clear();
+		collectLights(root, mat4(1));
+
+		lights = UniformBuffer();
+		lights.bind();
+		lights.setData<Point>(lightbuf, GL_DYNAMIC_DRAW);
+		//lights.blockBinding(shader.getProgramID(), 1, "Lights");
+		lights.unbind();
+		_getError();
+	}
+
+	void updateLights() {
+		lightbuf.clear();
+		collectLights(scene, mat4(1));
+		lights.bind();
+		lights.setData<Point>(lightbuf, GL_DYNAMIC_DRAW);
+		lights.unbind();
+	}
+
+	void render() {
+		render(scene, mat4(1));
+	}
+	void render(Node* root,mat4 transform) {
+
+		mat4 parent = mat4(1);
+		switch (root->getType()){
+		case NodeType::DUMMY: {
+			parent = reinterpret_cast<Dummy*>(root)->transform.Model();
+		}break;
+		case NodeType::ENTITY: {
+			Entity* entity = reinterpret_cast<Entity*>(root);
+			parent = entity->transform.Model();
+			Program* shader = &entity->material.shader;
+			if (!entity->flags) {
+				shader->bind();
+				entity->material.bind();
+				shader->setUniform("numLights", lightbuf.size());
+				shader->setUniform("model", &(transform * parent));
+				lights.bind();
+				lights.blockBinding(shader->getProgramID(), 1, "Lights");
+
+				entity->geometry.drawArrays();
+			}
+
+		}break;
+		}
+
+
+		for (int i = 0; i < root->getNumberOfChildren(); i++)
+			render(root->child(i), transform * parent);
+	}
+};
+
+void dumpMesh(Mesh &mesh,string fn) {
+	ofstream out(fn.c_str(), ios::binary);
+	size_t size = mesh.vertices.size();
+	out.write((char*)&size, sizeof(size));
+	for (int i = 0; i < mesh.vertices.size(); i++) {
+		Vertex v = mesh.vertices[i];
+		out.write((char*)&v, sizeof(v));
+	}
+	out.close();
+}
+
+Mesh loadMesh(string fn) {
+	vector<Vertex> verts;
+	ifstream in(fn.c_str(), ios::binary); 
+	if (!in) {
+		string obj = fn;
+		int dot = obj.find('.');
+		obj.replace(obj.begin() + dot + 1, obj.end(), "obj");
+		Mesh m = loadOBJ(obj);
+		dumpMesh(m, fn);
+		return m;
+	}
+	size_t size;
+	in.read((char*)&size, sizeof(size));
+	for (int i = 0; i < size; i++) {
+		Vertex v;
+		in.read((char*)&v, sizeof(v));
+		verts.push_back(v);
+	}
+	in.close();
+	return Mesh(verts);
+}
 
 
 class Game :public App {
@@ -148,9 +284,14 @@ class Game :public App {
 	Mesh ground, monkey;
 	Program uved;
 
-	Entity monkey_e;
+	Entity* monkey_e;
+	Light light,* light2;
+
+	Dummy scene;
 
 	UniformBuffer lights;
+
+	Renderer renderer;
 
 	void initGL() {
 		glEnable(GL_MULTISAMPLE);
@@ -158,7 +299,6 @@ class Game :public App {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glClearColor(.1, .1, .1, 1);
-		glEnable(GL_TEXTURE_2D);
 		//glEnable(GL_CULL_FACE);
 	}
 
@@ -174,75 +314,67 @@ class Game :public App {
 
 		R->addTexture("uvmap", "uvmap.bmp");
 
-		ground = loadOBJ(R->path+"ground.obj");
-		monkey = loadOBJ(R->path + "monkey.obj");
+		//ground = loadOBJ(R->path+"ground.obj");
+		monkey = loadMesh(R->path + "monkey.mesh");
 
-		Material uved_mat(vec4(1), vec4(1), 5.f);
+
+		Material uved_mat(vec4(1), vec4(1), 2);
 		uved_mat.diffuseMap = R->getTexture("uvmap");
 		uved_mat.shader = uved;
 
 		Geometry monkey_geom;
 		monkey_geom.size = monkey.vertices.size();
 		monkey_geom.topology = GL_TRIANGLES;
-		monkey_geom.vaObject = std::move(monkey.vaObject);
+		monkey_geom.vaObject = &monkey.vaObject;
 
-		monkey_e = Entity(monkey_geom, uved_mat);
-		
-		
+		monkey_e = new Entity(monkey_geom, uved_mat);
+		Entity* b = new Entity(monkey_geom, uved_mat);
+		b->transform.position_m = vec3(3,0,0);
+		b->transform.scale_m = vec3(.5);
+		monkey_e->add(b);
+		scene.add(monkey_e);
+
+		light = Light(Point{
+			vec4(.1,0,0,1),vec4(1,0,0,1),vec4(1,0,0,1),
+			attunation{1. / 2.,1,1},
+			vec4(1,1,0,0)
+		});
+
+		light2 = new Light(Point{
+			vec4(.1),vec4(1),vec4(1),
+			attunation{1. / 2.,1,1},
+			vec4(1,0,0,0)
+			});
+
+		scene.add(&light);
+		scene.add(light2);
+		renderer.setup(&scene);
+
 		cam.perspective(window, 45, .1, 100);
 		cam.bindCamera(uved);
 
-		vector<Light::Point> lightbuf;
-		lightbuf.push_back(Light::Point{
-				vec4(.1,0,0,1),vec4(1,0,0,1),vec4(0,1,1,1),
-				Light::attunation{1. / 2.,1,1},
-				vec4(1,1,0,0)
-			});
-		lightbuf.push_back(Light::Point{
-				vec4(0,0,.2,1),vec4(0,0,1,1),vec4(1,1,0,1),
-				Light::attunation{1. / 2.,1,1},
-				vec4(-1,-1,0,0)
-			});
-		lightbuf.push_back(Light::Point{
-				vec4(.1),vec4(1),vec4(1),
-				Light::attunation{1. / 2.,0,1},
-				vec4(0,0,3,0)
-			});
-
-		lights = UniformBuffer();
-		lights.bind();
-		lights.setData<Light::Point>(lightbuf, GL_STATIC_DRAW);
-		lights.blockBinding(uved.getProgramID(), 1, "Lights");
-		lights.unbind();
-
-
 	}
-
 	void onClose() {
 		R->cleanup(); 
 		cam.cleanup();
+		renderer.cleanup();
 	}
 
 	void update(float delta) {
 		cam.perspective(window, 45, .1, 100);
 		cam.updateBuffer();
+		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
-		lights.bind();
-		lights.setSubData(sizeof(Light::Point) * 0 + offsetof(Light::Point, position),
-			sizeof(vec4), glm::value_ptr(vec4(cos(ticks)*2,sin(ticks) * 2,0,0)));
-		lights.setSubData(sizeof(Light::Point) * 1 + offsetof(Light::Point, position),
-			sizeof(vec4), glm::value_ptr(vec4(-cos(ticks) * 2,-sin(ticks) * 2,0,0)));
-		lights.unbind();
-
+		//monkey_e->transform.rotation_m = angleAxis(radians(ticks*30), vec3(0, 1, 0));
+		light2->source.position = vec4(cos(ticks)*2,sin(ticks)*2,0,0);
 	}
 
 	void render(float delta) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		monkey_e.render();
-		
+		renderer.render();
 	}
 
 	void inputListener(float delta) {
