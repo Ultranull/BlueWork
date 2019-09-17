@@ -35,3 +35,15 @@ void Texture::cleanup(){
 void Texture::unbind(GLuint target){
 	glBindTexture(target, 0);
 }
+
+void Material::bind() {
+	shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0)); // add to spec: diffuse map always tex0
+	shader.setUniform("material.specular", &specular);
+	shader.setUniform("material.color", &color);
+	shader.setUniform("material.shininess", shininess);
+}
+
+void Material::cleanup() {
+	shader.cleanup();
+	diffuseMap.cleanup();
+}

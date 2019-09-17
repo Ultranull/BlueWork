@@ -56,6 +56,7 @@ vec3 calcDirLight(Directional light)
     vec4 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir.xyz), 0.0);
     vec4 reflectDir = reflect(-lightDir, vec4(normal,0));
+	//vec4 reflectDir = normalize(lightDir + direction);
     float spec = pow(max(dot(direction, reflectDir), 0.0), material.shininess);
 
     vec3 ambient = vec3(light.ambient.xyz * texture(material.diffuse,uv).rgb);

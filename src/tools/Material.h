@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include "ShaderProgram.h"
+
 
 struct TextureTraits {
 	GLuint target;
@@ -42,11 +44,24 @@ struct Texture {
 	static void unbind(GLuint target = GL_TEXTURE_2D);
 };
 
-//struct Material {
-//	glm::vec3 ambient;
-//	Texture diffuse;
-//	glm::vec3 specular;
-//	glm::vec3 color;
-//	float shininess;
-//};
+struct Material {
+	Texture diffuseMap;
+	glm::vec4 color;
+	glm::vec4 specular;
+	float shininess;
+	Program shader;
+
+	Material() :
+		color(glm::vec4(.5)), specular(glm::vec4(.5)),
+		shininess(1) {
+	}
+	Material(glm::vec4 col, glm::vec4 spec, float shine) :
+		color(col), specular(spec), shininess(shine) {
+	}
+
+	void bind();
+
+	void cleanup();
+
+};
 

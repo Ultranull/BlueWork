@@ -33,3 +33,14 @@ void Node::cleanup(){
 Node* Node::child(GLuint index) {
 	return children[index];
 }
+
+std::string Node::getName() {
+	return name;
+}
+
+Node* Node::setName(std::string name) {
+	this->name = name;
+	return this;
+}
+
+
