@@ -2,6 +2,28 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "Engine.h"
+
+
+Renderer::Renderer(){}
+
+Renderer::Renderer(Program passShader, GLuint w, GLuint h):
+	pass(passShader), width(w),height(h){
+	passthrough = FrameBuffer(1920, 1080);
+	passthrough.addTexture2D("passthrough", GL_RGBA, GL_RGBA, GL_COLOR_ATTACHMENT0);
+	passthrough.addDepth();
+	passthrough.drawBuffers();
+
+	plane = Mesh({
+		Vertex{{-1,-1,0},{},{0,0}},
+		Vertex{{-1,1,0},{},{0,1}},
+		Vertex{{1,1,0},{},{1,1}},
+		Vertex{{1,1,0},{},{1,1}},
+		Vertex{{1,-1,0},{},{1,0}},
+		Vertex{{-1,-1,0},{},{0,0}},
+		});
+}
+
 void Renderer::cleanup() {
 	lights.cleanup();
 	scene->cleanup();
@@ -49,11 +71,31 @@ void Renderer::updateLights() {
 	lights.unbind();
 }
 
+void Renderer::pre() {}
+
 void Renderer::render() {
-	render(scene, glm::mat4(1));
+	pre();
+
+	passthrough.bind();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	traverseGraph(scene, glm::mat4(1));
+
+	post();
 }
 
-void Renderer::render(Node* root, glm::mat4 transform) {
+void Renderer::post() {
+	FrameBuffer::bindDefualt();
+	glViewport(0, 0, width, height);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	pass.bind();
+	pass.setUniform("model", &glm::mat4(1));
+	pass.setUniform("passthrough", passthrough.getTexture("passthrough").activate(Engine::PASSMAP));
+	plane.renderVertices(GL_TRIANGLES);
+}
+
+void Renderer::traverseGraph(Node* root, glm::mat4 transform) {
 
 	glm::mat4 parent = glm::mat4(1);
 	switch (root->getType()) {
@@ -80,5 +122,5 @@ void Renderer::render(Node* root, glm::mat4 transform) {
 
 
 	for (int i = 0; i < root->getNumberOfChildren(); i++)
-		render(root->child(i), transform * parent);
+		traverseGraph(root->child(i), transform * parent);
 }

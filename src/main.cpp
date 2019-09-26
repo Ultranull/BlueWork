@@ -76,10 +76,6 @@ class Game :public App {
 
 	Renderer renderer;
 
-	FrameBuffer passthrough;
-	Mesh plane;
-	Program pass;
-
 
 	void initGL() {
 		glEnable(GL_MULTISAMPLE);
@@ -102,7 +98,9 @@ class Game :public App {
 		Shader pass_v = R->addShader("pass.vert");
 		Shader pass_f = R->addShader("pass.frag");
 
-		pass = Program(pass_v, pass_f);
+		Program pass(pass_v, pass_f);
+		viewportinit(window);
+		renderer = Renderer(pass, width, height);
 
 		R->addTexture("uvmap", "uvmap.bmp");
 
@@ -128,20 +126,6 @@ class Game :public App {
 		cam.perspective(window, 45, .1, 100);
 		cam.bindCamera(uved_mat.shader);
 
-		passthrough = FrameBuffer(1920,1080);
-		passthrough.addTexture2D("passthrough", GL_RGBA, GL_RGBA, GL_COLOR_ATTACHMENT0);
-		passthrough.addDepth();
-		passthrough.drawBuffers();
-
-		plane = Mesh({
-			Vertex{{-1,-1,0},{},{0,0}},
-			Vertex{{-1,1,0},{},{0,1}},
-			Vertex{{1,1,0},{},{1,1}},
-			Vertex{{1,1,0},{},{1,1}},
-			Vertex{{1,-1,0},{},{1,0}},
-			Vertex{{-1,-1,0},{},{0,0}},
-			});
-
 
 	}
 	void onClose() {
@@ -161,21 +145,7 @@ class Game :public App {
 
 	void render(float delta) {
 
-		passthrough.bind();
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		renderer.render();
-
-		FrameBuffer::bindDefualt();
-		viewportinit(window);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		pass.bind();
-		pass.setUniform("model", &mat4(1)); /// add to renderer as a post render 
-		pass.setUniform("passthrough", passthrough.getTexture("passthrough").activate(Engine::PASSMAP));
-		plane.renderVertices(GL_TRIANGLES);
 	}
 
 	void inputListener(float delta) {

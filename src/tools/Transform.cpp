@@ -25,7 +25,7 @@
  }
 
  void Transform::translate(glm::vec3 t) {
-	 position_m = t;
+	 position_m += t;
  }
 
  void Transform::scale(glm::vec3 t) {

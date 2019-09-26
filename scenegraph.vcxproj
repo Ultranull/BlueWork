@@ -21,8 +21,11 @@
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
-    <ClCompile Include="src\Node.cpp" />
+    <ClCompile Include="src\tools\OBJLoader.cpp" />
+    <ClCompile Include="src\tools\Entity.cpp" />
+    <ClCompile Include="src\tools\Geometry.cpp" />
     <ClCompile Include="src\tools\Light.cpp" />
+    <ClCompile Include="src\tools\Node.cpp" />
     <ClCompile Include="src\tools\Buffer.cpp" />
     <ClCompile Include="src\tools\Material.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -30,8 +33,10 @@
     <ClCompile Include="src\tools\Camera.cpp" />
     <ClCompile Include="src\tools\FrameBuffer.cpp" />
     <ClCompile Include="src\tools\Mesh.cpp" />
+    <ClCompile Include="src\tools\Renderer.cpp" />
     <ClCompile Include="src\tools\Resource.cpp" />
     <ClCompile Include="src\tools\ShaderProgram.cpp" />
+    <ClCompile Include="src\tools\Transform.cpp" />
     <ClCompile Include="src\tools\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,18 +193,23 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\SOIL.h" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="src\Node.h" />
+    <ClInclude Include="src\tools\OBJLoader.h" />
+    <ClInclude Include="src\tools\Engine.h" />
+    <ClInclude Include="src\tools\Entity.h" />
+    <ClInclude Include="src\tools\Geometry.h" />
     <ClInclude Include="src\tools\Light.h" />
+    <ClInclude Include="src\tools\Node.h" />
     <ClInclude Include="src\tools\Buffer.h" />
     <ClInclude Include="src\tools\errorcheck.h" />
     <ClInclude Include="src\tools\Material.h" />
     <ClInclude Include="src\tools\App.h" />
-    <ClInclude Include="src\tools\BluehatToolkit.h" />
     <ClInclude Include="src\tools\Camera.h" />
     <ClInclude Include="src\tools\FrameBuffer.h" />
     <ClInclude Include="src\tools\Mesh.h" />
+    <ClInclude Include="src\tools\Renderer.h" />
     <ClInclude Include="src\tools\Resource.h" />
     <ClInclude Include="src\tools\ShaderProgram.h" />
+    <ClInclude Include="src\tools\Transform.h" />
     <ClInclude Include="src\tools\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
