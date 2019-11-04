@@ -78,7 +78,7 @@ class Game :public App {
 
 
 	void initGL() {
-		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_MULTISAMPLE); // move to a context class
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
