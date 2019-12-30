@@ -8,8 +8,8 @@
 
 
 	struct Shader {
-		GLuint id;
-		GLuint type;
+		GLuint id = -1;
+		GLuint type = -1;
 		Shader() {}
 		Shader(std::string file, GLuint t);
 		void cleanup();

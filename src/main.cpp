@@ -92,23 +92,30 @@ class Game :public App {
 	void init() {
 		R = &Resource::getInstance(); // maybe a good time to make that asset loader
 
+		R->batchLoad(
+			"uvmap.bmp:uvmap;"
+			"vertex.vert:;"
+			"fragment.frag:;"
+			"pass.vert:;"
+			"pass.frag:;"
+			"monkey.obj:monkey;"
+		);
 
-		Shader uved_v = R->addShader("vertex.vert");
-		Shader uved_f = R->addShader("fragment.frag");
-		Shader pass_v = R->addShader("pass.vert");
-		Shader pass_f = R->addShader("pass.frag");
+
+		Shader uved_v = R->getShader("vertex.vert");
+		Shader uved_f = R->getShader("fragment.frag");
+		Shader pass_v = R->getShader("pass.vert");
+		Shader pass_f = R->getShader("pass.frag");
 
 		Program pass(pass_v, pass_f);
 		viewportinit(window);
 		renderer = Renderer(pass, width, height);
 
-		R->addTexture("uvmap", "uvmap.bmp");
-
 		Material uved_mat(vec4(1), vec4(.1), 5);
 		uved_mat.diffuseMap = R->getTexture("uvmap");
 		uved_mat.shader = Program(uved_v, uved_f);
 
-		Entity* monkey = new Entity(loader.load(R->path + "monkey.obj"), uved_mat);
+		Entity* monkey = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey->setName("monkey");
 		scene.add(monkey);
 		monkey->add(new lights::Light(lights::Point{

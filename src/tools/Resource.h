@@ -8,12 +8,15 @@
 
 #include"ShaderProgram.h"
 #include"Material.h"
+#include "Geometry.h"
 
 
 	class Resource {
 		std::map<std::string, Texture> textures;
 
 		std::map<std::string, Shader> shaders;
+
+		std::map<std::string, Geometry*> geometries;
 
 	public:
 		std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
@@ -27,11 +30,17 @@
 		Shader addShader(std::string name);
 		Shader getShader(std::string name);
 
+		void addGeometry(std::string name,Geometry* geom);
+		Geometry* getGeometry(std::string name);
+
+
 		Texture LoadGLTexture(const char *filename);
 		Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
 
 		void setPath(std::string texturePath, std::string shaderPath, std::string path);
 		std::string getShaderPath(std::string file);
+
+		void batchLoad(std::string manifest);
 
 		void cleanup();
 

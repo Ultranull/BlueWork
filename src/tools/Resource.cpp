@@ -9,6 +9,8 @@
 #include <sstream>
 #include <string>
 
+#include "OBJLoader.h"
+
 using namespace std;
 
 string readFile(const char *file) {//FIX! place in a header as a util
@@ -123,7 +125,6 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		string fn = (path + texturePath + string(tex));
 		const char *file = fn.c_str();
 		Texture t = LoadGLTexture(file);
-		printf("setting texture: %s\n", name.c_str());
 		textures.insert(make_pair(name, t));
 		return t;
 	}
@@ -135,7 +136,6 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 				stringstream n;
 				n << name << "-"<<i<<","<<c;
 				Texture t = LoadGLsubTexture(file, c*sub_width, i*sub_height, sub_width, sub_height);
-				printf("setting texture: %s\n", n.str().c_str());
 				textures.insert(make_pair(n.str(), t));
 			}
 
@@ -153,10 +153,11 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		string ext = file.substr(file.size() - 4, 4);
 		if (ext.compare("vert") == 0)
 			type = GL_VERTEX_SHADER;
-		else if(ext.compare("frag") == 0)
+		else if (ext.compare("frag") == 0)
 			type = GL_FRAGMENT_SHADER;
 		else if (ext.compare("geom") == 0)
 			type = GL_GEOMETRY_SHADER;
+		else return Shader();
 		Shader sh(path + shaderPath + file, type);
 		shaders.insert({ file,sh });
 		return sh;
@@ -165,8 +166,15 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		return shaders[name];
 	}
 
+	void Resource::addGeometry(std::string name, Geometry* geom){
+		geometries.insert(make_pair(name,geom));
+	}
+
+	Geometry* Resource::getGeometry(std::string name){
+		return geometries[name];
+	}
+
 	Texture Resource::LoadGLTexture(const char *filename) {
-		printf("loading texture: %s\n", filename);
 		//glEnable(GL_TEXTURE_2D);
 
 		Texture t;
@@ -191,7 +199,6 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		return t;
 	}
 	Texture Resource::LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height) {
-		printf("loading texture: %s\n", filename);
 		glEnable(GL_TEXTURE_2D);
 
 		unsigned char *data;
@@ -235,5 +242,60 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		}
 		for (;shadit != shaders.end();shadit++) {
 			shadit->second.cleanup();
+		}
+	}
+
+
+	/*
+		manifest:
+			
+			model.obj:model;
+			text.png:image;
+			vertex.vert:vertex;
+	
+	*/
+
+	bool isImage(std::string s) {
+		return s.compare("png") == 0 ||
+			s.compare("bmp") == 0 ||
+			s.compare("jpg") == 0;
+	}
+
+	bool isShader(std::string s) {
+		return s.compare("vert") == 0 ||
+			s.compare("frag") == 0 ||
+			s.compare("geom") == 0;
+	}
+
+	void Resource::batchLoad(std::string manifest) {
+
+		OBJLoader loader;
+
+		size_t pos = 0;
+		std::string line;
+		while ((pos = manifest.find(";")) != std::string::npos) {
+			line = manifest.substr(0, pos);
+
+			std::string file,name;
+			size_t posFile = line.find(":");
+			file = line.substr(0, posFile);
+			name = line.substr(posFile + 1, pos);
+
+			size_t posExt = file.find(".");
+			std::string extension = file.substr(posExt + 1, posFile);
+
+			if (extension.compare("obj") == 0) {
+				printf("loading geometry %s as %s\n", file.c_str(),name.c_str());
+				addGeometry(name, loader.load(path + file));
+			}
+			else if (isImage(extension)) {
+				printf("loading image %s as %s\n", file.c_str(), name.c_str());
+				addTexture(name, file.c_str());
+			}
+			else if(isShader(extension)){
+				printf("loading shader %s\n", file.c_str());
+				addShader(file);
+			}
+			manifest.erase(0, pos + 1);
 		}
 	}
