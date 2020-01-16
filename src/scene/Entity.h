@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
-#include "Geometry.h"
-#include "Material.h"
+#include "../Geometry.h"
+#include "../Material.h"
 #include "Node.h"
 
 

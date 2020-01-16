@@ -9,23 +9,23 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "tools/App.h"
-#include "tools/Camera.h"
-#include "tools/Mesh.h"
-#include "tools/Resource.h"
-#include "tools/ShaderProgram.h"
-#include "tools/FrameBuffer.h"
-#include "tools/VertexArray.h"
+#include "App.h"
+#include "scene/Camera.h"
+#include "Mesh.h"
+#include "resource/Resource.h"
+#include "graphics/ShaderProgram.h"
+#include "graphics/FrameBuffer.h"
+#include "graphics/VertexArray.h"
 
-#include "tools/errorcheck.h"
+#include "errorcheck.h"
 
-#include "tools/Node.h"
-#include "tools/Light.h"
-#include "tools/Geometry.h"
-#include "tools/Transform.h"
-#include "tools/Entity.h"
-#include "tools/Renderer.h"
-#include "tools/OBJLoader.h"
+#include "scene/Node.h"
+#include "scene/Light.h"
+#include "Geometry.h"
+#include "scene/Transform.h"
+#include "scene/Entity.h"
+#include "Renderer.h"
+#include "resource/OBJLoader.h"
 
 using namespace glm;
 using namespace std;

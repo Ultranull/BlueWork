@@ -4,8 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "Buffer.h"
-#include "ShaderProgram.h"
+#include "../graphics/Buffer.h"
+#include "../graphics/ShaderProgram.h"
 
 	class Camera {
 		glm::vec3 position;  

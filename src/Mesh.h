@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include "glm/glm.hpp"
 
-#include "VertexArray.h"
+#include "graphics/VertexArray.h"
 
 struct Vertex {
 	glm::vec3 pos       = glm::vec3(0);

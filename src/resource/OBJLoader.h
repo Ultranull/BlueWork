@@ -5,10 +5,10 @@
 
 #include <glm/glm.hpp>
 
-#include "Engine.h"
+#include "../Engine.h"
 #include "Resource.h"
-#include "VertexArray.h"
-#include "Geometry.h"
+#include "../graphics/VertexArray.h"
+#include "../Geometry.h"
 
 class OBJLoader{
 	Resource* R = &Resource::getInstance();

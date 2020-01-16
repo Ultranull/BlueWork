@@ -6,9 +6,9 @@
 
 #include <glad/glad.h>
 
-#include"ShaderProgram.h"
-#include"Material.h"
-#include "Geometry.h"
+#include"../graphics/ShaderProgram.h"
+#include"../Material.h"
+#include "../Geometry.h"
 
 
 	class Resource {

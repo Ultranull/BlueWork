@@ -3,12 +3,12 @@
 #include <vector>
 
 
-#include "Buffer.h"
-#include "Node.h"
-#include "Light.h"
-#include "ShaderProgram.h"
-#include "Entity.h"
-#include "FrameBuffer.h"
+#include "graphics/Buffer.h"
+#include "scene/Node.h"
+#include "scene/Light.h"
+#include "graphics/ShaderProgram.h"
+#include "scene/Entity.h"
+#include "graphics/FrameBuffer.h"
 #include "Mesh.h"
 
 struct Renderer {
