@@ -51,6 +51,8 @@ namespace lights {
 		void cleanup() {
 			Node::cleanup();
 		}
+
+		void SetPosition(glm::vec3 pos);
 	};
 
 

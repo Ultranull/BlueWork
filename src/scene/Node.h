@@ -5,31 +5,31 @@
 
 #include <glad/glad.h>
 
-enum NodeType :GLuint{
-	DUMMY=0,
-	ENTITY,
-	POINTLIGHT,
-	DIRLIGHT,
-	SPOTLIGHT
+#include "Transform.h"
 
-};
 
 class Node{
+
+	std::string type;
+
+protected:
 	std::vector<Node*> children;
 	Node *parent;
 
-	NodeType type;
+
 	std::string name;
 
 
 public:
+	Transform transform;
+
 	Node();
-	Node(NodeType t);
+	Node(std::string);
 
 	void add(Node* child);
 	void setParent(Node* p);
-	NodeType getType();
 	int getNumberOfChildren();
+	std::string GetType();
 	void cleanup();
 
 	Node* child(GLuint index);

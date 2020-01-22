@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "graphics/ShaderProgram.h"
+#include "scene/Transform.h"
 
 
 struct TextureTraits {

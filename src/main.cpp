@@ -17,6 +17,8 @@
 #include "graphics/FrameBuffer.h"
 #include "graphics/VertexArray.h"
 
+#include "componentSystem/SystemManager.h"
+
 #include "errorcheck.h"
 
 #include "scene/Node.h"
@@ -26,6 +28,7 @@
 #include "scene/Entity.h"
 #include "Renderer.h"
 #include "resource/OBJLoader.h"
+
 
 using namespace glm;
 using namespace std;
@@ -66,13 +69,14 @@ using namespace std;
 
 
 class Game :public App {
+	SystemManager& systemManager;
 	Resource *R;
 
 	OBJLoader loader;
 
 	Camera cam;
 
-	Dummy scene;
+	Node scene;
 
 	Renderer renderer;
 
@@ -100,6 +104,7 @@ class Game :public App {
 			"pass.frag:;"
 			"monkey.obj:monkey;"
 		);
+
 
 
 		Shader uved_v = R->getShader("vertex.vert");
@@ -133,9 +138,10 @@ class Game :public App {
 		cam.perspective(window, 45, .1, 100);
 		cam.bindCamera(uved_mat.shader);
 
-
+		systemManager.start();
 	}
 	void onClose() {
+		systemManager.CleanUp();
 		R->cleanup(); 
 		cam.cleanup();
 		renderer.cleanup();
@@ -161,7 +167,8 @@ class Game :public App {
 	}
 public:
 
-	Game(int width, int height, const char *title) :App(width, height, title) {
+	Game(int width, int height, const char *title) :
+		App(width, height, title), systemManager(SystemManager::getInstance()) {
 
 	}
 };

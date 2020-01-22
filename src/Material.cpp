@@ -37,6 +37,7 @@ void Texture::unbind(GLuint target){
 }
 
 void Material::bind() {
+	shader.bind();
 	shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0)); // add to spec: diffuse map always tex0
 	shader.setUniform("material.specular", &specular);
 	shader.setUniform("material.color", &color);

@@ -21,7 +21,11 @@
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="src\scene\SceneManager.cpp" />
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\componentSystem\AbstractComponent.cpp" />
+    <ClCompile Include="src\componentSystem\AbstractSystem.cpp" />
+    <ClCompile Include="src\componentSystem\SystemManager.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\graphics\Buffer.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp" />
@@ -193,7 +197,11 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\SOIL.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\scene\SceneManager.h" />
     <ClInclude Include="src\App.h" />
+    <ClInclude Include="src\componentSystem\AbstractComponent.h" />
+    <ClInclude Include="src\componentSystem\AbstractSystem.h" />
+    <ClInclude Include="src\componentSystem\SystemManager.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\errorcheck.h" />
     <ClInclude Include="src\Geometry.h" />

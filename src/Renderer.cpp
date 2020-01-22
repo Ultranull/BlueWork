@@ -98,16 +98,11 @@ void Renderer::post() {
 void Renderer::traverseGraph(Node* root, glm::mat4 transform) {
 
 	glm::mat4 parent = glm::mat4(1);
-	switch (root->getType()) {
-	case NodeType::DUMMY: {
-		parent = reinterpret_cast<Dummy*>(root)->transform.Model();
-	}break;
-	case NodeType::ENTITY: {
+	if (root->GetType().compare("Entity")) {
 		Entity* entity = reinterpret_cast<Entity*>(root);
 		parent = entity->transform.Model();
 		Program* shader = &entity->material.shader;
 		if (!entity->flags) {
-			shader->bind();
 			entity->material.bind();
 			shader->setUniform("numLights", lightbuf.size());
 			shader->setUniform("model", &(transform * parent));
@@ -116,8 +111,6 @@ void Renderer::traverseGraph(Node* root, glm::mat4 transform) {
 
 			entity->geometry->drawArrays(); // add some conditional stuff: castsshadow?
 		}
-
-	}break;
 	}
 
 

@@ -1,13 +1,13 @@
 #include "Node.h"
 
+Node::Node():
+	children(), parent(nullptr), type("Node")
+{}
 
-
-Node::Node()
-{
+Node::Node(std::string t):
+	Node(){
+	type = t;
 }
-
-
-Node::Node(NodeType t) :type(t), children(),parent(nullptr) {}
 
 void Node::add(Node* child) {
 	children.push_back(child);
@@ -17,12 +17,12 @@ void Node::setParent(Node* p) {
 	parent = p;
 }
 
-NodeType Node::getType(){
-	return type;
-}
-
 int Node::getNumberOfChildren(){
 	return children.size();
+}
+
+std::string Node::GetType(){
+	return type;
 }
 
 void Node::cleanup(){
