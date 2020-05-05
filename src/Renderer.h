@@ -11,15 +11,27 @@
 #include "graphics/FrameBuffer.h"
 #include "Mesh.h"
 
+
+/*
+	steps:
+		-resolve all transforms
+		-collect list of each node type needed
+		-bind lights
+		-loop over entities and render
+
+
+*/
+
+
 struct Renderer {
 	UniformBuffer lights;
-	std::vector<lights::Point> lightbuf;
-
-	Node* scene;
+	std::vector<Light::PointData> lightbuf;
 
 	FrameBuffer passthrough;
-	Mesh plane;
+	Geometry* plane;
 	Program pass;
+
+	SceneManager* Manager;
 
 	GLuint width, height;
 
@@ -29,16 +41,16 @@ struct Renderer {
 
 	void cleanup();
 
-	void collectLights(Node* root, glm::mat4 transform);
+	void collectLights(void);
 
-	void setup(Node* root);
+	void setup(SceneManager* manager);
 
 	void updateLights();
 
 	void pre();
 
 	void render();
-	void traverseGraph(Node* root, glm::mat4 transform);
+	void traverseGraph();
 
 	void post();
 };

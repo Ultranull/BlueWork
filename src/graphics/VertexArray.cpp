@@ -20,12 +20,15 @@ VertexArray::~VertexArray()
 }
 
  void VertexArray::cleanup() {
-	std::map<std::string, Buffer*>::iterator iter;
-	for (iter = buffers.begin(); iter != buffers.end(); iter++) {
-		Buffer *b = (*iter).second;
-		b->cleanup();
-		delete b;
-	}
+	 if (id != -1) {
+		 id = -1;
+		 std::map<std::string, Buffer*>::iterator iter;
+		 for (iter = buffers.begin(); iter != buffers.end(); iter++) {
+			 Buffer* b = (*iter).second;
+			 b->cleanup();
+			 delete b;
+		 }
+	 }
 }
 
  void VertexArray::updateData(std::string name, GLintptr offset, GLsizeiptr size,const void * data) {

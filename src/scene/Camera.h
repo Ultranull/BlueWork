@@ -7,10 +7,10 @@
 #include "../graphics/Buffer.h"
 #include "../graphics/ShaderProgram.h"
 
-	class Camera {
-		glm::vec3 position;  
-		glm::vec3 direction; 
-		glm::vec3 up;		 
+#include "Node.h"
+
+	class Camera: public Node{
+
 		glm::mat4 view;		  
 		glm::mat4 projection; 
 
@@ -23,6 +23,7 @@
 		UniformBuffer buffer;
 
 		float FOV = 45.f;
+
 		float speed = 3.f;
 		float mouseSpeed = 0.005f;
 		double xpos, ypos;

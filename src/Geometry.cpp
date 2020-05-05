@@ -2,9 +2,14 @@
 
 #include <glad/glad.h>
 
-void Geometry::drawArrays() {
+void Geometry::draw() {
 	vaObject->bind();
-	glDrawArrays(topology, 0, size);
+	if(indexed)
+		glDrawElementsInstancedBaseVertexBaseInstance(
+			topology, size, GL_UNSIGNED_INT, nullptr, instances, 0, 0);
+	else
+		glDrawArraysInstancedBaseInstance(
+			topology, 0, size, instances, 0);
 	vaObject->unbind();
 }
 

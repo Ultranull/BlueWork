@@ -2,12 +2,15 @@
 
 #include "graphics/VertexArray.h"
 
-struct Geometry {
-	GLuint topology;
-	int size, instances = 1;
-	VertexArray* vaObject;
 
-	void drawArrays();
+struct Geometry {
+	GLuint topology = 0;
+	int size = 0;
+	int instances = 1;
+	bool indexed = false;
+	VertexArray* vaObject = nullptr;
+
+	void draw();
 
 	void cleanup();
 };

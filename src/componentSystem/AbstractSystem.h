@@ -33,6 +33,7 @@ public:
 				iter->CleanUp();
 				ptr = nullptr;
 				iter = components.erase(iter);
+				break;
 			}
 			else {
 				iter++;
@@ -40,7 +41,7 @@ public:
 		}
 	}
 
-    ComponentType* Register() {
+    virtual ComponentType* Register() {
         components.push_back(ComponentType());
         return &components.back();
     }

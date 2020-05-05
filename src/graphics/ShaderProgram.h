@@ -20,7 +20,7 @@
 	public:
 		Program(Shader vert, Shader frag);
 		Program(Shader vert, Shader frag, Shader geom);
-		Program() {}
+		Program():programID(0) {}
 		~Program();
 
 		void cleanup();

@@ -7,10 +7,10 @@ Geometry* OBJLoader::load(std::string fn) {
 	geom->vaObject = new VertexArray();
 	Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
 	vbuffer->setData(vertices, GL_STATIC_DRAW);
-	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, pos));
-	vbuffer->bindPointer(Engine::COLOR, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, color));
-	vbuffer->bindPointer(Engine::TEXTURECOORD, 2, GL_FLOAT, (void*)offsetof(Engine::Vertex, UV));
-	vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, normal));
+	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));
+	vbuffer->bindPointer(Engine::COLOR, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Color));
+	vbuffer->bindPointer(Engine::TEXTURECOORD, 2, GL_FLOAT, (void*)offsetof(Engine::Vertex, TextureCoord));
+	vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Normal));
 	geom->size = vertices.size();
 	geom->topology = numberOfFaces == 4 ? GL_QUADS :
 		numberOfFaces == 3 ? GL_TRIANGLES : GL_LINES;

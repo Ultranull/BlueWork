@@ -2,40 +2,53 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <glad/glad.h>
 
 #include "Transform.h"
 
+class SceneManager;
+
+enum class NodeType {
+	Node,
+	Light,
+	Entity,
+	Camera
+};
 
 class Node{
 
-	std::string type;
+	SceneManager* manager;
+
+	NodeType type;
 
 protected:
 	std::vector<Node*> children;
-	Node *parent;
-
+	Node* parent;
 
 	std::string name;
-
 
 public:
 	Transform transform;
 
 	Node();
-	Node(std::string);
+	Node(NodeType);
+
+	glm::mat4 ResolveFinalTransform();
 
 	void add(Node* child);
 	void setParent(Node* p);
 	int getNumberOfChildren();
-	std::string GetType();
+	NodeType GetType();
 	void cleanup();
 
 	Node* child(GLuint index);
 
 	std::string getName();
 	Node* setName(std::string name);
+
+	void setManager(SceneManager* sceneManager);
 
 	template<class T>
 	T* findByName(std::string name) {
@@ -52,4 +65,3 @@ public:
 		return nullptr;
 	}
 };
-

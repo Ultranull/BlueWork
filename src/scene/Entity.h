@@ -6,18 +6,23 @@
 
 
 struct Entity : public Node {
-	static const unsigned int INSTANCED = 0b1;// maybe spec
-	static const unsigned int INDEXED = 0b10;
 
 	Geometry* geometry;
 	Material material;
 
-	unsigned int flags = 0;
+	union {
+		unsigned char flags;
+		struct {
+			unsigned Instanced : 1;
+			unsigned Indexed : 1;
+			unsigned res : 6;
+		};
+	};
 
 
-	Entity() {}
+	Entity(): Entity(nullptr, Material()) {}
 	Entity(Geometry* geom, Material mat) :
-		geometry(geom), material(mat), Node("Entity") {}
+		geometry(geom), material(mat), flags(0), Node(NodeType::Entity) {}
 
 	void cleanup();
 

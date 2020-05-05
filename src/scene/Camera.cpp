@@ -17,13 +17,8 @@ const GLuint JUMP = GLFW_KEY_SPACE;
 const GLuint CROUCH = GLFW_KEY_LEFT_SHIFT;
 
 
-Camera::Camera() {
-	position = vec3(0, 0, 0);
-	direction = vec3(0, 0, 0);
-}
-Camera::Camera(vec3 pos, vec3 dir, vec3 u) :position(pos), direction(dir), up(u) {
-	projection = glm::perspective(radians(FOV), 4.f / 3.f, .1f, 100.f);
-	view = lookAt(position, position + direction, up);
+Camera::Camera():
+	Node(NodeType::Camera){
 }
 
 void Camera::bindCamera(Program shader){
@@ -33,9 +28,9 @@ void Camera::bindCamera(Program shader){
 	buffer.setData<mat4>(3, GL_DYNAMIC_DRAW);
 	buffer.setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
 	buffer.setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
-	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(up,0)));
-	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(direction,0)));
-	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(position,0)));
+	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(),0)));
+	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(),0)));
+	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(),0)));
 	buffer.setSubData(index_pos + sizeof(glm::vec4), sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
 	buffer.blockBinding(shader.getProgramID(), 0, "camera");
 	buffer.unbind();
@@ -45,9 +40,9 @@ void Camera::updateBuffer(){
 	buffer.bind();
 	buffer.setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
 	buffer.setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
-	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(up, 0)));
-	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(direction, 0)));
-	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(position, 0)));
+	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(),0)));
+	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(),0)));
+	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(),0)));
 	buffer.unbind();
 }
 
@@ -64,36 +59,36 @@ void Camera::apply(GLFWwindow *window, float delta) {
 
 	float pi = radians(180.f);
 
-	direction = vec3(cos(vangle)*sin(hangle),
+	vec3 direction = vec3(cos(vangle)*sin(hangle),
 		sin(vangle),
 		cos(vangle)*cos(hangle));
 	vec3 right(sin(hangle - pi / 2.f),
 		0,
 		cos(hangle - pi / 2.f));
-	up = cross(right, direction);
+	vec3 up = cross(right, direction);
 	vec3 front = cross(vec3(0,1,0), right);
 
 	if (glfwGetKey(window, FORWARD) == GLFW_PRESS) {//FIX! all input should be called from input class
-		position += front * delta * speed;
+		transform.Position() += front * delta * speed;
 	}
 	if (glfwGetKey(window, BACKWARD) == GLFW_PRESS) {
-		position -= front * delta * speed;
+		transform.Position() -= front * delta * speed;
 	}
 	if (glfwGetKey(window, STRAFERIGHT) == GLFW_PRESS) {
-		position += right * delta * speed;
+		transform.Position() += right * delta * speed;
 	}
 	if (glfwGetKey(window, STRAFELEFT) == GLFW_PRESS) {
-		position -= right * delta * speed;
+		transform.Position() -= right * delta * speed;
 	}
 	if (glfwGetKey(window, JUMP) == GLFW_PRESS){
-		position += vec3(0,1,0) * delta * speed;
+		transform.Position() += vec3(0,1,0) * delta * speed;
 	}
 	if (glfwGetKey(window, CROUCH) == GLFW_PRESS) {
-		position -= vec3(0, 1, 0) * delta * speed;
+		transform.Position() -= vec3(0, 1, 0) * delta * speed;
 	}
 
 	float ratio = width / (float)height;
-	view = lookAt(position, position + direction, up);
+	view = lookAt(transform.Position(), transform.Position() + direction, up);
 }
 void Camera::orbit(GLFWwindow *window, float delta,vec3 target) {
 	int width, height;
@@ -115,24 +110,25 @@ void Camera::orbit(GLFWwindow *window, float delta,vec3 target) {
 
 	float pi = radians(180.f);
 
-	position = vec3(cos(vangle)*sin(hangle),
+	transform.Position() = vec3(cos(vangle)*sin(hangle),
 					 sin(vangle),
 					 cos(vangle)*cos(hangle))*orbitDist + target;
-	direction = (position - target)/ orbitDist;
+	vec3 direction = (transform.Position() - target)/ orbitDist;
 	vec3 right(sin(hangle - pi / 2.f),
 			   0,
 			   cos(hangle - pi / 2.f));
-	up = cross(right, direction);
+	vec3 up = cross(right, direction);
 
 	float ratio = width / (float)height;
 	view = glm::lookAt(
-		position, 
+		transform.Position(),
 		target,
 		up  
 	);
 
 
 }
+
 void Camera::perspective(GLFWwindow *window,float FOV,float near,float far) {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -151,11 +147,11 @@ mat4 Camera::V() {
 }
 
 vec3 Camera::getDirection() {
-	return direction;
+	return transform.Forward();
 }
 
 vec3 Camera::getPosition() {
-	return position;
+	return transform.Position();
 }
 
 void Camera::cleanup(){

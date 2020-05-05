@@ -27,10 +27,12 @@ struct Texture {
 
 
 
-	int width, height;
+	int width;
+	int height;
 	Texture():Texture(RGBA_2D) {}
 
-	Texture(TextureTraits t):params(t){
+	Texture(TextureTraits t):
+		params(t), width(0), height(0), id(0){
 		glGenTextures(1, &id);
 	}
 

@@ -1,17 +1,31 @@
 #include "Node.h"
 
+#include "SceneManager.h"
+
 Node::Node():
-	children(), parent(nullptr), type("Node")
+	Node(NodeType::Node)
 {}
 
-Node::Node(std::string t):
-	Node(){
-	type = t;
+Node::Node(NodeType t):
+	children(), parent(nullptr), type(t)
+{}
+
+glm::mat4 Node::ResolveFinalTransform() {
+	glm::mat4 parentTransform = glm::mat4(1);
+	bool shouldForce = false;
+	if (parent != nullptr) {
+		shouldForce = parent->transform.IsValid();
+		parentTransform = parent->ResolveFinalTransform();
+	}
+
+	return transform.FinalTransform(shouldForce, parentTransform);
 }
 
 void Node::add(Node* child) {
-	children.push_back(child);
-	child->setParent(this);
+	Node* childPtr = manager->PushNode(child);
+	children.push_back(childPtr);
+	childPtr->setParent(this);
+	childPtr->setManager(manager);
 }
 void Node::setParent(Node* p) {
 	parent = p;
@@ -21,7 +35,7 @@ int Node::getNumberOfChildren(){
 	return children.size();
 }
 
-std::string Node::GetType(){
+NodeType Node::GetType(){
 	return type;
 }
 
@@ -43,4 +57,7 @@ Node* Node::setName(std::string name) {
 	return this;
 }
 
+void Node::setManager(SceneManager* sceneManager) {
+	manager = sceneManager;
+}
 

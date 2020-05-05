@@ -3,9 +3,11 @@
 #include <glm/gtx/transform.hpp>
 
 #include "Engine.h"
+#include "resource/ShapeLoader.h"
+#include "scene/SceneManager.h"
 
-
-Renderer::Renderer(){}
+Renderer::Renderer(): 
+	Manager(nullptr), plane(nullptr), height(0), width(0){}
 
 Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 	pass(passShader), width(w),height(h){
@@ -14,60 +16,50 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 	passthrough.addDepth();
 	passthrough.drawBuffers();
 
-	plane = Mesh({
-		Vertex{{-1,-1,0},{},{0,0}},
-		Vertex{{-1,1,0},{},{0,1}},
-		Vertex{{1,1,0},{},{1,1}},
-		Vertex{{1,1,0},{},{1,1}},
-		Vertex{{1,-1,0},{},{1,0}},
-		Vertex{{-1,-1,0},{},{0,0}},
-		});
+	ShapeLoader loader;
+
+	plane = loader.MakePlane(1, 1);
 }
 
 void Renderer::cleanup() {
 	lights.cleanup();
-	scene->cleanup();
+	Manager->CleanUp();
+	plane->cleanup();
+	delete plane;
 }
 
-void Renderer::collectLights(Node* root, glm::mat4 transform) {
+void Renderer::collectLights() {
+	int numberOfLights = Manager->GetNumberOfLights();
 
-	glm::mat4 parent = glm::mat4(1);
-	switch (root->getType()) {
-	case NodeType::DUMMY: {
-		parent = (reinterpret_cast<Dummy*>(root))->transform.Model();
-	}break;
-	case NodeType::ENTITY: {
-		parent = (reinterpret_cast<Entity*>(root))->transform.Model();
-	}break;
-	case NodeType::POINTLIGHT: {
-		lights::Point light = reinterpret_cast<lights::Light*>(root)->pointLight;
-		parent = glm::translate(glm::vec3(light.position));
-		light.position = transform * light.position;
-		lightbuf.push_back(light);
-	}break;
+	for (int i = 0; i < numberOfLights; i++) {
+		Light* light = Manager->GetLight(i);
+		glm::mat4 finalTransform = light->ResolveFinalTransform();
+		switch (light->lightType) {
+		case LightType::Point:
+			PointLight* pointLight = (PointLight*)light;
+			lightbuf.push_back(pointLight->pack());
+		}
 	}
 
-	for (int i = 0; i < root->getNumberOfChildren(); i++)
-		collectLights(root->child(i), transform * parent);
 }
 
-void Renderer::setup(Node* root) {
-	scene = root;
+void Renderer::setup(SceneManager* manager) {
+	Manager = manager;
 	lightbuf.clear();
-	collectLights(root, glm::mat4(1));
+	collectLights();
 
 	lights = UniformBuffer();
 	lights.bind();
-	lights.setData<lights::Point>(lightbuf, GL_DYNAMIC_DRAW);
+	lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
 	//lights.blockBinding(shader.getProgramID(), 1, "Lights");
 	lights.unbind();
 }
 
 void Renderer::updateLights() {
 	lightbuf.clear();
-	collectLights(scene, glm::mat4(1));
+	collectLights();
 	lights.bind();
-	lights.setData<lights::Point>(lightbuf, GL_DYNAMIC_DRAW);
+	lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
 	lights.unbind();
 }
 
@@ -78,7 +70,7 @@ void Renderer::render() {
 
 	passthrough.bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	traverseGraph(scene, glm::mat4(1));
+	traverseGraph();
 
 	post();
 }
@@ -90,30 +82,26 @@ void Renderer::post() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	pass.bind();
-	pass.setUniform("model", &glm::mat4(1));
+	pass.setUniform("model", &glm::rotate(glm::radians(90.f), glm::vec3(1, 0, 0)));
 	pass.setUniform("passthrough", passthrough.getTexture("passthrough").activate(Engine::PASSMAP));
-	plane.renderVertices(GL_TRIANGLES);
+	plane->draw();
 }
 
-void Renderer::traverseGraph(Node* root, glm::mat4 transform) {
+void Renderer::traverseGraph() {
+	int numberOfEntities = Manager->GetNumberOfEntities();
 
-	glm::mat4 parent = glm::mat4(1);
-	if (root->GetType().compare("Entity")) {
-		Entity* entity = reinterpret_cast<Entity*>(root);
-		parent = entity->transform.Model();
-		Program* shader = &entity->material.shader;
+	for (int i = 0; i < numberOfEntities; i++) {
+		Entity* entity = Manager->GetEntity(i);
+		glm::mat4 finalTransform = entity->ResolveFinalTransform();		
+		Material* material = &entity->material;
 		if (!entity->flags) {
-			entity->material.bind();
-			shader->setUniform("numLights", lightbuf.size());
-			shader->setUniform("model", &(transform * parent));
+			material->bind();
+			material->shader.setUniform("numLights", lightbuf.size());
+			material->shader.setUniform("model", &finalTransform);
 			lights.bind();
-			lights.blockBinding(shader->getProgramID(), 1, "Lights");
+			lights.blockBinding(material->shader.getProgramID(), 1, "Lights");
 
-			entity->geometry->drawArrays(); // add some conditional stuff: castsshadow?
+			entity->geometry->draw(); // add some conditional stuff: castsshadow?
 		}
 	}
-
-
-	for (int i = 0; i < root->getNumberOfChildren(); i++)
-		traverseGraph(root->child(i), transform * parent);
 }

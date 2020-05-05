@@ -28,6 +28,7 @@
 #include "scene/Entity.h"
 #include "Renderer.h"
 #include "resource/OBJLoader.h"
+#include "scene/SceneManager.h"
 
 
 using namespace glm;
@@ -76,7 +77,7 @@ class Game :public App {
 
 	Camera cam;
 
-	Node scene;
+	SceneManager level1;
 
 	Renderer renderer;
 
@@ -122,18 +123,21 @@ class Game :public App {
 
 		Entity* monkey = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey->setName("monkey");
-		scene.add(monkey);
-		monkey->add(new lights::Light(lights::Point{
-			vec4(.1,0,0,1),vec4(1,0,0,1),vec4(1,0,0,1),
-			lights::attunation{1. / 2.,1,1},
-			vec4(1,1,0,0)
-		}));
-		scene.add(new lights::Light(lights::Point{
+
+		Entity* monkey2 = new Entity(R->getGeometry("monkey"), uved_mat);
+		monkey2->transform.translate(vec3(1, 1, 0));
+
+		Node* scene = level1.GetRoot();
+
+		scene->add(monkey);
+		monkey->add(monkey2);
+		scene->add(new PointLight(Light::PointData{
 			vec4(.1),vec4(1),vec4(1),
-			lights::attunation{1. / 2.,1,1},
+			Light::attunation{1. / 2.,1,1},
+			0,
 			vec4(1,0,0,0)
 		}));
-		renderer.setup(&scene);
+		renderer.setup(&level1);
 
 		cam.perspective(window, 45, .1, 100);
 		cam.bindCamera(uved_mat.shader);
@@ -153,7 +157,7 @@ class Game :public App {
 		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
-		scene.findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
+		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
 	}
 
 	void render(float delta) {
