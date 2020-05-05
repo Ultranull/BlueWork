@@ -27,7 +27,7 @@
 #include "scene/Transform.h"
 #include "scene/Entity.h"
 #include "Renderer.h"
-#include "resource/OBJLoader.h"
+#include "resource/ShapeLoader.h"
 #include "scene/SceneManager.h"
 
 
@@ -73,8 +73,6 @@ class Game :public App {
 	SystemManager& systemManager;
 	Resource *R;
 
-	OBJLoader loader;
-
 	Camera cam;
 
 	SceneManager level1;
@@ -106,7 +104,7 @@ class Game :public App {
 			"monkey.obj:monkey;"
 		);
 
-
+		R->addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
 		Shader uved_v = R->getShader("vertex.vert");
 		Shader uved_f = R->getShader("fragment.frag");
@@ -125,17 +123,22 @@ class Game :public App {
 		monkey->setName("monkey");
 
 		Entity* monkey2 = new Entity(R->getGeometry("monkey"), uved_mat);
-		monkey2->transform.translate(vec3(1, 1, 0));
+		monkey2->transform.translate(vec3(2, 2, 0));
+
+		Entity* ground = new Entity(R->getGeometry("ground"), uved_mat);
+		ground->transform.translate(vec3(0, -1, 0));
+		ground->transform.scale(vec3(10));
 
 		Node* scene = level1.GetRoot();
 
+		scene->add(ground);
 		scene->add(monkey);
 		monkey->add(monkey2);
 		scene->add(new PointLight(Light::PointData{
 			vec4(.1),vec4(1),vec4(1),
-			Light::attunation{1. / 2.,1,1},
+			Light::attunation{1./ 3.,1,1},
 			0,
-			vec4(1,0,0,0)
+			vec4(3,0,0,0)
 		}));
 		renderer.setup(&level1);
 

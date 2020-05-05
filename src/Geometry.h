@@ -11,6 +11,7 @@ struct Geometry {
 	VertexArray* vaObject = nullptr;
 
 	void draw();
+	void drawWire();
 
 	void cleanup();
 };

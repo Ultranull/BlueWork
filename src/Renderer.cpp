@@ -18,7 +18,7 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 
 	ShapeLoader loader;
 
-	plane = loader.MakePlane(1, 1);
+	plane = loader.MakeZPlane(1, 1);
 }
 
 void Renderer::cleanup() {
@@ -51,7 +51,6 @@ void Renderer::setup(SceneManager* manager) {
 	lights = UniformBuffer();
 	lights.bind();
 	lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
-	//lights.blockBinding(shader.getProgramID(), 1, "Lights");
 	lights.unbind();
 }
 
@@ -82,7 +81,7 @@ void Renderer::post() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	pass.bind();
-	pass.setUniform("model", &glm::rotate(glm::radians(90.f), glm::vec3(1, 0, 0)));
+	pass.setUniform("model", &glm::mat4(1));
 	pass.setUniform("passthrough", passthrough.getTexture("passthrough").activate(Engine::PASSMAP));
 	plane->draw();
 }
