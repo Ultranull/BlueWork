@@ -16,34 +16,46 @@ const GLuint STRAFELEFT = GLFW_KEY_A;
 const GLuint JUMP = GLFW_KEY_SPACE;
 const GLuint CROUCH = GLFW_KEY_LEFT_SHIFT;
 
+size_t index_proj = 0;
+size_t index_view = index_proj + sizeof(glm::mat4);
+size_t index_up = index_view + sizeof(glm::mat4);
+size_t index_dir = index_up + sizeof(glm::vec4);
+size_t index_pos = index_dir + sizeof(glm::vec4);
 
 Camera::Camera():
-	Node(NodeType::Camera){
+	buffer(nullptr), Node(NodeType::Camera){
 }
 
-void Camera::bindCamera(Program shader){
+void Camera::bindCamera(UniformBuffer* buf, Program shader){
+	buffer = buf;
+	buffer->bind();
+	buffer->blockBinding(shader.getProgramID(), 0, "camera");
+}
 
-	buffer = UniformBuffer();
-	buffer.bind();
-	buffer.setData<mat4>(3, GL_DYNAMIC_DRAW);
-	buffer.setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
-	buffer.setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
-	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(),0)));
-	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(),0)));
-	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(),0)));
-	buffer.setSubData(index_pos + sizeof(glm::vec4), sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
-	buffer.blockBinding(shader.getProgramID(), 0, "camera");
-	buffer.unbind();
+std::shared_ptr<UniformBuffer> Camera::buildCamera(void) {
+	std::shared_ptr<UniformBuffer> buffer = std::make_shared<UniformBuffer>();
+	buffer->bind();
+	buffer->setData<mat4>(3, GL_DYNAMIC_DRAW);
+	buffer->setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(glm::mat4(1)));
+	buffer->setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(glm::mat4(1)));
+	buffer->setSubData(index_up, sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
+	buffer->setSubData(index_dir, sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
+	buffer->setSubData(index_pos, sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
+	buffer->setSubData(index_pos + sizeof(glm::vec4), sizeof(glm::vec4), glm::value_ptr(glm::vec4(1)));
+	buffer->unbind();
+	return buffer;
 }
 
 void Camera::updateBuffer(){
-	buffer.bind();
-	buffer.setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
-	buffer.setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
-	buffer.setSubData(index_up  , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(),0)));
-	buffer.setSubData(index_dir , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(),0)));
-	buffer.setSubData(index_pos , sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(),0)));
-	buffer.unbind();
+	if (buffer != nullptr) {
+		buffer->bind();
+		buffer->setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
+		buffer->setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
+		buffer->setSubData(index_up, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(), 1)));
+		buffer->setSubData(index_dir, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(), 1)));
+		buffer->setSubData(index_pos, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(), 1)));
+		buffer->unbind();
+	}
 }
 
 void Camera::apply(GLFWwindow *window, float delta) {
@@ -133,6 +145,12 @@ void Camera::perspective(GLFWwindow *window,float FOV,float near,float far) {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	projection=glm::perspective(radians(FOV), width / (float)height, near, far);
+	float ratio = width / (float)height;
+	glm::mat4 finalTransform = ResolveFinalTransform();
+	view = lookAt(
+		glm::vec3(finalTransform * glm::vec4(0,0,0,1)),
+		glm::vec3(finalTransform * glm::vec4(0,0,1,1)),
+		glm::vec3(finalTransform * glm::vec4(0,1,0,0)));
 }
 
 void Camera::orthographic(float left, float right, float bottom, float top, float near, float far) {
@@ -155,5 +173,5 @@ vec3 Camera::getPosition() {
 }
 
 void Camera::cleanup(){
-	buffer.cleanup();
+	//buffer->cleanup();
 }

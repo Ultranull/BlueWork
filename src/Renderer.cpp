@@ -16,6 +16,8 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 	passthrough.addDepth();
 	passthrough.drawBuffers();
 
+	CameraBuffer = Camera::buildCamera();
+
 	ShapeLoader loader;
 
 	plane = loader.MakeZPlane(1, 1);
@@ -91,14 +93,16 @@ void Renderer::traverseGraph() {
 
 	for (int i = 0; i < numberOfEntities; i++) {
 		Entity* entity = Manager->GetEntity(i);
-		glm::mat4 finalTransform = entity->ResolveFinalTransform();		
+		Camera* camera = Manager->GetMainCamera();
 		Material* material = &entity->material;
+		glm::mat4 finalTransform = entity->ResolveFinalTransform();
 		if (!entity->flags) {
 			material->bind();
 			material->shader.setUniform("numLights", lightbuf.size());
 			material->shader.setUniform("model", &finalTransform);
 			lights.bind();
 			lights.blockBinding(material->shader.getProgramID(), 1, "Lights");
+			camera->bindCamera(CameraBuffer.get(), material->shader);
 
 			entity->geometry->draw(); // add some conditional stuff: castsshadow?
 		}

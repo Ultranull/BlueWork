@@ -6,14 +6,14 @@ Geometry* ShapeLoader::MakeZPlane(unsigned int xSegments, unsigned int ySegments
 	std::vector<Engine::Vertex> vertices;
 	std::vector<unsigned int> indices;
 
-	bool oddRow = false;
+	bool oddRow = true;
 	float dX = 1.0f / xSegments;
 	float dY = 1.0f / ySegments;
 	
-	for (int y = 0; y <= ySegments; ++y) {
+	for (int y = ySegments; y >= 0; --y) {
 		for (int x = 0; x <= xSegments; ++x) {
 			glm::vec3 pos(dX * x * 2.0f - 1.0f, dY * y * 2.0f - 1.0f, 0);
-			glm::vec2 uv(dX * x, 1.0f - y * dY);
+			glm::vec2 uv(dX * x, y * dY);
 			glm::vec3 norm(0.0f, 0.0f, 1.0f);
 			vertices.push_back(Engine::Vertex(pos, glm::vec3(1), uv, norm));
 		}

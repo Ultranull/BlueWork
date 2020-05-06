@@ -24,6 +24,8 @@
 
 
 struct Renderer {
+	std::shared_ptr<UniformBuffer> CameraBuffer;
+
 	UniformBuffer lights;
 	std::vector<Light::PointData> lightbuf;
 

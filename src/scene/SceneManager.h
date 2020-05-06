@@ -27,7 +27,9 @@ public:
 
 	Node* GetRoot(void);
 
-	void SetManCamera(std::string name);
+	Camera* GetMainCamera(void);
+	void SetMainCamera(std::string name);
+	void UpdateCamera(void);
 
 	int GetNumberOfLights(void);
 	Light* GetLight(int index);

@@ -73,8 +73,6 @@ class Game :public App {
 	SystemManager& systemManager;
 	Resource *R;
 
-	Camera cam;
-
 	SceneManager level1;
 
 	Renderer renderer;
@@ -86,7 +84,7 @@ class Game :public App {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glClearColor(.1, .1, .1, 1);
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 	}
 	
 	void loading() {
@@ -132,10 +130,17 @@ class Game :public App {
 
 		Node* scene = level1.GetRoot();
 
+		Camera* mainCamera = new Camera();
+		mainCamera->setName("Main");
+		mainCamera->transform.translate(vec3(0, 0, 6));
+		mainCamera->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
+
+
 		scene->add(ground);
 
 		scene->add(monkey);
 		monkey->add(monkey2);
+		monkey2->add(mainCamera);
 
 		PointLight* whiteLight = new PointLight(Light::PointData{
 			vec4(.1),vec4(1),vec4(1),
@@ -158,21 +163,19 @@ class Game :public App {
 
 		renderer.setup(&level1);
 
-		cam.perspective(window, 45, .1, 100);
-		cam.bindCamera(uved_mat.shader);
-
 		systemManager.start();
 	}
 	void onClose() {
 		systemManager.CleanUp();
 		R->cleanup(); 
-		cam.cleanup();
 		renderer.cleanup();
 	}
 
 	void update(float delta) {
-		cam.perspective(window, 45, .1, 100);
-		cam.updateBuffer();
+
+		level1.UpdateCamera();
+		level1.GetMainCamera()->perspective(window, 45, .1, 100);
+
 		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
@@ -187,7 +190,6 @@ class Game :public App {
 
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
-		cam.orbit(window, delta, { 0,0,0 });
 	}
 public:
 

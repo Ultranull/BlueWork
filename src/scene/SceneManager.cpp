@@ -41,11 +41,20 @@ Node* SceneManager::GetRoot(void){
 	return Root;
 }
 
-void SceneManager::SetManCamera(std::string name) {
+Camera* SceneManager::GetMainCamera(void) {
+	return MainCamera;
+}
+
+void SceneManager::SetMainCamera(std::string name) {
 	Camera* camera = Root->findByName<Camera>(name);
 	if (camera != nullptr) {
 		MainCamera = camera;
 	}
+}
+
+void SceneManager::UpdateCamera(void) {
+	//MainCamera->perspective(window, 45, .1, 100);
+	MainCamera->updateBuffer();
 }
 
 int SceneManager::GetNumberOfLights(void) {

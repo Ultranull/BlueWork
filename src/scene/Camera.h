@@ -14,13 +14,7 @@ class Camera: public Node{
 	glm::mat4 view;		  
 	glm::mat4 projection; 
 
-	size_t index_proj = 0;
-	size_t index_view = index_proj + sizeof(glm::mat4);
-	size_t index_up   = index_view + sizeof(glm::mat4);
-	size_t index_dir  = index_up + sizeof(glm::vec4);
-	size_t index_pos  = index_dir + sizeof(glm::vec4);
-
-	UniformBuffer buffer;
+	UniformBuffer* buffer;
 
 	float FOV = 45.f;
 
@@ -32,9 +26,10 @@ class Camera: public Node{
 
 public:
 	Camera();
-	Camera(glm::vec3 pos, glm::vec3 dir, glm::vec3 u);
 
-	void bindCamera(Program shader);
+	static std::shared_ptr<UniformBuffer> buildCamera(void);
+
+	void bindCamera(UniformBuffer* buf, Program shader);
 	void updateBuffer();
 
 	void apply(GLFWwindow *window, float delta);
