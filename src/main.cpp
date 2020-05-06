@@ -112,7 +112,7 @@ class Game :public App {
 		Shader pass_f = R->getShader("pass.frag");
 
 		Program pass(pass_v, pass_f);
-		viewportinit(window);
+
 		renderer = Renderer(pass, width, height);
 
 		Material uved_mat(vec4(1), vec4(.1), 5);
@@ -123,6 +123,7 @@ class Game :public App {
 		monkey->setName("monkey");
 
 		Entity* monkey2 = new Entity(R->getGeometry("monkey"), uved_mat);
+		monkey2->setName("monkey2");
 		monkey2->transform.translate(vec3(2, 2, 0));
 
 		Entity* ground = new Entity(R->getGeometry("ground"), uved_mat);
@@ -132,14 +133,29 @@ class Game :public App {
 		Node* scene = level1.GetRoot();
 
 		scene->add(ground);
+
 		scene->add(monkey);
 		monkey->add(monkey2);
-		scene->add(new PointLight(Light::PointData{
+
+		PointLight* whiteLight = new PointLight(Light::PointData{
 			vec4(.1),vec4(1),vec4(1),
-			Light::attunation{1./ 3.,1,1},
+			Light::attunation{1. / 3.,1,1},
 			0,
-			vec4(3,0,0,0)
-		}));
+			vec4(0)
+		});
+		whiteLight->transform.translate(vec3(0, 0, 3));
+
+		PointLight* redLight = new PointLight(Light::PointData{
+			vec4(.5),vec4(1.,0.,0.,1.),vec4(1),
+			Light::attunation{1. / 3.,1,1},
+			0,
+			vec4(0)
+		});
+		redLight->transform.translate(vec3(3, 0, 0));
+
+		scene->add(whiteLight);
+		monkey2->add(redLight);
+
 		renderer.setup(&level1);
 
 		cam.perspective(window, 45, .1, 100);
@@ -161,6 +177,7 @@ class Game :public App {
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
 		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
+		level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
 	}
 
 	void render(float delta) {
