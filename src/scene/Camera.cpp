@@ -24,6 +24,11 @@ size_t index_pos = index_dir + sizeof(glm::vec4);
 
 Camera::Camera():
 	buffer(nullptr), Node(NodeType::Camera){
+
+	settings = CameraSettings{
+		CameraSettings::Mode::Perspective,
+		{.1, 100, 45.f}
+	};
 }
 
 void Camera::bindCamera(UniformBuffer* buf, Program shader){
@@ -141,18 +146,39 @@ void Camera::orbit(GLFWwindow *window, float delta,vec3 target) {
 
 }
 
-void Camera::perspective(int width, int height,float FOV,float near,float far) {
-	projection=glm::perspective(radians(FOV), width / (float)height, near, far);
+void Camera::UpdateProjection(int height, int width) {
+	switch (settings.mode){
+		case CameraSettings::Mode::Perspective:
+			projection = glm::perspective(
+				radians(settings.PerspecitveData.FOV),
+				width / (float)height, 
+				settings.PerspecitveData.NearPlane,
+				settings.PerspecitveData.FarPlane);
+			break;
+
+		case CameraSettings::Mode::Orthographic:
+			projection = glm::ortho(
+				settings.OrthographicData.Left,
+				settings.OrthographicData.Right,
+				settings.OrthographicData.Bottom,
+				settings.OrthographicData.Top,
+				settings.OrthographicData.NearPlane,
+				settings.OrthographicData.FarPlane);
+			break;
+	}
+
 	glm::mat4 finalTransform = ResolveFinalTransform();
 	view = lookAt(
-		glm::vec3(finalTransform * glm::vec4(0,0,0,1)),
-		glm::vec3(finalTransform * glm::vec4(0,0,1,1)),
-		glm::vec3(finalTransform * glm::vec4(0,1,0,0)));
+		glm::vec3(finalTransform * glm::vec4(0, 0, 0, 1)),
+		glm::vec3(finalTransform * glm::vec4(0, 0, 1, 1)),
+		glm::vec3(finalTransform * glm::vec4(0, 1, 0, 0)));
 }
 
-void Camera::orthographic(float left, float right, float bottom, float top, float near, float far) {
-	projection = glm::ortho(left,right,bottom,top,near,far);
+void Camera::UpdateProjection(int height, int width, CameraSettings newSettings) {
+	settings = newSettings;
+	UpdateProjection(height, width);
 }
+
 mat4 Camera::P() {
 	return projection;
 }

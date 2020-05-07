@@ -9,12 +9,38 @@
 
 #include "Node.h"
 
+struct CameraSettings {
+	enum Mode {
+		Orthographic,
+		Perspective
+	};
+	Mode mode;
+	union {
+		struct {
+			float NearPlane; 
+			float FarPlane;
+			float FOV;
+		}PerspecitveData;
+
+		struct {
+			float NearPlane;
+			float FarPlane;
+			float Left; 
+			float Right; 
+			float Bottom; 
+			float Top;
+		}OrthographicData;
+	};
+};
+
 class Camera: public Node{
 
 	glm::mat4 view;		  
 	glm::mat4 projection; 
 
 	UniformBuffer* buffer;
+
+	CameraSettings settings;
 
 	float FOV = 45.f;
 
@@ -36,8 +62,9 @@ public:
 	void orbit(GLFWwindow *window, float delta, glm::vec3 target);
 	glm::mat4 P();
 	glm::mat4 V();
-	void perspective(int width, int height, float FOV, float near, float far);
-	void orthographic(float left, float right, float bottom, float top, float near, float far);
+
+	void UpdateProjection(int height, int width);
+	void UpdateProjection(int height, int width, CameraSettings newSettings);
 
 	glm::vec3 getDirection();
 	glm::vec3 getPosition();

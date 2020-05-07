@@ -145,6 +145,17 @@ class Game :public App {
 
 		Camera* camera3 = new Camera();
 		camera3->setName("camera 3");
+		camera3->UpdateProjection(height, width, CameraSettings{
+				.mode = CameraSettings::Mode::Orthographic,
+				.OrthographicData = {
+					.NearPlane = 1.,
+					.FarPlane = 100.,
+					.Left = -4.,
+					.Right = 4.,
+					.Bottom = -4.,
+					.Top = 4.
+				}
+			});
 		camera3->transform.translate(vec3(0, 5, 5));
 		camera3->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
 		camera3->transform.rotateBy(glm::angleAxis(glm::radians(-45.f), glm::vec3(1, 0, 0)));
@@ -192,8 +203,7 @@ class Game :public App {
 
 	void update(float delta) {
 
-		level1.UpdateCamera();
-		level1.GetMainCamera()->perspective(width, height, 45, .1, 100);
+		level1.UpdateCamera(height, width);
 
 		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());

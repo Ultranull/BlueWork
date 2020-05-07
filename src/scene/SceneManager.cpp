@@ -52,8 +52,8 @@ void SceneManager::SetMainCamera(std::string name) {
 	}
 }
 
-void SceneManager::UpdateCamera(void) {
-	//MainCamera->perspective(window, 45, .1, 100);
+void SceneManager::UpdateCamera(int height, int width) {
+	MainCamera->UpdateProjection(height, width);
 	MainCamera->updateBuffer();
 }
 

@@ -29,7 +29,7 @@ public:
 
 	Camera* GetMainCamera(void);
 	void SetMainCamera(std::string name);
-	void UpdateCamera(void);
+	void UpdateCamera(int height, int width);
 
 	int GetNumberOfLights(void);
 	Light* GetLight(int index);
