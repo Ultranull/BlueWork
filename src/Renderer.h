@@ -41,6 +41,8 @@ struct Renderer {
 
 	Renderer(Program passthrough, GLuint w, GLuint h);
 
+	void SetDimensions(int h, int w);
+
 	void cleanup();
 
 	void collectLights(void);

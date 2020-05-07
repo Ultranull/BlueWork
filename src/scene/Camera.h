@@ -36,7 +36,7 @@ public:
 	void orbit(GLFWwindow *window, float delta, glm::vec3 target);
 	glm::mat4 P();
 	glm::mat4 V();
-	void perspective(GLFWwindow *window, float FOV, float near, float far);
+	void perspective(int width, int height, float FOV, float near, float far);
 	void orthographic(float left, float right, float bottom, float top, float near, float far);
 
 	glm::vec3 getDirection();

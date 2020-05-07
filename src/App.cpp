@@ -52,6 +52,7 @@
 		double lastFPS = glfwGetTime();
 
 		while (running&&glfwWindowShouldClose(window) == 0) {
+			viewportinit(window);
 			double currenttime = glfwGetTime();
 			frames++;
 			if (currenttime - lastFPS >= 1) {
@@ -67,7 +68,6 @@
 			ticks += 1 * delta;
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-			viewportinit(window);
 		}
 		onClose();
 	}

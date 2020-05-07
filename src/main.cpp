@@ -100,6 +100,7 @@ class Game :public App {
 			"pass.vert:;"
 			"pass.frag:;"
 			"monkey.obj:monkey;"
+			"knot.obj:knot;"
 		);
 
 		R->addGeometry("ground", ShapeLoader().MakePlane(10, 10));
@@ -113,7 +114,7 @@ class Game :public App {
 
 		renderer = Renderer(pass, width, height);
 
-		Material uved_mat(vec4(1), vec4(.1), 5);
+		Material uved_mat(vec4(1), vec4(.5), 1.);
 		uved_mat.diffuseMap = R->getTexture("uvmap");
 		uved_mat.shader = Program(uved_v, uved_f);
 
@@ -128,19 +129,37 @@ class Game :public App {
 		ground->transform.translate(vec3(0, -1, 0));
 		ground->transform.scale(vec3(10));
 
+		Entity* ball = new Entity(R->getGeometry("knot"), uved_mat);
+
 		Node* scene = level1.GetRoot();
 
 		Camera* mainCamera = new Camera();
-		mainCamera->setName("Main");
+		mainCamera->setName("camera 1");
 		mainCamera->transform.translate(vec3(0, 0, 6));
 		mainCamera->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
 
+		Camera* camera2 = new Camera();
+		camera2->setName("camera 2");
+		camera2->transform.translate(vec3(0, 0, 6));
+		camera2->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
+
+		Camera* camera3 = new Camera();
+		camera3->setName("camera 3");
+		camera3->transform.translate(vec3(0, 5, 5));
+		camera3->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
+		camera3->transform.rotateBy(glm::angleAxis(glm::radians(-45.f), glm::vec3(1, 0, 0)));
+
+		scene->add(camera3);
+		camera3->add(ball);
 
 		scene->add(ground);
 
 		scene->add(monkey);
 		monkey->add(monkey2);
-		monkey2->add(mainCamera);
+		monkey->add(mainCamera);
+		monkey2->add(camera2);
+
+		level1.SetMainCamera("camera 1");
 
 		PointLight* whiteLight = new PointLight(Light::PointData{
 			vec4(.1),vec4(1),vec4(1),
@@ -174,7 +193,7 @@ class Game :public App {
 	void update(float delta) {
 
 		level1.UpdateCamera();
-		level1.GetMainCamera()->perspective(window, 45, .1, 100);
+		level1.GetMainCamera()->perspective(width, height, 45, .1, 100);
 
 		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());
@@ -185,11 +204,24 @@ class Game :public App {
 
 	void render(float delta) {
 
+		renderer.SetDimensions(height, width);
 		renderer.render();
 	}
 
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
+
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+			level1.SetMainCamera("camera 1");
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+			level1.SetMainCamera("camera 2");
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+			level1.SetMainCamera("camera 3");
+		}
 	}
 public:
 

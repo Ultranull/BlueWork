@@ -23,6 +23,11 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 	plane = loader.MakeZPlane(1, 1);
 }
 
+void Renderer::SetDimensions(int h, int w){
+	height = h;
+	width = w;
+}
+
 void Renderer::cleanup() {
 	lights.cleanup();
 	Manager->CleanUp();
@@ -78,9 +83,9 @@ void Renderer::render() {
 
 void Renderer::post() {
 	FrameBuffer::bindDefualt();
-	glViewport(0, 0, width, height);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, width, height);
 
 	pass.bind();
 	pass.setUniform("model", &glm::mat4(1));

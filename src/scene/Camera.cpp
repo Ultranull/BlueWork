@@ -141,11 +141,8 @@ void Camera::orbit(GLFWwindow *window, float delta,vec3 target) {
 
 }
 
-void Camera::perspective(GLFWwindow *window,float FOV,float near,float far) {
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
+void Camera::perspective(int width, int height,float FOV,float near,float far) {
 	projection=glm::perspective(radians(FOV), width / (float)height, near, far);
-	float ratio = width / (float)height;
 	glm::mat4 finalTransform = ResolveFinalTransform();
 	view = lookAt(
 		glm::vec3(finalTransform * glm::vec4(0,0,0,1)),
