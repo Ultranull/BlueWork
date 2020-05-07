@@ -10,7 +10,7 @@
 #include "Node.h"
 
 struct CameraSettings {
-	enum Mode {
+	enum class Mode {
 		Orthographic,
 		Perspective
 	};
