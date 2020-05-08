@@ -42,14 +42,6 @@ class Camera: public Node{
 
 	CameraSettings settings;
 
-	float FOV = 45.f;
-
-	float speed = 3.f;
-	float mouseSpeed = 0.005f;
-	double xpos, ypos;
-	float hangle = 0, vangle = 0;
-	float orbitDist = 3;
-
 public:
 	Camera();
 

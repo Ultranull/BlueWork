@@ -68,6 +68,90 @@ using namespace std;
 //	return Mesh(verts);
 //}
 
+const GLuint FORWARD = GLFW_KEY_W;//FIX! move to input class
+const GLuint BACKWARD = GLFW_KEY_S;
+const GLuint STRAFERIGHT = GLFW_KEY_D;
+const GLuint STRAFELEFT = GLFW_KEY_A;
+const GLuint JUMP = GLFW_KEY_SPACE;
+const GLuint CROUCH = GLFW_KEY_LEFT_SHIFT;
+
+class Player : public Entity {
+	GLFWwindow* window;
+
+	float speed;
+	float mouseSpeed;
+	double xpos, ypos;
+	float hangle, vangle;
+
+public:
+
+	Player(GLFWwindow* w, Geometry* geometry, Material mat) :
+		window(w), Entity(geometry, mat) {
+
+		speed = 3.f;
+		mouseSpeed = 0.005f;
+		xpos = 0;
+		ypos = 0;
+		hangle = 0;
+		vangle = 0;
+	}
+
+	void movement(float delta) {
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);//FIX! all input should be called from input class
+		glfwGetCursorPos(window, &xpos, &ypos);
+		glfwSetCursorPos(window, width / 2, height / 2);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
+		hangle += mouseSpeed * float(width / 2 - xpos);//theta
+		vangle += mouseSpeed * float(height / 2 - ypos);//phi
+
+		float pi = radians(180.f);
+
+		vec3 direction = vec3(cos(vangle) * sin(hangle),
+			sin(vangle),
+			cos(vangle) * cos(hangle));
+		vec3 right(sin(hangle - pi / 2.f),
+			0,
+			cos(hangle - pi / 2.f));
+		vec3 up = cross(right, direction);
+		vec3 front = cross(vec3(0, 1, 0), right);
+
+		vec3 xaxis = cross(up, direction);
+		xaxis = normalize(xaxis);
+
+		vec3 yaxis = cross(direction, xaxis);
+		yaxis = normalize(yaxis);
+
+		mat3 rotation = {
+			xaxis.x, xaxis.y, xaxis.z,
+			yaxis.x, yaxis.y, yaxis.z,
+			direction.x, direction.y, direction.z,
+		};
+
+		transform.Rotation() = quat_cast(rotation);
+
+		if (glfwGetKey(window, FORWARD) == GLFW_PRESS) {//FIX! all input should be called from input class
+			transform.Position() += front * delta * speed;
+		}
+		if (glfwGetKey(window, BACKWARD) == GLFW_PRESS) {
+			transform.Position() -= front * delta * speed;
+		}
+		if (glfwGetKey(window, STRAFERIGHT) == GLFW_PRESS) {
+			transform.Position() += right * delta * speed;
+		}
+		if (glfwGetKey(window, STRAFELEFT) == GLFW_PRESS) {
+			transform.Position() -= right * delta * speed;
+		}
+		if (glfwGetKey(window, JUMP) == GLFW_PRESS) {
+			transform.Position() += vec3(0, 1, 0) * delta * speed;
+		}
+		if (glfwGetKey(window, CROUCH) == GLFW_PRESS) {
+			transform.Position() -= vec3(0, 1, 0) * delta * speed;
+		}
+	}
+};
 
 class Game :public App {
 	SystemManager& systemManager;
@@ -77,6 +161,7 @@ class Game :public App {
 
 	Renderer renderer;
 
+	Player* player;
 
 	void initGL() {
 		glEnable(GL_MULTISAMPLE); // move to a context class
@@ -135,8 +220,8 @@ class Game :public App {
 
 		Camera* mainCamera = new Camera();
 		mainCamera->setName("camera 1");
-		mainCamera->transform.translate(vec3(0, 0, 6));
-		mainCamera->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
+		mainCamera->transform.translate(vec3(0, 3, -5));
+		mainCamera->transform.rotate(glm::radians(30.), glm::vec3(1, 0, 0));
 
 		Camera* camera2 = new Camera();
 		camera2->setName("camera 2");
@@ -160,6 +245,11 @@ class Game :public App {
 		camera3->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
 		camera3->transform.rotateBy(glm::angleAxis(glm::radians(-45.f), glm::vec3(1, 0, 0)));
 
+		player = new Player(window, R->getGeometry("monkey"), uved_mat);
+
+		scene->add(player);
+		player->add(mainCamera);
+
 		scene->add(camera3);
 		camera3->add(ball);
 
@@ -167,7 +257,6 @@ class Game :public App {
 
 		scene->add(monkey);
 		monkey->add(monkey2);
-		monkey->add(mainCamera);
 		monkey2->add(camera2);
 
 		level1.SetMainCamera("camera 1");
@@ -220,6 +309,8 @@ class Game :public App {
 
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
+
+		player->movement(delta);
 
 		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 			level1.SetMainCamera("camera 1");
