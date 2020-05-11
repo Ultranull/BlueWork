@@ -289,13 +289,13 @@ class Game :public App {
 
 	void update(float delta) {
 
-		level1.UpdateCamera(height, width);
-
-		renderer.updateLights();
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
 		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
 		level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
+
+		level1.UpdateCamera(height, width);
+		renderer.updateLights();
 	}
 
 	void render(float delta) {

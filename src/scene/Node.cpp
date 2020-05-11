@@ -12,11 +12,13 @@ Node::Node(NodeType t):
 
 glm::mat4 Node::ResolveFinalTransform() {
 	glm::mat4 parentTransform = glm::mat4(1);
-	bool shouldForce = !parent->transform.IsValid();
-	if (parent != nullptr && (!transform.IsValid() || shouldForce)) {
-		parentTransform = parent->ResolveFinalTransform();
+	bool shouldForce = false;
+	if (parent != nullptr) {
+		shouldForce = !parent->transform.IsValid();
+		if (!transform.IsValid() || shouldForce) {
+			parentTransform = parent->ResolveFinalTransform();
+		}
 	}
-
 	return transform.FinalTransform(shouldForce, parentTransform);
 }
 
