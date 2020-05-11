@@ -21,13 +21,14 @@ VertexArray::~VertexArray()
 
  void VertexArray::cleanup() {
 	 if (id != -1) {
-		 id = -1;
 		 std::map<std::string, Buffer*>::iterator iter;
 		 for (iter = buffers.begin(); iter != buffers.end(); iter++) {
 			 Buffer* b = (*iter).second;
 			 b->cleanup();
 			 delete b;
 		 }
+		 buffers.clear();
+		 id = -1;
 	 }
 }
 

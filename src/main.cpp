@@ -107,26 +107,23 @@ public:
 		hangle += mouseSpeed * float(width / 2 - xpos);//theta
 		vangle += mouseSpeed * float(height / 2 - ypos);//phi
 
-		float pi = radians(180.f);
-
+		float piHalves = glm::half_pi<float>();
+		
 		vec3 direction = vec3(cos(vangle) * sin(hangle),
 			sin(vangle),
 			cos(vangle) * cos(hangle));
-		vec3 right(sin(hangle - pi / 2.f),
+		vec3 right(sin(hangle - piHalves),
 			0,
-			cos(hangle - pi / 2.f));
+			cos(hangle - piHalves));
 		vec3 up = cross(right, direction);
 		vec3 front = cross(vec3(0, 1, 0), right);
 
 		vec3 xaxis = cross(up, direction);
 		xaxis = normalize(xaxis);
 
-		vec3 yaxis = cross(direction, xaxis);
-		yaxis = normalize(yaxis);
-
 		mat3 rotation = {
 			xaxis.x, xaxis.y, xaxis.z,
-			yaxis.x, yaxis.y, yaxis.z,
+			up.x, up.y, up.z,
 			direction.x, direction.y, direction.z,
 		};
 
@@ -199,7 +196,7 @@ class Game :public App {
 
 		renderer = Renderer(pass, width, height);
 
-		Material uved_mat(vec4(1), vec4(.5), 1.);
+		Material uved_mat(vec4(1), vec4(.5), 25);
 		uved_mat.diffuseMap = R->getTexture("uvmap");
 		uved_mat.shader = Program(uved_v, uved_f);
 
@@ -262,7 +259,7 @@ class Game :public App {
 		level1.SetMainCamera("camera 1");
 
 		PointLight* whiteLight = new PointLight(Light::PointData{
-			vec4(.1),vec4(1),vec4(1),
+			vec4(1),vec4(1),vec4(1),
 			Light::attunation{1. / 3.,1,1},
 			0,
 			vec4(0)

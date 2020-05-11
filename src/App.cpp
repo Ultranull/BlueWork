@@ -70,6 +70,8 @@
 			glfwPollEvents();
 		}
 		onClose();
+		glfwDestroyWindow(window);
+		glfwTerminate();
 	}
 
 	void App::callback(int key, int scancode, int action, int mods) {

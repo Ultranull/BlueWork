@@ -237,12 +237,20 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 	void Resource::cleanup() {
 		map<string,Texture>::iterator textit = textures.begin();
 		map<string,Shader>::iterator shadit = shaders.begin();
+		map<string,Geometry*>::iterator geomit = geometries.begin();
 		for (;textit != textures.end();textit++) {
 			textit->second.cleanup();
 		}
 		for (;shadit != shaders.end();shadit++) {
 			shadit->second.cleanup();
 		}
+		for (; geomit != geometries.end(); geomit++) {
+			geomit->second->cleanup();
+			delete geomit->second;
+		}
+		textures.clear();
+		shaders.clear();
+		geometries.clear();
 	}
 
 

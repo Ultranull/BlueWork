@@ -80,9 +80,9 @@ vec4 calcLight(Point light){
     
     // specular
     vec3 viewDir = normalize(position.xyz - FragPos);
-//    vec3 reflectDir = reflect(-lightDir, norm);
-	vec3 reflectDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, reflectDir), 0.0), material.shininess);
+    vec3 reflectDir = reflect(-lightDir, norm);
+	//vec3 reflectDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = (light.specular.xyz * material.specular.xyz) * (spec);  
         
     return vec4((ambient + diffuse + specular)*attun,1);
