@@ -19,6 +19,9 @@
 
 #include "componentSystem/SystemManager.h"
 
+#include "components/input system/InputComponent.h"
+#include "components/input system/InputSystem.h"
+
 #include "errorcheck.h"
 
 #include "scene/Node.h"
@@ -76,7 +79,8 @@ const GLuint JUMP = GLFW_KEY_SPACE;
 const GLuint CROUCH = GLFW_KEY_LEFT_SHIFT;
 
 class Player : public Entity {
-	GLFWwindow* window;
+
+	InputComponent* input;
 
 	float speed;
 	float mouseSpeed;
@@ -85,8 +89,8 @@ class Player : public Entity {
 
 public:
 
-	Player(GLFWwindow* w, Geometry* geometry, Material mat) :
-		window(w), Entity(geometry, mat) {
+	Player(Geometry* geometry, Material mat) :
+		Entity(geometry, mat) {
 
 		speed = 3.f;
 		mouseSpeed = 0.005f;
@@ -94,20 +98,24 @@ public:
 		ypos = 0;
 		hangle = 0;
 		vangle = 0;
+
+		input = SystemManager::getInstance().CreateComponent<InputComponent>();
 	}
 
-	void movement(float delta) {
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);//FIX! all input should be called from input class
-		glfwGetCursorPos(window, &xpos, &ypos);
-		glfwSetCursorPos(window, width / 2, height / 2);
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	void OnMouseMove(double mouseX, double mouseY) {
+		xpos = mouseX;
+		ypos = mouseY;
+	}
 
+	void movement(float delta, int width, int height) {
+		input->GetCursorPostion(xpos, ypos);
+		input->SetCursorPostion(width / 2, height / 2);
+		input->SetCursorMode(CursorInputMode::Disabled);
 
 		hangle += mouseSpeed * float(width / 2 - xpos);//theta
 		vangle += mouseSpeed * float(height / 2 - ypos);//phi
 
-		float piHalves = glm::half_pi<float>();
+		constexpr float piHalves = glm::half_pi<float>();
 		
 		vec3 direction = vec3(cos(vangle) * sin(hangle),
 			sin(vangle),
@@ -129,22 +137,22 @@ public:
 
 		transform.Rotation() = quat_cast(rotation);
 
-		if (glfwGetKey(window, FORWARD) == GLFW_PRESS) {//FIX! all input should be called from input class
+		if (input->GetKeyState(FORWARD) == InputState::Pressed) {
 			transform.Position() += front * delta * speed;
 		}
-		if (glfwGetKey(window, BACKWARD) == GLFW_PRESS) {
+		if (input->GetKeyState(BACKWARD) == InputState::Pressed) {
 			transform.Position() -= front * delta * speed;
 		}
-		if (glfwGetKey(window, STRAFERIGHT) == GLFW_PRESS) {
+		if (input->GetKeyState(STRAFERIGHT) == InputState::Pressed) {
 			transform.Position() += right * delta * speed;
 		}
-		if (glfwGetKey(window, STRAFELEFT) == GLFW_PRESS) {
+		if (input->GetKeyState(STRAFELEFT) == InputState::Pressed) {
 			transform.Position() -= right * delta * speed;
 		}
-		if (glfwGetKey(window, JUMP) == GLFW_PRESS) {
+		if (input->GetKeyState(JUMP) == InputState::Pressed) {
 			transform.Position() += vec3(0, 1, 0) * delta * speed;
 		}
-		if (glfwGetKey(window, CROUCH) == GLFW_PRESS) {
+		if (input->GetKeyState(CROUCH) == InputState::Pressed) {
 			transform.Position() -= vec3(0, 1, 0) * delta * speed;
 		}
 	}
@@ -174,6 +182,8 @@ class Game :public App {
 
 	void init() {
 		R = &Resource::getInstance(); // maybe a good time to make that asset loader
+
+		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
 		R->batchLoad(
 			"uvmap.bmp:uvmap;"
@@ -242,7 +252,7 @@ class Game :public App {
 		camera3->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
 		camera3->transform.rotateBy(glm::angleAxis(glm::radians(-45.f), glm::vec3(1, 0, 0)));
 
-		player = new Player(window, R->getGeometry("monkey"), uved_mat);
+		player = new Player(R->getGeometry("monkey"), uved_mat);
 
 		scene->add(player);
 		player->add(mainCamera);
@@ -307,7 +317,7 @@ class Game :public App {
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
 
-		player->movement(delta);
+		player->movement(delta, width, height);
 
 		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 			level1.SetMainCamera("camera 1");

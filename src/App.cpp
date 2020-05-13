@@ -11,7 +11,7 @@
 	}
 
 
-	void App::viewportinit(GLFWwindow *window) {
+	void App::viewportinit() {
 		glfwGetFramebufferSize(window, &width, &height);
 		glViewport(0, 0, width, height);
 	}
@@ -40,9 +40,8 @@
 			exit(-1);
 		}
 		glfwSetWindowUserPointer(window, this);
-		glfwSetKeyCallback(window, onKey);
-
-		viewportinit(window);
+		//glfwSetKeyCallback(window, onKey);
+		viewportinit();
 	}
 
 	void App::mainLoop() {
@@ -52,7 +51,7 @@
 		double lastFPS = glfwGetTime();
 
 		while (running&&glfwWindowShouldClose(window) == 0) {
-			viewportinit(window);
+			viewportinit();
 			double currenttime = glfwGetTime();
 			frames++;
 			if (currenttime - lastFPS >= 1) {
@@ -72,16 +71,6 @@
 		onClose();
 		glfwDestroyWindow(window);
 		glfwTerminate();
-	}
-
-	void App::callback(int key, int scancode, int action, int mods) {
-		keyfunc func = inputs[key];
-		if (func != nullptr) {
-			func(action, mods);
-		}
-	}
-	void App::addInput(int key, keyfunc func) {
-		inputs.insert(keyAction(key, func));
 	}
 
 	void App::start() {

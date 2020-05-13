@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="src\components\input system\InputComponent.cpp" />
+    <ClCompile Include="src\components\input system\InputSystem.cpp" />
     <ClCompile Include="src\resource\ShapeLoader.cpp" />
     <ClCompile Include="src\scene\SceneManager.cpp" />
     <ClCompile Include="src\App.cpp" />
@@ -197,6 +199,9 @@
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\components\input system\InputComponent.h" />
+    <ClInclude Include="src\components\input system\InputEnums.h" />
+    <ClInclude Include="src\components\input system\InputSystem.h" />
     <ClInclude Include="src\resource\ShapeLoader.h" />
     <ClInclude Include="src\scene\SceneManager.h" />
     <ClInclude Include="src\App.h" />

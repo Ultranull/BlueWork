@@ -28,9 +28,7 @@ public:
     void RegisterSystem(std::string name, SystemInterface* system);
 
     template<typename ComponentType>
-    ComponentType* CreateComponent() {
-        return nullptr;
-    }
+    ComponentType* CreateComponent();
 
     void start();
     void update();
