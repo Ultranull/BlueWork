@@ -1,18 +1,11 @@
 #include "Buffer.h"
 
-
-
-
-
-
  Buffer::Buffer(GLuint t) :type(t) {
 	glGenBuffers(1, &id);
 }
 
  Buffer::Buffer() {}
  Buffer::~Buffer() {}
-
-
 
  void Buffer::unbind() {
 	glBindBuffer(type, 0);

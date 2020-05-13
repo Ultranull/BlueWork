@@ -9,6 +9,8 @@
 #include <sstream>
 #include <string>
 
+#include <loguru.hpp>
+
 #include "OBJLoader.h"
 
 using namespace std;
@@ -23,7 +25,7 @@ string readFile(const char *file) {//FIX! place in a header as a util
 		stream.close();
 	}
 	else {
-		printf("Failed to open %s\n", file);
+		LOG_F(ERROR,"Failed to open %s", file);
 		return "";
 	}
 	return content;
@@ -31,7 +33,7 @@ string readFile(const char *file) {//FIX! place in a header as a util
 bool compileshader(const char* file, GLuint id) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
-	printf("Compiling shader: %s\n", file);
+	LOG_F(INFO,"Compiling shader: %s", file);
 	string content = readFile(file);
 	if (content.compare("") == 0) { return NULL; }
 	char const * src = content.c_str();
@@ -44,7 +46,7 @@ bool compileshader(const char* file, GLuint id) {
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetShaderInfoLog(id, infoLogLength, NULL, &errormessage[0]);
-		printf("%s compile error:\n\t%s\n", file, &errormessage[0]);
+		LOG_F(INFO, "%s compile error:\n\t%s", file, &errormessage[0]);
 		return false;
 	}
 	return true;
@@ -60,7 +62,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile) {
 	if (!compileshader(vertexfile, vertexID)) { return NULL; }
 	if (!compileshader(fragmentfile, fragmentID)) { return NULL; }
 
-	printf("linking program\n");
+	LOG_F(INFO, "linking program");
 	GLuint programID = glCreateProgram();
 	glAttachShader(programID, vertexID);
 	glAttachShader(programID, fragmentID);
@@ -71,7 +73,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile) {
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
-		printf("link error:\n%s\n", &errormessage[0]);
+		LOG_F(WARNING, "link error:\n%s", &errormessage[0]);
 		return NULL;
 	}
 
@@ -95,7 +97,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 	if (!compileshader(fragmentfile, fragmentID)) { return NULL; }
 	if (!compileshader(geometryfile, geometryID)) { return NULL; }
 
-	printf("linking program\n");
+	LOG_F(INFO, "linking program");
 	GLuint programID = glCreateProgram();
 	glAttachShader(programID, vertexID);
 	glAttachShader(programID, fragmentID);
@@ -107,7 +109,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
-		printf("link error:\n%s\n", &errormessage[0]);
+		LOG_F(WARNING, "link error:\n%s", &errormessage[0]);
 		return NULL;
 	}
 
@@ -183,7 +185,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		int w, h, bpp;
 		unsigned char *data = stbi_load(filename, &w, &h, &bpp, 0);
 		if (data == NULL) {
-			printf("error loading texture %s!\n", filename);
+			LOG_F(FATAL, "error loading texture %s!", filename);
 			getchar();
 			exit(-1);
 		}
@@ -210,7 +212,7 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 
 		data = stbi_load(filename, &width, &height, 0, STBI_rgb_alpha);
 		if (data == NULL) {
-			printf("error loading texture %s!\n", filename);
+			LOG_F(FATAL, "error loading texture %s!", filename);
 			getchar();
 			exit(-1);
 		}
@@ -293,15 +295,15 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 			std::string extension = file.substr(posExt + 1, posFile);
 
 			if (extension.compare("obj") == 0) {
-				printf("loading geometry %s as %s\n", file.c_str(),name.c_str());
+				LOG_F(INFO, "loading geometry %s as %s", file.c_str(),name.c_str());
 				addGeometry(name, loader.load(path + file));
 			}
 			else if (isImage(extension)) {
-				printf("loading image %s as %s\n", file.c_str(), name.c_str());
+				LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
 				addTexture(name, file.c_str());
 			}
 			else if(isShader(extension)){
-				printf("loading shader %s\n", file.c_str());
+				LOG_F(INFO, "loading shader %s", file.c_str());
 				addShader(file);
 			}
 			manifest.erase(0, pos + 1);

@@ -1,5 +1,7 @@
 #include "SceneManager.h"
 
+#include <loguru.hpp>
+
 SceneManager::SceneManager():
 	Root(nullptr), MainCamera(nullptr){
 	Root = PushNode(new Node());
@@ -31,7 +33,7 @@ Node* SceneManager::PushNode(Node* node) {
 		}
 
 		default:
-			printf("not a node %u", static_cast<int>(node->GetType()));
+			LOG_F(ERROR, "not a node %u", static_cast<int>(node->GetType()));
 			break;
 	}
 	return nullptr;
@@ -74,6 +76,7 @@ Entity* SceneManager::GetEntity(int index) {
 }
 
 void SceneManager::CleanUp(void) {
+	LOG_F(INFO + 1, "Cleaning scene manager");
 	for (size_t i = 0; i < Nodes.size(); i++) {
 		Nodes[i]->cleanup();
 	}

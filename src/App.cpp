@@ -1,6 +1,6 @@
 #include "App.h"
 
-
+#include <loguru.hpp>
 
 	App::App() {
 	}
@@ -16,25 +16,30 @@
 		glViewport(0, 0, width, height);
 	}
 	App::App(int w, int h, const char *title) {
+		LOG_F(INFO, "Loading GLFW...");
 		if (!glfwInit()) {
-			fprintf(stderr, "Failed to initialize glfw\n");
+			LOG_F(FATAL, "Failed to initialize glfw");
 			getchar();
 			exit(-1);
 		}
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_SAMPLES, 64);
+
+		LOG_F(INFO, "Creating window...");
  		window = glfwCreateWindow(w, h, title, NULL, NULL);
 		if (window == nullptr) {
-			fprintf(stderr, "Failed to init window\n");
+			LOG_F(FATAL, "Failed to init window");
 			getchar();
 			glfwTerminate();
 			exit(-1);
 		}
 		glfwMakeContextCurrent(window);
+
+		LOG_F(INFO, "Loading GLAD...");
 		int res=gladLoadGL();
 		if (!res) {
-			fprintf(stderr, "Failed to init glad\n");
+			LOG_F(FATAL, "Failed to init glad (%i)", res);
 			getchar();
 			glfwTerminate();
 			exit(-1);
@@ -50,6 +55,7 @@
 		double lastFrame = glfwGetTime();
 		double lastFPS = glfwGetTime();
 
+		LOG_F(INFO, "Starting main loop...");
 		while (running&&glfwWindowShouldClose(window) == 0) {
 			viewportinit();
 			double currenttime = glfwGetTime();
@@ -68,6 +74,7 @@
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
+
 		onClose();
 		glfwDestroyWindow(window);
 		glfwTerminate();

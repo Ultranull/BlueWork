@@ -1,6 +1,6 @@
 #include "VertexArray.h"
 
-
+#include <loguru.hpp>
 
 
 VertexArray::VertexArray() {
@@ -21,6 +21,7 @@ VertexArray::~VertexArray()
 
  void VertexArray::cleanup() {
 	 if (id != -1) {
+		 LOG_F(INFO + 1, "Cleaning VAO");
 		 std::map<std::string, Buffer*>::iterator iter;
 		 for (iter = buffers.begin(); iter != buffers.end(); iter++) {
 			 Buffer* b = (*iter).second;

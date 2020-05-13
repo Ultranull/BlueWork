@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include <loguru.hpp>
+
 using namespace std;
 
 string read(const char *file) {//FIX! place in a header as a util
@@ -16,7 +18,7 @@ string read(const char *file) {//FIX! place in a header as a util
 		stream.close();
 	}
 	else {
-		printf("Failed to open %s\n", file);
+		LOG_F(ERROR, "Failed to open %s", file);
 		return "";
 	}
 	return content;
@@ -27,10 +29,10 @@ string read(const char *file) {//FIX! place in a header as a util
 bool compile(const char* file, GLuint id) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
-	printf("Compiling shader: %s\n", file);
+	LOG_F(INFO, "Compiling shader: %s", file);
 	string content = read(file);
 	if (content.compare("") == 0) {
-		printf("compile error: file not found!");
+		LOG_F(ERROR, "compile error: file not found!");
 		return false; 
 	}
 	char const * src = content.c_str();
@@ -43,7 +45,7 @@ bool compile(const char* file, GLuint id) {
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetShaderInfoLog(id, infoLogLength, NULL, &errormessage[0]);
-		printf("%s compile error:\n\t%s\n", file, &errormessage[0]);
+		LOG_F(WARNING, "%s compile error:\n\t%s", file, &errormessage[0]);
 		return false;
 	}
 	return true;
@@ -66,7 +68,7 @@ Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
 
-	printf("linking program: %d %d\n", vertex.id, fragment.id);
+	LOG_F(INFO, "linking program: %d %d", vertex.id, fragment.id);
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex.id);
 	glAttachShader(programID, fragment.id);
@@ -77,7 +79,7 @@ Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
-		printf("link error:\n%s\n", &errormessage[0]);
+		LOG_F(FATAL, "link error:\n%s", &errormessage[0]);
 		getchar();
 		exit(-1);
 	}
@@ -89,7 +91,7 @@ Program::Program(Shader vert, Shader frag, Shader geom) :vertex(vert), fragment(
 	GLint result = GL_FALSE;
 	int infoLogLength;
 
-	printf("linking program\n");
+	LOG_F(INFO, "linking program");
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex.id);
 	glAttachShader(programID, fragment.id);
@@ -101,7 +103,7 @@ Program::Program(Shader vert, Shader frag, Shader geom) :vertex(vert), fragment(
 	if (infoLogLength > 1) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
-		printf("link error:\n%s\n", &errormessage[0]);
+		LOG_F(FATAL, "link error:\n%s\n", &errormessage[0]);
 		getchar();
 		exit(-1);
 	}

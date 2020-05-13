@@ -8,10 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <loguru.hpp>
 
 #include "App.h"
 #include "scene/Camera.h"
-#include "Mesh.h"
 #include "resource/Resource.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/FrameBuffer.h"
@@ -339,7 +339,14 @@ public:
 	}
 };
 
-int main() {
+int main(int argc, char** argv) {
+	loguru::g_preamble_thread = false;
+	loguru::g_preamble_uptime = false;
+
+	loguru::init(argc, argv);
+	loguru::add_file("verbose_log.log", loguru::Truncate, loguru::Verbosity_MAX);
+	loguru::add_file("log.log", loguru::Truncate, loguru::Verbosity_INFO);
+
 	Game game(700, 700, "");
 	game.start();
 	return 0;

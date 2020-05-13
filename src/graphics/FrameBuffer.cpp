@@ -1,5 +1,6 @@
 #include "FrameBuffer.h"
 
+#include <loguru.hpp>
 
 FrameBuffer::FrameBuffer():FrameBuffer(500,500){
 }
@@ -90,7 +91,7 @@ Texture FrameBuffer::getTexture(std::string name){
 void FrameBuffer::check(){
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		printf("fb failed");
+		LOG_F(FATAL, "fb failed");
 		getchar();
 		exit(-1);
 	}
