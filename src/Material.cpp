@@ -1,6 +1,13 @@
 #include "Material.h"
 
+#include "resource/Serializer.h"
 
+template<>
+nlohmann::json Serializer::GeneralCompose(Material object) {
+	nlohmann::json json;
+	json["message"] = "im a material and my definition is hard";
+	return json;
+}
 
 
 void Texture::load(){

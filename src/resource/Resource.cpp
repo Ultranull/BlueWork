@@ -12,29 +12,15 @@
 #include <loguru.hpp>
 
 #include "OBJLoader.h"
+#include "Utilities.h"
 
 using namespace std;
 
-string readFile(const char *file) {//FIX! place in a header as a util
-	string content;
-	ifstream stream(file);
-	if (stream.is_open()) {
-		stringstream ss;
-		ss << stream.rdbuf();
-		content = ss.str();
-		stream.close();
-	}
-	else {
-		LOG_F(ERROR,"Failed to open %s", file);
-		return "";
-	}
-	return content;
-}
 bool compileshader(const char* file, GLuint id) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
 	LOG_F(INFO,"Compiling shader: %s", file);
-	string content = readFile(file);
+	string content = Utilities::readFile(file);
 	if (content.compare("") == 0) { return NULL; }
 	char const * src = content.c_str();
 	const GLint length = content.size();

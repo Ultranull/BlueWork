@@ -2,12 +2,14 @@
 
 #include "SceneManager.h"
 
+unsigned int Node::NextId = 0;
+
 Node::Node():
 	Node(NodeType::Node)
 {}
 
 Node::Node(NodeType t):
-	children(), parent(nullptr), type(t)
+	children(), parent(nullptr), type(t), Id(NextId++)
 {}
 
 glm::mat4 Node::ResolveFinalTransform() {
@@ -43,6 +45,17 @@ NodeType Node::GetType(){
 void Node::cleanup(){
 	for (int i = 0; i < getNumberOfChildren(); i++)
 		child(i)->cleanup();
+}
+
+unsigned int Node::GetParentId() {
+	if (parent != nullptr) {
+		return parent->GetId();
+	}
+	return -1;
+}
+
+unsigned int Node::GetId() {
+	return Id;
 }
 
 Node* Node::child(GLuint index) {

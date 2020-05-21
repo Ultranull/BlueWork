@@ -1,5 +1,28 @@
 #include "Transform.h"
 
+#include "resource/Serializer.h"
+
+template<>
+nlohmann::json Serializer::GeneralCompose(Transform object) {
+    nlohmann::json json;
+    json["position"] = {
+        {"x",object.Position().x},
+        {"y",object.Position().y},
+        {"z",object.Position().z} };
+
+    json["scale"] = {
+        {"x",object.Scale().x},
+        {"y",object.Scale().y},
+        {"z",object.Scale().z} };
+
+    json["rotation"] = {
+        {"x",object.Rotation().x},
+        {"y",object.Rotation().y},
+        {"z",object.Rotation().z},
+        {"w",object.Rotation().w} };
+    return json;
+}
+
  glm::mat4 Transform::Model() {
 	return T() * R() * S();
 }
@@ -87,3 +110,4 @@
  bool Transform::IsValid(void) {
      return ValidFinalTransform;
  }
+

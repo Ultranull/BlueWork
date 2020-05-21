@@ -21,11 +21,8 @@ static TextureTraits DEPTH_3D = { GL_TEXTURE_CUBE_MAP,GL_NEAREST,GL_CLAMP_TO_EDG
 
 struct Texture {
 
-
 	GLuint id;
 	TextureTraits params;
-
-
 
 	int width;
 	int height;
@@ -43,11 +40,10 @@ struct Texture {
 	GLint activate(GLenum texture);
 	void cleanup();
 
-
 	static void unbind(GLuint target = GL_TEXTURE_2D);
 };
 
-struct Material {
+struct Material { // needs to handle more stuff
 	Texture diffuseMap;
 	glm::vec4 color;
 	glm::vec4 specular;

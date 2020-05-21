@@ -173,7 +173,7 @@ class Game :public App {
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
-		glClearColor(.1, .1, .1, 1);
+		glClearColor(.1f, .1f, .1f, 1.f);
 		glEnable(GL_CULL_FACE);
 	}
 	
@@ -228,12 +228,12 @@ class Game :public App {
 		Camera* mainCamera = new Camera();
 		mainCamera->setName("camera 1");
 		mainCamera->transform.translate(vec3(0, 3, -5));
-		mainCamera->transform.rotate(glm::radians(30.), glm::vec3(1, 0, 0));
+		mainCamera->transform.rotate(glm::radians(30.f), glm::vec3(1, 0, 0));
 
 		Camera* camera2 = new Camera();
 		camera2->setName("camera 2");
 		camera2->transform.translate(vec3(0, 0, 6));
-		camera2->transform.rotate(glm::radians(180.), glm::vec3(0, 1, 0));
+		camera2->transform.rotate(glm::radians(180.f), glm::vec3(0, 1, 0));
 
 		Camera* camera3 = new Camera();
 		camera3->setName("camera 3");
@@ -338,6 +338,8 @@ public:
 
 	}
 };
+
+#include "resource/Serializer.h"
 
 int main(int argc, char** argv) {
 	loguru::g_preamble_thread = false;

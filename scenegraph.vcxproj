@@ -22,6 +22,7 @@
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="include\loguru.cpp" />
+    <ClCompile Include="src\resource\Serializer.cpp" />
     <ClCompile Include="src\components\input system\InputComponent.cpp" />
     <ClCompile Include="src\components\input system\InputSystem.cpp" />
     <ClCompile Include="src\resource\ShapeLoader.cpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="src\scene\Light.cpp" />
     <ClCompile Include="src\scene\Node.cpp" />
     <ClCompile Include="src\scene\Transform.cpp" />
+    <ClCompile Include="src\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glad\glad.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\loguru.hpp" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\resource\Serializer.h" />
     <ClInclude Include="src\components\input system\InputComponent.h" />
     <ClInclude Include="src\components\input system\InputEnums.h" />
     <ClInclude Include="src\components\input system\InputSystem.h" />
@@ -225,6 +228,7 @@
     <ClInclude Include="src\scene\Light.h" />
     <ClInclude Include="src\scene\Node.h" />
     <ClInclude Include="src\scene\Transform.h" />
+    <ClInclude Include="src\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment.frag" />

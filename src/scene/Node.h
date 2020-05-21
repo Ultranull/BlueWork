@@ -23,10 +23,13 @@ class Node{
 
 	NodeType type;
 
+	static unsigned int NextId;
+
 protected:
 	std::vector<Node*> children;
 	Node* parent;
 
+	unsigned int Id;
 	std::string name;
 
 public:
@@ -42,6 +45,9 @@ public:
 	int getNumberOfChildren();
 	NodeType GetType();
 	void cleanup();
+
+	unsigned int GetParentId();
+	unsigned int GetId();
 
 	Node* child(GLuint index);
 
