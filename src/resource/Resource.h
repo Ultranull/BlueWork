@@ -33,6 +33,9 @@
 		void addGeometry(std::string name,Geometry* geom);
 		Geometry* getGeometry(std::string name);
 
+		std::string GetGeometryName(Geometry* geom);
+		std::string GetTextureName(Texture tex);
+		std::string GetShaderName(Shader shader);
 
 		Texture LoadGLTexture(const char *filename);
 		Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);

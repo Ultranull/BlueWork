@@ -1,28 +1,14 @@
 #include "ShaderProgram.h"
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include <string>
 
 #include <loguru.hpp>
 
-using namespace std;
+#include "resource/Serializer.h"
+#include "resource/Resource.h"
+#include "Utilities.h"
 
-string read(const char *file) {//FIX! place in a header as a util
-	string content;
-	ifstream stream(file);
-	if (stream.is_open()) {
-		stringstream ss;
-		ss << stream.rdbuf();
-		content = ss.str();
-		stream.close();
-	}
-	else {
-		LOG_F(ERROR, "Failed to open %s", file);
-		return "";
-	}
-	return content;
-}
+using namespace std;
 
 
 
@@ -30,7 +16,7 @@ bool compile(const char* file, GLuint id) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
 	LOG_F(INFO, "Compiling shader: %s", file);
-	string content = read(file);
+	string content = Utilities::readFile(file);
 	if (content.compare("") == 0) {
 		LOG_F(ERROR, "compile error: file not found!");
 		return false; 
@@ -61,6 +47,26 @@ Shader::Shader(std::string file, GLuint t) :type(t) {
 
 void Shader::cleanup(){
 	glDeleteShader(id);
+}
+
+template<>
+nlohmann::json Serializer::GeneralCompose(Program object) {
+	nlohmann::json json;
+	Shader vertex = object.GetShader(GL_VERTEX_SHADER), 
+		fragment = object.GetShader(GL_FRAGMENT_SHADER), 
+		geom = object.GetShader(GL_GEOMETRY_SHADER);
+
+	if (vertex.id != -1) {
+		json.push_back(Resource::getInstance().GetShaderName(vertex));
+	}
+	if (fragment.id != -1) {
+		json.push_back(Resource::getInstance().GetShaderName(fragment));
+	}
+	if (geom.id != -1) {
+		json.push_back(Resource::getInstance().GetShaderName(geom));
+	}
+
+	return json;
 }
 
 Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
@@ -167,4 +173,18 @@ void Program::bind() {
 
 GLuint Program::getProgramID() {
 	return programID;
+}
+
+Shader Program::GetShader(GLuint type) {
+	switch (type) {
+	case GL_VERTEX_SHADER:
+		return vertex;
+
+	case GL_FRAGMENT_SHADER:
+		return fragment;
+
+	case GL_GEOMETRY_SHADER:
+		return geometry;
+	}
+	return Shader();
 }

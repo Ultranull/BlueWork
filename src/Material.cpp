@@ -1,11 +1,21 @@
 #include "Material.h"
 
+#include "resource/Resource.h"
 #include "resource/Serializer.h"
 
 template<>
 nlohmann::json Serializer::GeneralCompose(Material object) {
 	nlohmann::json json;
-	json["message"] = "im a material and my definition is hard";
+	json["DiffuseMap"] = Resource::getInstance()
+			.GetTextureName(object.diffuseMap);
+	
+	json["Color"] = Serializer::GeneralCompose(object.color);
+	json["Specular"] = Serializer::GeneralCompose(object.specular);
+	json["Shininess"] = object.shininess;
+
+
+	json["Shaders"] = Serializer::GeneralCompose(object.shader);
+
 	return json;
 }
 
@@ -44,6 +54,10 @@ void Texture::unbind(GLuint target){
 	glBindTexture(target, 0);
 }
 
+bool Texture::operator==(const Texture& rhs) {
+	return rhs.id == id;
+}
+
 void Material::bind() {
 	shader.bind();
 	shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0)); // add to spec: diffuse map always tex0
@@ -51,6 +65,7 @@ void Material::bind() {
 	shader.setUniform("material.color", &color);
 	shader.setUniform("material.shininess", shininess);
 }
+
 
 void Material::cleanup() {
 	shader.cleanup();

@@ -12,6 +12,9 @@
 		GLuint type = -1;
 		Shader() {}
 		Shader(std::string file, GLuint t);
+		 inline bool operator==(const Shader& rhs) {
+			return id == rhs.id;
+		}
 		void cleanup();
 	};
 	class Program {
@@ -37,4 +40,6 @@
 		void bind();
 
 		GLuint getProgramID();
+
+		Shader GetShader(GLuint type);
 	};

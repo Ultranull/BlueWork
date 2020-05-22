@@ -40,6 +40,8 @@ struct Texture {
 	GLint activate(GLenum texture);
 	void cleanup();
 
+	bool operator==(const Texture& rhs);
+
 	static void unbind(GLuint target = GL_TEXTURE_2D);
 };
 

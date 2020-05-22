@@ -241,6 +241,29 @@ GLuint loadshaders(const char *vertexfile, const char *fragmentfile, const char 
 		geometries.clear();
 	}
 
+	std::string Resource::GetGeometryName(Geometry* geom) {
+		std::vector<std::string> values;
+		if (Utilities::findByValue(values, geometries, geom)) {
+			return values[0];
+		}
+		return "";
+	}
+
+	std::string Resource::GetTextureName(Texture tex) {
+		std::vector<std::string> values;
+		if (Utilities::findByValue(values, textures, tex)) {
+			return values[0];
+		}
+		return "";
+	}
+
+	std::string Resource::GetShaderName(Shader shader) {
+		std::vector<std::string> values;
+		if (Utilities::findByValue(values, shaders, shader)) {
+			return values[0];
+		}
+		return "";
+	}
 
 	/*
 		manifest:

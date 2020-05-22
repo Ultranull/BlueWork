@@ -1,5 +1,6 @@
 #include "Serializer.h"
 
+#include "resource/Resource.h"
 #include "Utilities.h"
 
 //todo where do i run this for any given node?
@@ -23,7 +24,37 @@ void Serializer::RegisterParser(std::string name, ComposeFunction compose, Parse
 	instance.ParseMap.insert(std::make_pair(name, ParseIdentity{ compose, parse }));
 }
 
+template<>
+nlohmann::json Serializer::GeneralCompose(glm::vec3 object) {
+	nlohmann::json json = {
+		{"x",object.x},
+		{"y",object.y},
+		{"z",object.z} };
+	return json;
+}
+
+template<>
+nlohmann::json Serializer::GeneralCompose(glm::vec4 object) {
+	nlohmann::json json = {
+		{"x",object.x},
+		{"y",object.y},
+		{"z",object.z},
+		{"w",object.w} };
+	return json;
+}
+
+template<>
+nlohmann::json Serializer::GeneralCompose(glm::quat object) {
+	nlohmann::json json = {
+		{"x",object.x},
+		{"y",object.y},
+		{"z",object.z},
+		{"w",object.w} };
+	return json;
+}
+
 void Serializer::CommonParsers() {
+	Resource& R = Resource::getInstance();
 	ComposeFunction nodeCompose =
 		[&](Node* node) {
 		nlohmann::json json;
@@ -51,7 +82,7 @@ void Serializer::CommonParsers() {
 		nlohmann::json json;
 
 		json["flags"] = entity->flags;
-		json["Geometry"] = "none for now";
+		json["Geometry"] = R.GetGeometryName(entity->geometry);
 		json["Material"] = GeneralCompose<Material>(entity->material);
 
 		json.merge_patch(Compose("Node", node));

@@ -13,6 +13,7 @@
 #include "App.h"
 #include "scene/Camera.h"
 #include "resource/Resource.h"
+#include "resource/Serializer.h"
 #include "graphics/ShaderProgram.h"
 #include "graphics/FrameBuffer.h"
 #include "graphics/VertexArray.h"
@@ -183,6 +184,8 @@ class Game :public App {
 	void init() {
 		R = &Resource::getInstance(); // maybe a good time to make that asset loader
 
+		Serializer::getInstance().CommonParsers();
+
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
 		R->batchLoad(
@@ -212,6 +215,8 @@ class Game :public App {
 
 		Entity* monkey = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey->setName("monkey");
+
+		LOG_F(INFO, "%s",Serializer::getInstance().Compose("Entity",monkey).dump().c_str());
 
 		Entity* monkey2 = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey2->setName("monkey2");
@@ -339,7 +344,6 @@ public:
 	}
 };
 
-#include "resource/Serializer.h"
 
 int main(int argc, char** argv) {
 	loguru::g_preamble_thread = false;
