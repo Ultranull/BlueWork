@@ -1,10 +1,10 @@
 #include "Serializer.h"
 
+#include "scene/SceneManager.h"
 #include "resource/Resource.h"
 #include "Utilities.h"
 
 //todo where do i run this for any given node?
-//todo how to handle inhertance
 
 Serializer::Serializer() {
 }
@@ -59,6 +59,7 @@ void Serializer::CommonParsers() {
 		[&](Node* node) {
 		nlohmann::json json;
 
+		json["Id"] = node->GetId();
 		json["Transform"] = GeneralCompose<Transform>(node->transform);
 		json["name"] = node->getName();
 		json["parent"] = node->GetParentId();
@@ -94,4 +95,21 @@ void Serializer::CommonParsers() {
 		return nullptr;
 	};
 	RegisterParser("Entity", entityCompose, entityParse);
+
+	ComposeFunction cameraCompose =
+		[&](Node* node) {
+		Camera* camera = (Camera*)node;
+		nlohmann::json json;
+
+		json["Settings"] = GeneralCompose(camera->GetSettings());
+
+		json.merge_patch(Compose("Node", node));
+
+		return json;
+	};
+	ParseFunction cameraParse =
+		[&](nlohmann::json data) -> Node* {
+		return nullptr;
+	};
+	RegisterParser("Camera", cameraCompose, cameraParse);
 }

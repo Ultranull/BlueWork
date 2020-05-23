@@ -7,6 +7,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+#include "resource/Serializer.h"
+
 using namespace glm;
 
 size_t index_proj = 0;
@@ -15,8 +17,39 @@ size_t index_up = index_view + sizeof(glm::mat4);
 size_t index_dir = index_up + sizeof(glm::vec4);
 size_t index_pos = index_dir + sizeof(glm::vec4);
 
+template<>
+nlohmann::json Serializer::GeneralCompose(CameraSettings object) {
+	nlohmann::json json;
+
+	switch (object.mode)
+	{
+		case CameraSettings::Mode::Perspective:
+			json["Mode"] = "Perspective";
+			json["Settings"] = {
+				{"NearPlane", object.PerspecitveData.NearPlane},
+				{"FarPlane", object.PerspecitveData.FarPlane},
+				{"FOV", object.PerspecitveData.FOV}
+			};
+			break;
+
+		case CameraSettings::Mode::Orthographic:
+			json["Mode"] = "Orthographic";
+			json["Settings"] = {
+				{"NearPlane", object.OrthographicData.NearPlane},
+				{"FarPlane", object.OrthographicData.FarPlane},
+				{"Left ", object.OrthographicData.Left},
+				{"Right ", object.OrthographicData.Right},
+				{"Bottom", object.OrthographicData.Bottom},
+				{"Top", object.OrthographicData.Top},
+			};
+			break;
+	}
+	
+	return json;
+}
+
 Camera::Camera():
-	buffer(nullptr), Node(NodeType::Camera){
+	buffer(nullptr), Node("Camera", NodeType::Camera){
 
 	settings = CameraSettings{
 		CameraSettings::Mode::Perspective,
@@ -142,6 +175,10 @@ vec3 Camera::getDirection() {
 
 vec3 Camera::getPosition() {
 	return transform.Position();
+}
+
+CameraSettings Camera::GetSettings() {
+	return settings;
 }
 
 void Camera::cleanup(){

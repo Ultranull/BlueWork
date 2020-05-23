@@ -20,9 +20,13 @@ struct Entity : public Node {
 	};
 
 
-	Entity(): Entity(nullptr, Material()) {}
+	Entity(): Entity("Entity",nullptr, Material()) {}
+
 	Entity(Geometry* geom, Material mat) :
-		geometry(geom), material(mat), flags(0), Node(NodeType::Entity) {}
+		Entity("Entity", geom, mat) {}
+
+	Entity(std::string typeName, Geometry* geom, Material mat) :
+		geometry(geom), material(mat), flags(0), Node(typeName, NodeType::Entity) {}
 
 	void cleanup();
 

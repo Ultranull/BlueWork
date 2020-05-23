@@ -6,11 +6,12 @@
 
 #include <json.hpp>
 
-#include "scene/SceneManager.h"
 #include "scene/Node.h"
 
 #define ComposeFunction std::function<nlohmann::json(Node*)>
 #define ParseFunction std::function<Node*(nlohmann::json)>
+
+class SceneManager;
 
 struct ParseIdentity {
 	ComposeFunction Compose;
@@ -53,6 +54,7 @@ public:
 
 {
 	"manifest":"mesh.obj:meshName;",
+	"root": <id>,
 	"nodes":[
 		"Node":{
 			"Transform":{

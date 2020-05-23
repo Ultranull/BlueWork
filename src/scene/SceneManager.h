@@ -8,8 +8,13 @@
 #include "Light.h"
 #include "Camera.h"
 
+#include "resource/Serializer.h"
+
 
 class SceneManager{
+	 template<typename T>
+	 friend	nlohmann::json Serializer::GeneralCompose(T object);
+
 	std::vector<std::unique_ptr<Node>> Nodes;
 	std::vector<std::unique_ptr<Entity>> Entities;
 	std::vector<std::unique_ptr<Light>> Lights;

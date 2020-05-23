@@ -25,9 +25,9 @@ struct CameraSettings {
 		struct {
 			float NearPlane;
 			float FarPlane;
-			float Left; 
-			float Right; 
-			float Bottom; 
+			float Left;
+			float Right;
+			float Bottom;
 			float Top;
 		}OrthographicData;
 	};
@@ -60,6 +60,8 @@ public:
 
 	glm::vec3 getDirection();
 	glm::vec3 getPosition();
+
+	CameraSettings GetSettings();
 
 	void cleanup();
 };

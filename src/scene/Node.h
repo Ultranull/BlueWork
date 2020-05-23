@@ -30,13 +30,14 @@ protected:
 	Node* parent;
 
 	unsigned int Id;
+	std::string TypeName;
 	std::string name;
 
 public:
 	Transform transform;
 
 	Node();
-	Node(NodeType);
+	Node(std::string,NodeType);
 
 	glm::mat4 ResolveFinalTransform();
 
@@ -53,6 +54,8 @@ public:
 
 	std::string getName();
 	Node* setName(std::string name);
+
+	std::string GetTypeName();
 
 	void setManager(SceneManager* sceneManager);
 

@@ -216,8 +216,6 @@ class Game :public App {
 		Entity* monkey = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey->setName("monkey");
 
-		LOG_F(INFO, "%s",Serializer::getInstance().Compose("Entity",monkey).dump().c_str());
-
 		Entity* monkey2 = new Entity(R->getGeometry("monkey"), uved_mat);
 		monkey2->setName("monkey2");
 		monkey2->transform.translate(vec3(2, 2, 0));
@@ -293,6 +291,9 @@ class Game :public App {
 		monkey2->add(redLight);
 
 		renderer.setup(&level1);
+
+
+		LOG_F(INFO, "%s", Serializer::getInstance().GeneralCompose(&level1).dump().c_str());
 
 		systemManager.start();
 	}

@@ -46,8 +46,8 @@ struct Light : public Node {
 
 	LightType lightType;
 
-	Light():
-		Node(NodeType::Light){}
+	Light(std::string typeName):
+		Node(typeName, NodeType::Light){}
 
 	void cleanup() {
 		Node::cleanup();
@@ -65,7 +65,7 @@ struct PointLight : public Light {
 	}
 
 	PointLight(PointData data):
-		Light(), data(data){
+		Light("PointLight"), data(data){
 		lightType = LightType::Point;
 		transform.Position() = glm::vec3(data.position);
 	}

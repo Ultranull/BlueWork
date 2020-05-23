@@ -2,6 +2,7 @@
 
 #include <loguru.hpp>
 
+
 SceneManager::SceneManager():
 	Root(nullptr), MainCamera(nullptr){
 	Root = PushNode(new Node());
@@ -89,4 +90,33 @@ void SceneManager::CleanUp(void) {
 	for (size_t i = 0; i < Cameras.size(); i++) {
 		Cameras[i]->cleanup();
 	}
+}
+
+
+template<>
+nlohmann::json Serializer::GeneralCompose(SceneManager* object) {
+	Serializer& s = Serializer::getInstance();
+	nlohmann::json json;
+	json["Root"] = object->GetRoot()->GetId();
+
+	for (int i = 0; i < object->Nodes.size(); i++) {
+		nlohmann::json nodeJson;
+		Node* node = object->Nodes[i].get();
+		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
+		json["Nodes"].push_back(nodeJson);
+	}
+	for (int i = 0; i < object->Entities.size(); i++) {
+		nlohmann::json nodeJson;
+		Node* node = object->Entities[i].get();
+		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
+		json["Nodes"].push_back(nodeJson);
+	}
+	for (int i = 0; i < object->Cameras.size(); i++) {
+		nlohmann::json nodeJson;
+		Node* node = object->Cameras[i].get();
+		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
+		json["Nodes"].push_back(nodeJson);
+	}
+
+	return json;
 }

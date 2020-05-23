@@ -5,11 +5,11 @@
 unsigned int Node::NextId = 0;
 
 Node::Node():
-	Node(NodeType::Node)
+	Node("Node",NodeType::Node)
 {}
 
-Node::Node(NodeType t):
-	children(), parent(nullptr), type(t), Id(NextId++)
+Node::Node(std::string typeName, NodeType t):
+	children(), parent(nullptr), type(t), Id(NextId++), TypeName(typeName)
 {}
 
 glm::mat4 Node::ResolveFinalTransform() {
@@ -70,6 +70,8 @@ Node* Node::setName(std::string name) {
 	this->name = name;
 	return this;
 }
+
+std::string Node::GetTypeName() { return TypeName; }
 
 void Node::setManager(SceneManager* sceneManager) {
 	manager = sceneManager;
