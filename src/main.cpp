@@ -34,6 +34,8 @@
 #include "resource/ShapeLoader.h"
 #include "scene/SceneManager.h"
 
+#include "Player.h"
+
 
 using namespace glm;
 using namespace std;
@@ -72,92 +74,7 @@ using namespace std;
 //	return Mesh(verts);
 //}
 
-const GLuint FORWARD = GLFW_KEY_W;//FIX! move to input class
-const GLuint BACKWARD = GLFW_KEY_S;
-const GLuint STRAFERIGHT = GLFW_KEY_D;
-const GLuint STRAFELEFT = GLFW_KEY_A;
-const GLuint JUMP = GLFW_KEY_SPACE;
-const GLuint CROUCH = GLFW_KEY_LEFT_SHIFT;
 
-class Player : public Entity {
-
-	InputComponent* input;
-
-	float speed;
-	float mouseSpeed;
-	double xpos, ypos;
-	float hangle, vangle;
-
-public:
-
-	Player(Geometry* geometry, Material mat) :
-		Entity(geometry, mat) {
-
-		speed = 3.f;
-		mouseSpeed = 0.005f;
-		xpos = 0;
-		ypos = 0;
-		hangle = 0;
-		vangle = 0;
-
-		input = SystemManager::getInstance().CreateComponent<InputComponent>();
-	}
-
-	void OnMouseMove(double mouseX, double mouseY) {
-		xpos = mouseX;
-		ypos = mouseY;
-	}
-
-	void movement(float delta, int width, int height) {
-		input->GetCursorPostion(xpos, ypos);
-		input->SetCursorPostion(width / 2, height / 2);
-		input->SetCursorMode(CursorInputMode::Disabled);
-
-		hangle += mouseSpeed * float(width / 2 - xpos);//theta
-		vangle += mouseSpeed * float(height / 2 - ypos);//phi
-
-		constexpr float piHalves = glm::half_pi<float>();
-		
-		vec3 direction = vec3(cos(vangle) * sin(hangle),
-			sin(vangle),
-			cos(vangle) * cos(hangle));
-		vec3 right(sin(hangle - piHalves),
-			0,
-			cos(hangle - piHalves));
-		vec3 up = cross(right, direction);
-		vec3 front = cross(vec3(0, 1, 0), right);
-
-		vec3 xaxis = cross(up, direction);
-		xaxis = normalize(xaxis);
-
-		mat3 rotation = {
-			xaxis.x, xaxis.y, xaxis.z,
-			up.x, up.y, up.z,
-			direction.x, direction.y, direction.z,
-		};
-
-		transform.Rotation() = quat_cast(rotation);
-
-		if (input->GetKeyState(FORWARD) == InputState::Pressed) {
-			transform.Position() += front * delta * speed;
-		}
-		if (input->GetKeyState(BACKWARD) == InputState::Pressed) {
-			transform.Position() -= front * delta * speed;
-		}
-		if (input->GetKeyState(STRAFERIGHT) == InputState::Pressed) {
-			transform.Position() += right * delta * speed;
-		}
-		if (input->GetKeyState(STRAFELEFT) == InputState::Pressed) {
-			transform.Position() -= right * delta * speed;
-		}
-		if (input->GetKeyState(JUMP) == InputState::Pressed) {
-			transform.Position() += vec3(0, 1, 0) * delta * speed;
-		}
-		if (input->GetKeyState(CROUCH) == InputState::Pressed) {
-			transform.Position() -= vec3(0, 1, 0) * delta * speed;
-		}
-	}
-};
 
 class Game :public App {
 	SystemManager& systemManager;

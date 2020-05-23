@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\resource\CommonSerializers.cpp" />
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="include\loguru.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\resource\Serializer.cpp" />
     <ClCompile Include="src\components\input system\InputComponent.cpp" />
     <ClCompile Include="src\components\input system\InputSystem.cpp" />
@@ -49,6 +51,7 @@
     <ClCompile Include="src\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\resource\CommonSerializers.h" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\glad\khrplatform.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
@@ -202,6 +205,7 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\loguru.hpp" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\resource\Serializer.h" />
     <ClInclude Include="src\components\input system\InputComponent.h" />
     <ClInclude Include="src\components\input system\InputEnums.h" />
@@ -231,6 +235,7 @@
     <ClInclude Include="src\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include="assets\shaders\fragment.frag" />
     <None Include="assets\shaders\vertex.vert" />
     <None Include="include\glm\detail\func_common.inl" />
