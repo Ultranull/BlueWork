@@ -49,26 +49,6 @@ void Shader::cleanup(){
 	glDeleteShader(id);
 }
 
-template<>
-nlohmann::json Serializer::GeneralCompose(Program object) {
-	nlohmann::json json;
-	Shader vertex = object.GetShader(GL_VERTEX_SHADER), 
-		fragment = object.GetShader(GL_FRAGMENT_SHADER), 
-		geom = object.GetShader(GL_GEOMETRY_SHADER);
-
-	if (vertex.id != -1) {
-		json.push_back(Resource::getInstance().GetShaderName(vertex));
-	}
-	if (fragment.id != -1) {
-		json.push_back(Resource::getInstance().GetShaderName(fragment));
-	}
-	if (geom.id != -1) {
-		json.push_back(Resource::getInstance().GetShaderName(geom));
-	}
-
-	return json;
-}
-
 Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 
 	GLint result = GL_FALSE;

@@ -3,23 +3,6 @@
 #include "resource/Resource.h"
 #include "resource/Serializer.h"
 
-template<>
-nlohmann::json Serializer::GeneralCompose(Material object) {
-	nlohmann::json json;
-	json["DiffuseMap"] = Resource::getInstance()
-			.GetTextureName(object.diffuseMap);
-	
-	json["Color"] = Serializer::GeneralCompose(object.color);
-	json["Specular"] = Serializer::GeneralCompose(object.specular);
-	json["Shininess"] = object.shininess;
-
-
-	json["Shaders"] = Serializer::GeneralCompose(object.shader);
-
-	return json;
-}
-
-
 void Texture::load(){
 	glTexParameteri(params.target, GL_TEXTURE_MAG_FILTER, params.FILTER);
 	glTexParameteri(params.target, GL_TEXTURE_MIN_FILTER, params.FILTER);

@@ -101,7 +101,8 @@ class Game :public App {
 	void init() {
 		R = &Resource::getInstance(); // maybe a good time to make that asset loader
 
-		Serializer::getInstance().CommonParsers();
+		Serializer::getInstance().Initialize();
+		Player::RegisterSerializer();
 
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 

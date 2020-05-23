@@ -28,13 +28,12 @@ public:
 
 	Serializer();
 
-	void CommonParsers();
+	void Initialize();
 
 	nlohmann::json Compose(std::string name, Node* node);
 
 	void LoadFile(std::string fileName, SceneManager& manager);
 
-	//todo where do i run this for any given node?
 	void RegisterParser(std::string name, ComposeFunction compose, ParseFunction parse);
 
 	template<typename T>

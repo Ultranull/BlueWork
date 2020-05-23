@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include "componentSystem/SystemManager.h"
+#include "resource/Serializer.h"
 
 const unsigned int FORWARD = GLFW_KEY_W;//FIX! move to input class
 const unsigned int BACKWARD = GLFW_KEY_S;
@@ -10,7 +11,7 @@ const unsigned int JUMP = GLFW_KEY_SPACE;
 const unsigned int CROUCH = GLFW_KEY_LEFT_SHIFT;
 
 Player::Player(Geometry* geometry, Material mat) :
-	Entity(geometry, mat) {
+	Entity("Player", geometry, mat) {
 
 	speed = 3.f;
 	mouseSpeed = 0.005f;
@@ -75,4 +76,23 @@ void Player::movement(float delta, int width, int height) {
 	if (input->GetKeyState(CROUCH) == InputState::Pressed) {
 		transform.Position() -= glm::vec3(0, 1, 0) * delta * speed;
 	}
+}
+
+
+void Player::RegisterSerializer() {
+	Serializer& S = Serializer::getInstance();
+	ComposeFunction entityCompose = [&](Node* node) {
+		Player* entity = (Player*)node;
+		nlohmann::json json;
+
+		json["info"] = "some player information";
+
+		json.merge_patch(S.Compose("Entity", node));
+
+		return json;
+	};
+	ParseFunction entityParse = [&](nlohmann::json data) -> Node* {
+		return nullptr;
+	};
+	S.RegisterParser("Player", entityCompose, entityParse);
 }

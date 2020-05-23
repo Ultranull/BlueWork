@@ -1,6 +1,5 @@
 #include "InputSystem.h"
 
-std::string InputSystem::Name = "InputSystem";
 
 template<>
 InputComponent* SystemManager::CreateComponent() {

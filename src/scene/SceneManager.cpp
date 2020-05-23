@@ -117,6 +117,12 @@ nlohmann::json Serializer::GeneralCompose(SceneManager* object) {
 		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
 		json["Nodes"].push_back(nodeJson);
 	}
+	for (int i = 0; i < object->Lights.size(); i++) {
+		nlohmann::json nodeJson;
+		Node* node = object->Lights[i].get();
+		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
+		json["Nodes"].push_back(nodeJson);
+	}
 
 	return json;
 }

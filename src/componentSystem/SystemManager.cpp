@@ -3,7 +3,7 @@
 #include <loguru.hpp>
 
 void SystemManager::RegisterSystem(std::string name, SystemInterface* system) {
-    LOG_F(INFO, "Registering system %s", name);
+    LOG_F(INFO, "Registering system %s", name.c_str());
     systems.insert(std::make_pair(name, system));
 }
 

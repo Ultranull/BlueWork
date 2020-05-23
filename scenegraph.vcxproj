@@ -235,7 +235,6 @@
     <ClInclude Include="src\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".clang-format" />
     <None Include="assets\shaders\fragment.frag" />
     <None Include="assets\shaders\vertex.vert" />
     <None Include="include\glm\detail\func_common.inl" />

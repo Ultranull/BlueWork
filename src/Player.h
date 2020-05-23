@@ -21,4 +21,6 @@ public:
 	void OnMouseMove(double mouseX, double mouseY);
 
 	void movement(float delta, int width, int height);
+
+	static void RegisterSerializer();
 };

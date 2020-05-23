@@ -2,14 +2,7 @@
 
 #include "resource/Serializer.h"
 
-template<>
-nlohmann::json Serializer::GeneralCompose(Transform object) {
-    nlohmann::json json;
-    json["position"] = Serializer::GeneralCompose(object.Position());
-    json["scale"] = Serializer::GeneralCompose(object.Scale());
-    json["rotation"] = Serializer::GeneralCompose(object.Rotation());
-    return json;
-}
+
 
  glm::mat4 Transform::Model() {
 	return T() * R() * S();

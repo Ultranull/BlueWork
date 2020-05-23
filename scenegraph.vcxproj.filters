@@ -999,6 +999,5 @@
     </None>
     <None Include="assets\shaders\fragment.frag" />
     <None Include="assets\shaders\vertex.vert" />
-    <None Include=".clang-format" />
   </ItemGroup>
 </Project>

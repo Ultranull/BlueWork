@@ -24,7 +24,7 @@ class InputSystem :
 	void callback(int key, int scancode, int action, int mods);
 
 public:
-	static std::string Name;
+	inline static const std::string Name = "InputSystem";
 
 	InputSystem(GLFWwindow* window);
 
