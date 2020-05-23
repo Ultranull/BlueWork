@@ -5,7 +5,7 @@
 #include<map>
 #include<string>
 
-#include "../Material.h"
+#include "graphics/Material.h"
 
 	class FrameBuffer {
 		GLuint id;

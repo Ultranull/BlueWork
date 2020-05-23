@@ -3,7 +3,7 @@
 #include "../Engine.h"
 #include "Resource.h"
 #include "../graphics/VertexArray.h"
-#include "../Geometry.h"
+#include "graphics/Geometry.h"
 
 class ShapeLoader{
 	Resource* R = &Resource::getInstance();

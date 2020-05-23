@@ -27,7 +27,7 @@
 
 #include "scene/Node.h"
 #include "scene/Light.h"
-#include "Geometry.h"
+#include "graphics/Geometry.h"
 #include "scene/Transform.h"
 #include "scene/Entity.h"
 #include "Renderer.h"

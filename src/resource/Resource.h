@@ -7,8 +7,8 @@
 #include <glad/glad.h>
 
 #include"../graphics/ShaderProgram.h"
-#include"../Material.h"
-#include "../Geometry.h"
+#include "graphics/Geometry.h"
+#include "graphics/Material.h"
 
 
 	class Resource {
