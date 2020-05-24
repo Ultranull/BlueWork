@@ -15,7 +15,7 @@ using namespace std;
 bool compile(const char* file, GLuint id) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
-	LOG_F(INFO, "Compiling shader: %s", file);
+	LOG_F(INFO+1, "Compiling shader: %s (%u)", file, id);
 	string content = Utilities::readFile(file);
 	if (content.compare("") == 0) {
 		LOG_F(ERROR, "compile error: file not found!");
@@ -37,10 +37,10 @@ bool compile(const char* file, GLuint id) {
 	return true;
 }
 
-Shader::Shader(std::string file, GLuint t) :type(t) {
+Shader::Shader(std::string file, GLuint t) :
+	type(t), FileName(file) {
 	id = glCreateShader(t);
 	if (!compile(file.c_str(), id)) {
-		getchar();
 		exit(-1);
 	}
 }
@@ -54,7 +54,7 @@ Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
 
-	LOG_F(INFO, "linking program: %d %d", vertex.id, fragment.id);
+	LOG_F(INFO+1, "linking program: %d %d", vertex.id, fragment.id);
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex.id);
 	glAttachShader(programID, fragment.id);
@@ -66,7 +66,6 @@ Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
 		LOG_F(FATAL, "link error:\n%s", &errormessage[0]);
-		getchar();
 		exit(-1);
 	}
 	glDetachShader(programID, vertex.id);
@@ -77,7 +76,7 @@ Program::Program(Shader vert, Shader frag, Shader geom) :vertex(vert), fragment(
 	GLint result = GL_FALSE;
 	int infoLogLength;
 
-	LOG_F(INFO, "linking program");
+	LOG_F(INFO+1, "linking program");
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex.id);
 	glAttachShader(programID, fragment.id);
@@ -90,7 +89,6 @@ Program::Program(Shader vert, Shader frag, Shader geom) :vertex(vert), fragment(
 		vector<char> errormessage(infoLogLength + 1);
 		glGetProgramInfoLog(programID, infoLogLength, NULL, &errormessage[0]);
 		LOG_F(FATAL, "link error:\n%s\n", &errormessage[0]);
-		getchar();
 		exit(-1);
 	}
 }

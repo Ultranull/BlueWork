@@ -265,3 +265,4 @@ visualglfwtest/models/head.obj
 visualglfwtest/models/lowpolybear13.obj
 /visualglfwtest/models/head_nmt.png
 /renderdoc.cap
+*.scene

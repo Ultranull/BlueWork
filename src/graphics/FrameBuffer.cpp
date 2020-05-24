@@ -92,7 +92,6 @@ void FrameBuffer::check(){
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		LOG_F(FATAL, "fb failed");
-		getchar();
 		exit(-1);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

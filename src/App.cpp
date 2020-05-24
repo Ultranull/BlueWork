@@ -19,7 +19,6 @@
 		LOG_F(INFO, "Loading GLFW...");
 		if (!glfwInit()) {
 			LOG_F(FATAL, "Failed to initialize glfw");
-			getchar();
 			exit(-1);
 		}
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -30,7 +29,6 @@
  		window = glfwCreateWindow(w, h, title, NULL, NULL);
 		if (window == nullptr) {
 			LOG_F(FATAL, "Failed to init window");
-			getchar();
 			glfwTerminate();
 			exit(-1);
 		}
@@ -40,7 +38,6 @@
 		int res=gladLoadGL();
 		if (!res) {
 			LOG_F(FATAL, "Failed to init glad (%i)", res);
-			getchar();
 			glfwTerminate();
 			exit(-1);
 		}

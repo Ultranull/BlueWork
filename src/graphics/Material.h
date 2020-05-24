@@ -23,6 +23,7 @@ struct Texture {
 
 	GLuint id;
 	TextureTraits params;
+	std::string FileName;
 
 	int width;
 	int height;

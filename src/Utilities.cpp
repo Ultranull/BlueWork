@@ -20,3 +20,14 @@ std::string Utilities::readFile(const char* file) {
 	}
 	return content;
 }
+
+void Utilities::SaveFile(const char* file, const char* content) {
+	std::ofstream stream(file);
+	if (stream.is_open()) {
+		stream << content;
+		stream.close();
+	}
+	else {
+		LOG_F(ERROR, "Failed to open %s", file);
+	}
+}

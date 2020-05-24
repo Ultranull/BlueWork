@@ -18,9 +18,10 @@
 
 		std::map<std::string, Geometry*> geometries;
 
+		std::string Manifest;
 	public:
 		std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
-		Resource() {}
+		Resource();
 
 		Texture addTexture(std::string name, const char *tex);
 		void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);
@@ -42,6 +43,8 @@
 
 		void setPath(std::string texturePath, std::string shaderPath, std::string path);
 		std::string getShaderPath(std::string file);
+
+		std::string GetManifest();
 
 		void batchLoad(std::string manifest);
 

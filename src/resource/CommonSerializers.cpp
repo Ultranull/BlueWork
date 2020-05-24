@@ -124,7 +124,16 @@ void CommonSerializers::CommonParsers() {
             json["Id"] = node->GetId();
             json["Transform"] = S.GeneralCompose<Transform>(node->transform);
             json["name"] = node->getName();
-            json["parent"] = node->GetParentId();
+
+            unsigned int parentId = node->GetParentId();
+            if (parentId == -1) {
+                // this will show -1 in the json instead of the unsigned equivilent
+                json["parent"] = -1; 
+            }
+            else {
+                json["parent"] = parentId;
+            }
+
             nlohmann::json childrenArray = nlohmann::json::array();
             for (int i = 0; i < node->getNumberOfChildren(); i++) {
                 Node* child = node->child(i);

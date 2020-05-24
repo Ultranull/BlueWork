@@ -32,7 +32,9 @@ public:
 
 	nlohmann::json Compose(std::string name, Node* node);
 
-	void LoadFile(std::string fileName, SceneManager& manager);
+	void LoadFile(std::string fileName, SceneManager* manager);
+
+	void SaveFile(std::string fileName, SceneManager* manager);
 
 	void RegisterParser(std::string name, ComposeFunction compose, ParseFunction parse);
 

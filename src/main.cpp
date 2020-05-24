@@ -211,7 +211,7 @@ class Game :public App {
 		renderer.setup(&level1);
 
 
-		LOG_F(INFO, "%s", Serializer::getInstance().GeneralCompose(&level1).dump().c_str());
+		Serializer::getInstance().SaveFile("test", &level1);
 
 		systemManager.start();
 	}
@@ -263,7 +263,7 @@ public:
 	}
 };
 
-
+#include "Utilities.h"
 int main(int argc, char** argv) {
 	loguru::g_preamble_thread = false;
 	loguru::g_preamble_uptime = false;
@@ -274,5 +274,6 @@ int main(int argc, char** argv) {
 
 	Game game(700, 700, "");
 	game.start();
+
 	return 0;
 }
