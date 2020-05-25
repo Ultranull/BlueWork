@@ -13,6 +13,11 @@ nlohmann::json Serializer::GeneralCompose(glm::vec3 object) {
   return json;
 }
 
+template <>
+glm::vec3 Serializer::GeneralParse(nlohmann::json json) {
+    return glm::vec3(json[0], json[1], json[2]);
+}
+
 template <> 
 nlohmann::json Serializer::GeneralCompose(glm::vec4 object) {
   nlohmann::json json = {
@@ -20,11 +25,21 @@ nlohmann::json Serializer::GeneralCompose(glm::vec4 object) {
   return json;
 }
 
+template <>
+glm::vec4 Serializer::GeneralParse(nlohmann::json json) {
+    return glm::vec4(json[0], json[1], json[2], json[3]);
+}
+
 template <> 
 nlohmann::json Serializer::GeneralCompose(glm::quat object) {
   nlohmann::json json = {
       object.x, object.y, object.z, object.w};
   return json;
+}
+
+template <>
+glm::quat Serializer::GeneralParse(nlohmann::json json) {
+    return glm::quat(json[0], json[1], json[2], json[3]);
 }
 
 template<>
@@ -103,6 +118,15 @@ nlohmann::json Serializer::GeneralCompose(Transform object) {
     return json;
 }
 
+template <>
+Transform Serializer::GeneralParse(nlohmann::json json) {
+    Transform transform;
+    transform.Position() = Serializer::GeneralParse<glm::vec3>(json["position"]);
+    transform.Scale() = Serializer::GeneralParse<glm::vec3>(json["scale"]);
+    transform.Rotation() = Serializer::GeneralParse<glm::quat>(json["rotation"]);
+    return transform;
+}
+
 template<>
 nlohmann::json Serializer::GeneralCompose(Light::attunation object) {
     nlohmann::json json;
@@ -111,6 +135,8 @@ nlohmann::json Serializer::GeneralCompose(Light::attunation object) {
     json["constant"] = object.constant;
     return json;
 }
+
+
 
 void CommonSerializers::CommonParsers() {
     Resource &R = Resource::getInstance();
@@ -142,8 +168,15 @@ void CommonSerializers::CommonParsers() {
             json["children"] = childrenArray;
             return json;
         };
-        ParseFunction nodeParse = [&](nlohmann::json data) -> Node* {
-            return nullptr;
+        ParseFunction nodeParse = [&](nlohmann::json data, Node* node) -> Node* {
+            Node* newNode = new (node) Node(
+                data["Id"].get<unsigned int>(),
+                "Node",
+                NodeType::Node);
+
+            node->setName(data["name"].get<std::string>());
+            node->transform = S.GeneralParse<Transform>(data["transform"]);
+            return node;
         };
         S.RegisterParser("Node", nodeCompose, nodeParse);
     }
@@ -161,7 +194,8 @@ void CommonSerializers::CommonParsers() {
 
             return json;
         };
-        ParseFunction entityParse = [&](nlohmann::json data) -> Node* {
+        ParseFunction entityParse = [&](nlohmann::json data, Node* node) -> Node* {
+            Entity* entity = new (node) Entity();
             return nullptr;
         };
         S.RegisterParser("Entity", entityCompose, entityParse);

@@ -37,7 +37,8 @@ public:
 	Transform transform;
 
 	Node();
-	Node(std::string,NodeType);
+	Node(std::string,NodeType); 
+	Node(unsigned int id, std::string typeName, NodeType t);
 
 	glm::mat4 ResolveFinalTransform();
 

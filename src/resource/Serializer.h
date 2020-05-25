@@ -9,7 +9,7 @@
 #include "scene/Node.h"
 
 #define ComposeFunction std::function<nlohmann::json(Node*)>
-#define ParseFunction std::function<Node*(nlohmann::json)>
+#define ParseFunction std::function<Node*(nlohmann::json,Node*)>
 
 class SceneManager;
 
