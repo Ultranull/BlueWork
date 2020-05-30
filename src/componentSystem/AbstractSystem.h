@@ -12,7 +12,7 @@ public:
 template<typename ComponentType>
 class AbstractSystem : public SystemInterface {
 protected:
-    std::vector<ComponentType> components;
+    std::vector<ComponentType*> components;
 
 public:
 
@@ -20,14 +20,14 @@ public:
     virtual void OnStart() {}
 
 	virtual void CleanUp() {
-		std::vector<ComponentType>::iterator iter;
+		std::vector<ComponentType*>::iterator iter;
 		for (iter = components.begin(); iter != components.end(); iter++) {
-			iter->CleanUp();
+			(*iter)->CleanUp();
 		}
 	}
 
 	void Remove(ComponentType* ptr) {
-		std::vector<ComponentType>::iterator iter;
+		std::vector<ComponentType*>::iterator iter;
 		for (iter = components.begin(); iter != components.end(); ) {
 			if (&(*iter) == ptr) {
 				iter->CleanUp();

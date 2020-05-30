@@ -69,7 +69,9 @@ void Renderer::updateLights() {
 	lights.unbind();
 }
 
-void Renderer::pre() {}
+void Renderer::pre() {
+	Manager->UpdateCamera(height, width);
+}
 
 void Renderer::render() {
 	pre();

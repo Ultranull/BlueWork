@@ -80,7 +80,7 @@ class Game :public App {
 	SystemManager& systemManager;
 	Resource *R;
 
-	SceneManager level1;
+	SceneManager level1, level2;
 
 	Renderer renderer;
 
@@ -108,10 +108,12 @@ class Game :public App {
 
 		R->addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
+		Serializer::getInstance().LoadFile("test2.scene", &level2);
 		Serializer::getInstance().LoadFile("test.scene", &level1);
 
 	    player = level1.GetRoot()->findByName<Player>("player");
 		level1.SetMainCamera("camera 1");
+		level2.SetMainCamera("camera 1");
 
 		Shader pass_v = R->getShader("pass.vert");
 		Shader pass_f = R->getShader("pass.frag");
@@ -136,10 +138,9 @@ class Game :public App {
 
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
-		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
-		level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
+		//level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
+		//level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
 
-		level1.UpdateCamera(height, width);
 		renderer.updateLights();
 	}
 
@@ -164,6 +165,15 @@ class Game :public App {
 
 		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
 			level1.SetMainCamera("camera 3");
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+			player = level2.GetRoot()->findByName<Player>("player");
+			renderer.setup(&level2);
+		}
+		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+			player = level1.GetRoot()->findByName<Player>("player");
+			renderer.setup(&level1);
 		}
 	}
 public:

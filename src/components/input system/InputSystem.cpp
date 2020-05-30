@@ -29,6 +29,6 @@ void InputSystem::OnUpdate() {
 }
 
 InputComponent* InputSystem::Register() {
-	components.push_back(InputComponent(Window));
-	return &components.back();
+	components.push_back(new InputComponent(Window));
+	return components.back();
 }

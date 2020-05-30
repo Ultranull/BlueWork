@@ -70,7 +70,7 @@ public:
 			current = child(i);
 			current = current->findByName<T>(name);
 			if (current != nullptr)
-				return reinterpret_cast<T*>(current);
+				return (T*)(current);
 		}
 		return nullptr;
 	}
