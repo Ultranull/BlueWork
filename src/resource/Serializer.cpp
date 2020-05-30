@@ -1,5 +1,7 @@
 #include "Serializer.h"
 
+#include <sstream>
+
 #include <loguru.hpp>
 
 #include "scene/SceneManager.h"
@@ -46,8 +48,19 @@ void Serializer::LoadFile(std::string fileName, SceneManager* manager) {
 	Resource& R = Resource::getInstance();
 	std::string contents = Utilities::readFile(fileName.c_str());
 	nlohmann::json json = nlohmann::json::parse(contents);
+	
+	std::stringstream ss;
+	nlohmann::json manifestArray = json["Manifest"];
 
-	R.batchLoad(json["Manifest"].get<std::string>());
+	for (int i = 0; i < manifestArray.size(); i++) {
+		ss << manifestArray[i]["asset"].get<std::string>();
+		ss << ":";
+		ss << manifestArray[i]["name"].get<std::string>();
+		ss << ";";
+	}
+	LOG_F(INFO + 1, "loaded manifest: %s", ss.str().c_str());
+	R.batchLoad(ss.str());
+
 	Node* root = manager->GetRoot();
 	Parse(root->GetTypeName(), json["Scene"], root, nullptr);
 
@@ -58,7 +71,28 @@ void Serializer::SaveFile(std::string fileName, SceneManager* manager) {
 	std::string manifest = R.GetManifest();
 	
 	nlohmann::json saveContent = GeneralCompose(manager);
-	saveContent["Manifest"] = manifest;
+
+	nlohmann::json manifestJson;
+
+	size_t pos = 0;
+	std::string line;
+	while ((pos = manifest.find(";")) != std::string::npos) {
+		line = manifest.substr(0, pos);
+
+		std::string file, name;
+		size_t posFile = line.find(":");
+		file = line.substr(0, posFile);
+		name = line.substr(posFile + 1, pos);
+
+		manifestJson.push_back({
+			{"name",name},
+			{"asset",file}
+		});
+
+		manifest.erase(0, pos + 1);
+	}
+
+	saveContent["Manifest"] = manifestJson;
 
 	if(!fileName.ends_with(AsciiExtention.c_str())){
 		fileName += AsciiExtention;
