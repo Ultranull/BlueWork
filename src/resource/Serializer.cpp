@@ -18,13 +18,38 @@ void Serializer::Initialize(){
 	CommonSerializers::CommonParsers();
 }
 
-nlohmann::json Serializer::Compose(std::string name, Node* node) {
-	return ParseMap[name].Compose(node);
+nlohmann::json Serializer::Compose(std::string type, Node* node) {
+	if (ParseMap.find(type) != ParseMap.end()) {
+		return ParseMap[type].Compose(node);
+	}
+	LOG_F(ERROR, "Could not compose type: %s", type.c_str());
+	return nlohmann::json();
+}
+
+nlohmann::json Serializer::Compose(Node* node) {
+	return Compose(node->GetTypeName(), node);
+}
+
+Node* Serializer::Parse(std::string type, nlohmann::json json, Node* node, Node* parent) {
+	if (ParseMap.find(type) != ParseMap.end()) {
+		return ParseMap[type].Parse(json, node, parent);
+	}
+	LOG_F(ERROR, "Could not parse type: %s with %s", type.c_str(), json.dump().c_str());
+	return node;
+}
+
+Node* Serializer::Parse(std::string type, nlohmann::json json){
+	return Parse(type, json, nullptr, nullptr);
 }
 
 void Serializer::LoadFile(std::string fileName, SceneManager* manager) {
+	Resource& R = Resource::getInstance();
 	std::string contents = Utilities::readFile(fileName.c_str());
+	nlohmann::json json = nlohmann::json::parse(contents);
 
+	R.batchLoad(json["Manifest"].get<std::string>());
+	Node* root = manager->GetRoot();
+	Parse(root->GetTypeName(), json["Scene"], root, nullptr);
 
 }
 

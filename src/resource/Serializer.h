@@ -9,7 +9,7 @@
 #include "scene/Node.h"
 
 #define ComposeFunction std::function<nlohmann::json(Node*)>
-#define ParseFunction std::function<Node*(nlohmann::json,Node*)>
+#define ParseFunction std::function<Node*(nlohmann::json,Node*,Node*)>
 
 class SceneManager;
 
@@ -30,7 +30,10 @@ public:
 
 	void Initialize();
 
-	nlohmann::json Compose(std::string name, Node* node);
+	nlohmann::json Compose(Node* node);
+	nlohmann::json Compose(std::string type, Node* node);
+	Node* Parse(std::string type, nlohmann::json json);
+	Node* Parse(std::string type, nlohmann::json json, Node* node, Node* parent);
 
 	void LoadFile(std::string fileName, SceneManager* manager);
 
@@ -55,17 +58,23 @@ public:
 
 {
 	"manifest":"mesh.obj:meshName;",
-	"root": <id>,
-	"nodes":[
-		"Node":{
-			"Transform":{
-				"position":{"x":0.0, "y":0.0, "z":0.0},
-				"scale":{"x":0.0, "y":0.0, "z":0.0},
-				"rotation":{"x":0.0, "y":0.0, "z":0.0, "w":0.0},
-			},
-			"name":"bob",
-			"parent": <id>
-			"children":[<id>, <id>, <id>, ...]
+	"root": {
+		
+	}
+}
+
+		{
+			Name:"Node",
+			
+				"Transform":{
+					"position":{"x":0.0, "y":0.0, "z":0.0},
+					"scale":{"x":0.0, "y":0.0, "z":0.0},
+					"rotation":{"x":0.0, "y":0.0, "z":0.0, "w":0.0},
+				},
+				"name":"bob",
+				"parent": <id>
+				"children":[<id>, <id>, <id>, ...]
+			
 		},
 		"Light":{
 			<Node stuff>
@@ -93,9 +102,6 @@ public:
 				"FOV":0
 			}
 		}
-	]
-
-}
 
 */
 

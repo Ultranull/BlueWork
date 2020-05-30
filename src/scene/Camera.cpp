@@ -151,6 +151,8 @@ CameraSettings Camera::GetSettings() {
 	return settings;
 }
 
+void Camera::SetSettings(CameraSettings cs) { settings = cs; }
+
 void Camera::cleanup(){
 	//buffer->cleanup();
 }

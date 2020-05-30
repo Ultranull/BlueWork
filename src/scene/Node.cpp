@@ -8,12 +8,12 @@ Node::Node():
 	Node("Node",NodeType::Node)
 {}
 
-Node::Node(unsigned int id, std::string typeName, NodeType t):
-	children(), parent(nullptr), type(t), Id(id), TypeName(typeName)
+Node::Node(std::string typeName, NodeType t) :
+	Node(NextId++, typeName, t)
 {}
 
-Node::Node(std::string typeName, NodeType t) :
-	children(), parent(nullptr), Node(NextId++, "Node", NodeType::Node)
+Node::Node(unsigned int id, std::string typeName, NodeType t):
+	children(), parent(nullptr), type(t), Id(id), TypeName(typeName)
 {}
 
 glm::mat4 Node::ResolveFinalTransform() {

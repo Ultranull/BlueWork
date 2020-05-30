@@ -62,6 +62,7 @@ public:
 	glm::vec3 getPosition();
 
 	CameraSettings GetSettings();
+	void SetSettings(CameraSettings cs);
 
 	void cleanup();
 };

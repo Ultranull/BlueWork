@@ -1,5 +1,7 @@
 #include "CommonSerializers.h"
 
+#include <loguru.hpp>
+
 #include "resource/Serializer.h"
 #include "resource/Resource.h"
 
@@ -15,7 +17,7 @@ nlohmann::json Serializer::GeneralCompose(glm::vec3 object) {
 
 template <>
 glm::vec3 Serializer::GeneralParse(nlohmann::json json) {
-    return glm::vec3(json[0], json[1], json[2]);
+    return glm::vec3(json[0].get<double>(), json[1].get<double>(), json[2].get<double>());
 }
 
 template <> 
@@ -27,7 +29,7 @@ nlohmann::json Serializer::GeneralCompose(glm::vec4 object) {
 
 template <>
 glm::vec4 Serializer::GeneralParse(nlohmann::json json) {
-    return glm::vec4(json[0], json[1], json[2], json[3]);
+    return glm::vec4(json[0].get<double>(), json[1].get<double>(), json[2].get<double>(), json[3].get<double>());
 }
 
 template <> 
@@ -39,7 +41,7 @@ nlohmann::json Serializer::GeneralCompose(glm::quat object) {
 
 template <>
 glm::quat Serializer::GeneralParse(nlohmann::json json) {
-    return glm::quat(json[0], json[1], json[2], json[3]);
+    return glm::quat(json[3].get<double>() , json[0].get<double>(), json[1].get<double>(), json[2].get<double>());
 }
 
 template<>
@@ -62,6 +64,23 @@ nlohmann::json Serializer::GeneralCompose(Program object) {
     return json;
 }
 
+template <>
+Program Serializer::GeneralParse(nlohmann::json json) {
+    if (json.size() == 2) {
+        return Program(
+            Resource::getInstance().getShader(json[0]),
+            Resource::getInstance().getShader(json[1]));
+    }
+    else if (json.size() == 3) {
+        return Program(
+            Resource::getInstance().getShader(json[0]),
+            Resource::getInstance().getShader(json[1]),
+            Resource::getInstance().getShader(json[2]));
+    }
+    LOG_F(ERROR, "Could not parse program: %s", json.dump().c_str());
+    return Program();
+}
+
 template<>
 nlohmann::json Serializer::GeneralCompose(Material object) {
     nlohmann::json json;
@@ -76,6 +95,17 @@ nlohmann::json Serializer::GeneralCompose(Material object) {
     json["Shaders"] = Serializer::GeneralCompose(object.shader);
 
     return json;
+}
+
+template <>
+Material Serializer::GeneralParse(nlohmann::json json) {
+    Material mat;
+    mat.diffuseMap = Resource::getInstance().getTexture(json["DiffuseMap"]);
+    mat.color = Serializer::GeneralParse<glm::vec4>(json["Color"]);
+    mat.specular = Serializer::GeneralParse<glm::vec4>(json["Specular"]);
+    mat.shininess = json["Shininess"].get<float>();
+    mat.shader = Serializer::GeneralParse<Program>(json["Shaders"]);
+    return mat;
 }
 
 template<>
@@ -98,8 +128,8 @@ nlohmann::json Serializer::GeneralCompose(CameraSettings object) {
         json["Settings"] = {
             {"NearPlane", object.OrthographicData.NearPlane},
             {"FarPlane", object.OrthographicData.FarPlane},
-            {"Left ", object.OrthographicData.Left},
-            {"Right ", object.OrthographicData.Right},
+            {"Left", object.OrthographicData.Left},
+            {"Right", object.OrthographicData.Right},
             {"Bottom", object.OrthographicData.Bottom},
             {"Top", object.OrthographicData.Top},
         };
@@ -107,6 +137,38 @@ nlohmann::json Serializer::GeneralCompose(CameraSettings object) {
     }
 
     return json;
+}
+
+template <>
+CameraSettings Serializer::GeneralParse(nlohmann::json json) {
+    CameraSettings settings;
+    std::string modeStr = json["Mode"].get<std::string>();
+    if (modeStr.compare("Orthographic") == 0) {
+        settings.mode = CameraSettings::Mode::Orthographic;
+    }
+    else if (modeStr.compare("Perspective") == 0) {
+        settings.mode = CameraSettings::Mode::Perspective;
+    }
+
+    switch (settings.mode)
+    {
+    case CameraSettings::Mode::Perspective:
+        settings.PerspecitveData.NearPlane = json["Settings"]["NearPlane"].get<float>();
+        settings.PerspecitveData.FarPlane = json["Settings"]["FarPlane"].get<float>();
+        settings.PerspecitveData.FOV = json["Settings"]["FOV"].get<float>();
+        break;
+
+    case CameraSettings::Mode::Orthographic:
+        settings.OrthographicData.NearPlane = json["Settings"]["NearPlane"].get<float>();
+        settings.OrthographicData.FarPlane = json["Settings"]["FarPlane"].get<float>();
+        settings.OrthographicData.Left = json["Settings"]["Left"].get<float>();
+        settings.OrthographicData.Right = json["Settings"]["Right"].get<float>();
+        settings.OrthographicData.Bottom = json["Settings"]["Bottom"].get<float>();
+        settings.OrthographicData.Top = json["Settings"]["Top"].get<float>();
+        break;
+    }
+
+    return settings;
 }
 
 template<>
@@ -136,7 +198,14 @@ nlohmann::json Serializer::GeneralCompose(Light::attunation object) {
     return json;
 }
 
-
+template <>
+Light::attunation Serializer::GeneralParse(nlohmann::json json) {
+    Light::attunation att;
+    att.quadratic = json["quadratic"].get<float>();
+    att.linear = json["linear"].get<float>();
+    att.constant = json["constant"].get<float>();
+    return att;
+}
 
 void CommonSerializers::CommonParsers() {
     Resource &R = Resource::getInstance();
@@ -146,36 +215,39 @@ void CommonSerializers::CommonParsers() {
     {
         ComposeFunction nodeCompose = [&](Node* node) {
             nlohmann::json json;
-
-            json["Id"] = node->GetId();
+            json["Type"] = node->GetTypeName();
             json["Transform"] = S.GeneralCompose<Transform>(node->transform);
             json["name"] = node->getName();
-
-            unsigned int parentId = node->GetParentId();
-            if (parentId == -1) {
-                // this will show -1 in the json instead of the unsigned equivilent
-                json["parent"] = -1; 
-            }
-            else {
-                json["parent"] = parentId;
-            }
 
             nlohmann::json childrenArray = nlohmann::json::array();
             for (int i = 0; i < node->getNumberOfChildren(); i++) {
                 Node* child = node->child(i);
-                childrenArray.push_back(child->GetId());
+                childrenArray.push_back(S.Compose(child));
             }
             json["children"] = childrenArray;
             return json;
         };
-        ParseFunction nodeParse = [&](nlohmann::json data, Node* node) -> Node* {
-            Node* newNode = new (node) Node(
-                data["Id"].get<unsigned int>(),
-                "Node",
-                NodeType::Node);
+        ParseFunction nodeParse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
+            if (node == nullptr) {
+                node = new Node();
+            }
 
             node->setName(data["name"].get<std::string>());
-            node->transform = S.GeneralParse<Transform>(data["transform"]);
+            node->transform = S.GeneralParse<Transform>(data["Transform"]);
+
+            if (parent != nullptr) {
+                parent->add(node);
+            }   
+
+            nlohmann::json childrenArray = data["children"];
+            for (int i = 0; i < childrenArray.size(); i++) {
+                nlohmann::json childJson = childrenArray[i];
+                std::string type = childJson["Type"].get<std::string>();
+                Node* child = S.Parse(type, childJson, nullptr, node);
+                if (child == nullptr) {
+                    LOG_F(ERROR, "got nullptr with %s: %s", type.c_str(), childJson.dump().c_str());
+                }
+            }
             return node;
         };
         S.RegisterParser("Node", nodeCompose, nodeParse);
@@ -194,9 +266,19 @@ void CommonSerializers::CommonParsers() {
 
             return json;
         };
-        ParseFunction entityParse = [&](nlohmann::json data, Node* node) -> Node* {
-            Entity* entity = new (node) Entity();
-            return nullptr;
+        ParseFunction entityParse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
+            Entity* entity = (Entity*) node;
+            if (entity == nullptr) {
+                entity = new Entity();
+            }
+
+            entity->flags = data["flags"].get<unsigned char>();
+            entity->geometry = R.getGeometry(data["Geometry"].get<std::string>());
+            entity->material = S.GeneralParse<Material>(data["Material"]);
+            
+            S.Parse("Node", data, entity, parent);
+
+            return entity;
         };
         S.RegisterParser("Entity", entityCompose, entityParse);
     }
@@ -212,8 +294,17 @@ void CommonSerializers::CommonParsers() {
 
             return json;
         };
-        ParseFunction cameraParse = [&](nlohmann::json data) -> Node* {
-            return nullptr;
+        ParseFunction cameraParse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
+            Camera* camera = (Camera*)node;
+            if (camera == nullptr) {
+                camera = new Camera();
+            }
+
+            camera->SetSettings(S.GeneralParse<CameraSettings>(data["Settings"]));
+
+            S.Parse("Node", data, camera, parent);
+
+            return camera;
         };
         S.RegisterParser("Camera", cameraCompose, cameraParse);
     }
@@ -232,8 +323,20 @@ void CommonSerializers::CommonParsers() {
 
             return json;
         };
-        ParseFunction parse = [&](nlohmann::json data) -> Node* {
-            return nullptr;
+        ParseFunction parse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
+            PointLight* light = (PointLight*)node;
+            if (light == nullptr) {
+                light = new PointLight();
+            }
+
+            light->data.ambient = S.GeneralParse<glm::vec4>(data["Ambient"]);
+            light->data.color = S.GeneralParse<glm::vec4>(data["Color"]);
+            light->data.specular = S.GeneralParse<glm::vec4>(data["Specular"]);
+            light->data.att = S.GeneralParse<Light::attunation>(data["Att"]);
+
+            S.Parse("Node", data, light, parent);
+
+            return light;
         };
         S.RegisterParser("PointLight", compose, parse);
     }

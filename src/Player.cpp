@@ -1,5 +1,7 @@
 #include "Player.h"
 
+#include <loguru.hpp>
+
 #include "componentSystem/SystemManager.h"
 #include "resource/Serializer.h"
 
@@ -91,8 +93,62 @@ void Player::RegisterSerializer() {
 
 		return json;
 	};
-	ParseFunction entityParse = [&](nlohmann::json data) -> Node* {
-		return nullptr;
+	ParseFunction entityParse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
+		Player* player = (Player*)node;
+		if (player == nullptr) {
+			player = new Player(nullptr, Material());
+		}
+
+		LOG_F(INFO, "info from the player: %s", data["info"].dump().c_str());
+
+		S.Parse("Entity", data, player, parent);
+
+		return player;
 	};
 	S.RegisterParser("Player", entityCompose, entityParse);
 }
+
+/*
+
+
+	  {
+		"Geometry": "monkey",
+		"Material": {
+		  "Color": [ 1.0, 1.0, 1.0, 1.0 ],
+		  "DiffuseMap": "uvmap",
+		  "Shaders": [ "vertex.vert", "fragment.frag" ],
+		  "Shininess": 25.0,
+		  "Specular": [ 0.5, 0.5, 0.5, 0.5 ]
+		},
+		"Transform": {
+		  "position": [ 0.0, 0.0, 0.0 ],
+		  "rotation": [ 0.0, 1.0, 0.0, 0.0 ],
+		  "scale": [ 1.0, 1.0, 1.0 ]
+		},
+		"Type": "Player",
+		"children": [
+		  {
+			"Settings": {
+			  "Mode": "Perspective",
+			  "Settings": {
+				"FOV": 45.0,
+				"FarPlane": 100.0,
+				"NearPlane": 0.10000000149011612
+			  }
+			},
+			"Transform": {
+			  "position": [ 0.0, 3.0, -5.0 ],
+			  "rotation": [ 0.0, 0.9659258127212524, 0.258819043636322, 0.0 ],
+			  "scale": [ 1.0, 1.0, 1.0 ]
+			},
+			"Type": "Camera",
+			"children": [],
+			"name": "camera 1"
+		  }
+		],
+		"flags": 0,
+		"info": "some player information",
+		"name": "player"
+	  },
+
+*/

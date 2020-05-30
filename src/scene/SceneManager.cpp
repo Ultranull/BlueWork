@@ -97,32 +97,7 @@ template<>
 nlohmann::json Serializer::GeneralCompose(SceneManager* object) {
 	Serializer& s = Serializer::getInstance();
 	nlohmann::json json;
-	json["Root"] = object->GetRoot()->GetId();
-
-	for (int i = 0; i < object->Nodes.size(); i++) {
-		nlohmann::json nodeJson;
-		Node* node = object->Nodes[i].get();
-		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
-		json["Nodes"].push_back(nodeJson);
-	}
-	for (int i = 0; i < object->Entities.size(); i++) {
-		nlohmann::json nodeJson;
-		Node* node = object->Entities[i].get();
-		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
-		json["Nodes"].push_back(nodeJson);
-	}
-	for (int i = 0; i < object->Cameras.size(); i++) {
-		nlohmann::json nodeJson;
-		Node* node = object->Cameras[i].get();
-		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
-		json["Nodes"].push_back(nodeJson);
-	}
-	for (int i = 0; i < object->Lights.size(); i++) {
-		nlohmann::json nodeJson;
-		Node* node = object->Lights[i].get();
-		nodeJson[node->GetTypeName()] = s.Compose(node->GetTypeName(), node);
-		json["Nodes"].push_back(nodeJson);
-	}
+	json["Scene"] = s.Compose(object->GetRoot());
 
 	return json;
 }
