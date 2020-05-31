@@ -1,6 +1,9 @@
 #include "OBJLoader.h"
 
+#include <loguru.hpp> 
+
 Geometry* OBJLoader::load(std::string fn) {
+	LOG_F(INFO + 1, "loading %s", fn.c_str());
 	Geometry* geom = new Geometry();
 	int numberOfFaces;
 	std::vector<Engine::Vertex> vertices = parseOBJ(fn, numberOfFaces);

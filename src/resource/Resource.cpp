@@ -21,6 +21,13 @@ Resource::Resource():
 
 }
 
+bool Resource::ContainsName(std::string name) {
+	return
+		MapContains(textures, name) ||
+		MapContains(shaders, name) ||
+		MapContains(geometries, name);
+}
+
 Texture Resource::addTexture(string name, const char *tex) {
 	string fn = (path + texturePath + string(tex));
 	const char *file = fn.c_str();

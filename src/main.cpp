@@ -1,5 +1,7 @@
-
+#ifdef  LEAK_DETECT
 #include <vld.h>
+#endif //  LEAK_DETECT
+
 
 #include <fstream>
 #include <sstream>

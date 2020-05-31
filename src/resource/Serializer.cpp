@@ -53,10 +53,14 @@ void Serializer::LoadFile(std::string fileName, SceneManager* manager) {
 	nlohmann::json manifestArray = json["Manifest"];
 
 	for (int i = 0; i < manifestArray.size(); i++) {
-		ss << manifestArray[i]["asset"].get<std::string>();
-		ss << ":";
-		ss << manifestArray[i]["name"].get<std::string>();
-		ss << ";";
+		std::string name = manifestArray[i]["name"].get<std::string>();
+		std::string assetFile = manifestArray[i]["asset"].get<std::string>();
+		if (!R.ContainsName(name) && !R.ContainsName(assetFile)) {
+			ss << assetFile;
+			ss << ":";
+			ss << name;
+			ss << ";";
+		}
 	}
 	LOG_F(INFO + 1, "loaded manifest: %s", ss.str().c_str());
 	R.batchLoad(ss.str());

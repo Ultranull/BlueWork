@@ -11,51 +11,54 @@
 #include "graphics/Geometry.h"
 #include "graphics/Material.h"
 
+#define MapContains(MAP, KEY) MAP.find(KEY) != MAP.end()
 
-	class Resource {
-		std::map<std::string, Texture> textures;
+class Resource {
+	std::map<std::string, Texture> textures;
 
-		std::map<std::string, Shader> shaders;
+	std::map<std::string, Shader> shaders;
 
-		std::map<std::string, std::unique_ptr<Geometry>> geometries;
+	std::map<std::string, std::unique_ptr<Geometry>> geometries;
 
-		std::string Manifest;
-	public:
-		std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
-		Resource();
+	std::string Manifest;
+public:
+	std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
+	Resource();
 
-		Texture addTexture(std::string name, const char *tex);
-		void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);
-		Texture getTexture(std::string name);
-		GLint bindTexture(std::string name, GLuint sample);
+	bool ContainsName(std::string name);
 
-		Shader addShader(std::string name);
-		Shader getShader(std::string name);
+	Texture addTexture(std::string name, const char *tex);
+	void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);
+	Texture getTexture(std::string name);
+	GLint bindTexture(std::string name, GLuint sample);
 
-		void addGeometry(std::string name,Geometry* geom);
-		Geometry* getGeometry(std::string name);
+	Shader addShader(std::string name);
+	Shader getShader(std::string name);
 
-		std::string GetGeometryName(Geometry* geom);
-		std::string GetTextureName(Texture tex);
-		std::string GetShaderName(Shader shader);
+	void addGeometry(std::string name,Geometry* geom);
+	Geometry* getGeometry(std::string name);
 
-		Texture LoadGLTexture(const char *filename);
-		Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
+	std::string GetGeometryName(Geometry* geom);
+	std::string GetTextureName(Texture tex);
+	std::string GetShaderName(Shader shader);
 
-		void setPath(std::string texturePath, std::string shaderPath, std::string path);
-		std::string getShaderPath(std::string file);
+	Texture LoadGLTexture(const char *filename);
+	Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
 
-		std::string GetManifest();
+	void setPath(std::string texturePath, std::string shaderPath, std::string path);
+	std::string getShaderPath(std::string file);
 
-		void batchLoad(std::string manifest);
+	std::string GetManifest();
 
-		void cleanup();
+	void batchLoad(std::string manifest);
 
-		static Resource& getInstance() {
-			static Resource instance;
-			return instance;
-		}
-		Resource(Resource const&) = delete;
-		void operator=(Resource const&) = delete;
+	void cleanup();
 
-	};
+	static Resource& getInstance() {
+		static Resource instance;
+		return instance;
+	}
+	Resource(Resource const&) = delete;
+	void operator=(Resource const&) = delete;
+
+};
