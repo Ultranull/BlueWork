@@ -19,6 +19,8 @@ Player::Player(Geometry* geometry, Material mat) :
 	mouseSpeed = 0.005f;
 	xpos = 0;
 	ypos = 0;
+	oldxpos = 0;
+	oldypos = 0;
 	hangle = 0;
 	vangle = 0;
 
@@ -26,17 +28,21 @@ Player::Player(Geometry* geometry, Material mat) :
 }
 
 void Player::OnMouseMove(double mouseX, double mouseY) {
+	oldxpos = xpos;
+	oldypos = ypos;
 	xpos = mouseX;
 	ypos = mouseY;
 }
 
 void Player::movement(float delta, int width, int height) {
+	oldxpos = xpos;
+	oldypos = ypos;
 	input->GetCursorPostion(xpos, ypos);
-	input->SetCursorPostion(width / 2, height / 2);
+	//input->SetCursorPostion(width / 2, height / 2);
 	input->SetCursorMode(CursorInputMode::Disabled);
 
-	hangle += mouseSpeed * float(width / 2 - xpos);//theta
-	vangle += mouseSpeed * float(height / 2 - ypos);//phi
+	hangle += mouseSpeed * float(oldxpos - xpos);//theta
+	vangle += mouseSpeed * float(oldypos - ypos);//phi
 
 	constexpr float piHalves = glm::half_pi<float>();
 

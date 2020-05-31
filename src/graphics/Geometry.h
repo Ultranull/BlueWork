@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "graphics/VertexArray.h"
 
 
@@ -9,7 +11,7 @@ struct Geometry {
 	int instances = 1; // should this be in here?
 	bool indexed = false;
 	bool deleted = false;
-	VertexArray* vaObject = nullptr;
+	std::unique_ptr<VertexArray> vaObject;
 
 	void draw();
 	void drawWire();

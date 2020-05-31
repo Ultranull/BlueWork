@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 #include "AbstractSystem.h"
 
@@ -12,7 +13,7 @@
 
 class SystemManager {
 
-    std::map<std::string, SystemInterface*> systems;
+    std::map<std::string, std::unique_ptr<SystemInterface>> systems;
 
     SystemManager() {}
 

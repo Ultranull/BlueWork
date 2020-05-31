@@ -72,7 +72,7 @@ Geometry* ShapeLoader::MakePlane(unsigned int xSegments, unsigned int zSegments)
 
 Geometry* ShapeLoader::load(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices) {
 	Geometry* geom = new Geometry();
-	geom->vaObject = new VertexArray();
+	geom->vaObject = std::unique_ptr<VertexArray>(new VertexArray());;
 	Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
 	vbuffer->setData(vertices, GL_STATIC_DRAW);
 	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));

@@ -11,7 +11,7 @@ class Player : public Entity {
 
 	float speed;
 	float mouseSpeed;
-	double xpos, ypos;
+	double xpos, ypos, oldxpos, oldypos;
 	float hangle, vangle;
 
 public:

@@ -73,7 +73,7 @@ void Resource::addGeometry(std::string name, Geometry* geom){
 }
 
 Geometry* Resource::getGeometry(std::string name){
-	return geometries[name];
+	return geometries[name].get();
 }
 
 Texture Resource::LoadGLTexture(const char *filename) {
@@ -141,7 +141,7 @@ std::string Resource::GetManifest() {
 void Resource::cleanup() {
 	map<string,Texture>::iterator textit = textures.begin();
 	map<string,Shader>::iterator shadit = shaders.begin();
-	map<string,Geometry*>::iterator geomit = geometries.begin();
+	map<string,std::unique_ptr<Geometry>>::iterator geomit = geometries.begin();
 	for (;textit != textures.end();textit++) {
 		textit->second.cleanup();
 	}
@@ -150,7 +150,6 @@ void Resource::cleanup() {
 	}
 	for (; geomit != geometries.end(); geomit++) {
 		geomit->second->cleanup();
-		delete geomit->second;
 	}
 	textures.clear();
 	shaders.clear();
@@ -158,9 +157,11 @@ void Resource::cleanup() {
 }
 
 std::string Resource::GetGeometryName(Geometry* geom) {
-	std::vector<std::string> values;
-	if (Utilities::findByValue(values, geometries, geom)) {
-		return values[0];
+	map<string, std::unique_ptr<Geometry>>::iterator geomit = geometries.begin();
+	for (; geomit != geometries.end(); geomit++) {
+		if (geomit->second.get() == geom) {
+			return geomit->first;
+		}
 	}
 	return "";
 }

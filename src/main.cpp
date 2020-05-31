@@ -1,3 +1,6 @@
+
+#include <vld.h>
+
 #include <fstream>
 #include <sstream>
 
@@ -35,6 +38,7 @@
 #include "scene/SceneManager.h"
 
 #include "Player.h"
+
 
 
 using namespace glm;
@@ -128,10 +132,12 @@ class Game :public App {
 
 		systemManager.start();
 	}
-	void onClose() {
+	virtual void onClose() {
 		systemManager.CleanUp();
 		R->cleanup(); 
 		renderer.cleanup();
+		level1.CleanUp();
+		level2.CleanUp();
 	}
 
 	void update(float delta) {
@@ -153,7 +159,7 @@ class Game :public App {
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
 
-		player->movement(delta, width, height);
+		//player->movement(delta, width, height);
 
 		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 			level1.SetMainCamera("camera 1");
@@ -183,8 +189,6 @@ public:
 
 	}
 };
-
-#include "Utilities.h"
 int main(int argc, char** argv) {
 	loguru::g_preamble_thread = false;
 	loguru::g_preamble_uptime = false;
@@ -193,8 +197,8 @@ int main(int argc, char** argv) {
 	loguru::add_file("verbose_log.log", loguru::Truncate, loguru::Verbosity_MAX);
 	loguru::add_file("log.log", loguru::Truncate, loguru::Verbosity_INFO);
 
-	Game game(700, 700, "");
-	game.start();
-
+	Game* game = new Game(700, 700, "");
+	game->start();
+	delete game;
 	return 0;
 }

@@ -9,7 +9,7 @@
 
 class VertexArray{
 	GLuint id;
-	std::map<std::string, Buffer*> buffers;
+	std::map<std::string, std::unique_ptr<Buffer>> buffers;
 public:
 	VertexArray();
 	~VertexArray();
@@ -31,7 +31,7 @@ template<typename T>
 inline Buffer * VertexArray::bindBuffer(std::string name, GLenum type) {
 	bind();
 	Buffer *buf = new Buffer(type);
-	buffers.insert(std::make_pair(name, buf));
+	buffers.insert(std::make_pair(name, std::unique_ptr<Buffer>(buf)));
 	buf->bind();
 	return buf;
 }

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <stdio.h>
+#include <memory>
 
 #include <glad/glad.h>
 
@@ -16,7 +17,7 @@
 
 		std::map<std::string, Shader> shaders;
 
-		std::map<std::string, Geometry*> geometries;
+		std::map<std::string, std::unique_ptr<Geometry>> geometries;
 
 		std::string Manifest;
 	public:

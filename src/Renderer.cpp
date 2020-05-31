@@ -30,7 +30,7 @@ void Renderer::SetDimensions(int h, int w){
 
 void Renderer::cleanup() {
 	lights.cleanup();
-	Manager->CleanUp();
+	//Manager->CleanUp();
 	plane->cleanup();
 	delete plane;
 }

@@ -4,7 +4,7 @@ Geometry* OBJLoader::load(std::string fn) {
 	Geometry* geom = new Geometry();
 	int numberOfFaces;
 	std::vector<Engine::Vertex> vertices = parseOBJ(fn, numberOfFaces);
-	geom->vaObject = new VertexArray();
+	geom->vaObject = std::unique_ptr<VertexArray>(new VertexArray());
 	Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
 	vbuffer->setData(vertices, GL_STATIC_DRAW);
 	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));

@@ -3,7 +3,8 @@
 #include <loguru.hpp>
 
 
-VertexArray::VertexArray() {
+VertexArray::VertexArray():
+	buffers(){
 	glGenVertexArrays(1, &id);
 }
 
@@ -22,11 +23,10 @@ VertexArray::~VertexArray()
  void VertexArray::cleanup() {
 	 if (id != -1) {
 		 LOG_F(INFO + 1, "Cleaning VAO");
-		 std::map<std::string, Buffer*>::iterator iter;
+		 std::map<std::string, std::unique_ptr<Buffer>>::iterator iter;
 		 for (iter = buffers.begin(); iter != buffers.end(); iter++) {
-			 Buffer* b = (*iter).second;
+			 Buffer* b = (*iter).second.get();
 			 b->cleanup();
-			 delete b;
 		 }
 		 buffers.clear();
 		 id = -1;
@@ -34,13 +34,13 @@ VertexArray::~VertexArray()
 }
 
  void VertexArray::updateData(std::string name, GLintptr offset, GLsizeiptr size,const void * data) {
-	Buffer *buf = buffers[name];
+	Buffer *buf = buffers[name].get();
 	bind();
 	buf->bind();
 	buf->setSubData(offset, size, data);
 }
 
  Buffer * VertexArray::getBuffer(std::string name) {
-	return buffers[name];
+	return buffers[name].get();
 }
 

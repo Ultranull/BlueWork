@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 class SystemInterface {
 
@@ -12,22 +13,25 @@ public:
 template<typename ComponentType>
 class AbstractSystem : public SystemInterface {
 protected:
-    std::vector<ComponentType*> components;
+    std::vector<std::unique_ptr<ComponentType>> components;
 
 public:
+
+	AbstractSystem(): components() {}
 
     virtual void OnUpdate() {}
     virtual void OnStart() {}
 
 	virtual void CleanUp() {
-		std::vector<ComponentType*>::iterator iter;
+		std::vector<std::unique_ptr<ComponentType>>::iterator iter;
 		for (iter = components.begin(); iter != components.end(); iter++) {
 			(*iter)->CleanUp();
 		}
+		components.clear();
 	}
 
 	void Remove(ComponentType* ptr) {
-		std::vector<ComponentType*>::iterator iter;
+		std::vector<std::unique_ptr<ComponentType>>::iterator iter;
 		for (iter = components.begin(); iter != components.end(); ) {
 			if (&(*iter) == ptr) {
 				iter->CleanUp();
