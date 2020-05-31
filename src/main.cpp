@@ -84,7 +84,7 @@ using namespace std;
 
 class Game :public App {
 	SystemManager& systemManager;
-	Resource *R;
+	Resource& R;
 
 	SceneManager level1, level2;
 
@@ -105,14 +105,14 @@ class Game :public App {
 	}
 
 	void init() {
-		R = &Resource::getInstance(); // maybe a good time to make that asset loader
+		// maybe a good time to make that asset loader
 
 		Serializer::getInstance().Initialize();
 		Player::RegisterSerializer();
 
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
-		R->addGeometry("ground", ShapeLoader().MakePlane(10, 10));
+		R.addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
 		Serializer::getInstance().LoadFile("test2.scene", &level2);
 		Serializer::getInstance().LoadFile("test.scene", &level1);
@@ -121,8 +121,8 @@ class Game :public App {
 		level1.SetMainCamera("camera 1");
 		level2.SetMainCamera("camera 1");
 
-		Shader pass_v = R->getShader("pass.vert");
-		Shader pass_f = R->getShader("pass.frag");
+		Shader pass_v = R.getShader("pass.vert");
+		Shader pass_f = R.getShader("pass.frag");
 
 		Program pass(pass_v, pass_f);
 
@@ -136,7 +136,7 @@ class Game :public App {
 	}
 	virtual void onClose() {
 		systemManager.CleanUp();
-		R->cleanup(); 
+		R.cleanup(); 
 		renderer.cleanup();
 		level1.CleanUp();
 		level2.CleanUp();
@@ -146,8 +146,8 @@ class Game :public App {
 
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
-		//level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
-		//level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
+		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
+		level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
 
 		renderer.updateLights();
 	}
@@ -161,7 +161,7 @@ class Game :public App {
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
 
-		//player->movement(delta, width, height);
+		player->movement(delta, width, height);
 
 		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 			level1.SetMainCamera("camera 1");
@@ -187,7 +187,9 @@ class Game :public App {
 public:
 
 	Game(int width, int height, const char *title) :
-		App(width, height, title), systemManager(SystemManager::getInstance()) {
+		App(width, height, title), 
+		systemManager(SystemManager::getInstance()),
+		R(Resource::getInstance()){
 
 	}
 };
