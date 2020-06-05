@@ -27,7 +27,7 @@ Node* SceneManager::PushNode(Node* node) {
 		case NodeType::Camera: {
 			Cameras.push_back(std::unique_ptr<Camera>((Camera*)node));
 			Camera* camera = Cameras.back().get();
-			if (node->getName().compare("Main") == 0) {
+			if (MainCamera == nullptr) {
 				MainCamera = camera;
 			}
 			return camera;

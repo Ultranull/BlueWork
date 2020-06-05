@@ -17,14 +17,16 @@ size_t index_up = index_view + sizeof(glm::mat4);
 size_t index_dir = index_up + sizeof(glm::vec4);
 size_t index_pos = index_dir + sizeof(glm::vec4);
 
+Camera::Camera(CameraSettings s):
+	settings(s),buffer(nullptr), Node("Camera", NodeType::Camera) {
+
+}
 
 Camera::Camera():
-	buffer(nullptr), Node("Camera", NodeType::Camera){
-
-	settings = CameraSettings{
+	Camera(CameraSettings{
 		CameraSettings::Mode::Perspective,
-		{.1, 100, 45.f}
-	};
+		{.1, 100, 45.f} }){
+
 }
 
 void Camera::bindCamera(UniformBuffer* buf, Program shader){

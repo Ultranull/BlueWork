@@ -999,5 +999,7 @@
     </None>
     <None Include="assets\shaders\fragment.frag" />
     <None Include="assets\shaders\vertex.vert" />
+    <None Include="assets\shaders\loadingScreen.frag" />
+    <None Include="assets\shaders\loadingScreen.vert" />
   </ItemGroup>
 </Project>

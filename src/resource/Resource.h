@@ -4,6 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <memory>
+#include <functional>
 
 #include <glad/glad.h>
 
@@ -15,17 +16,20 @@
 
 class Resource {
 	std::map<std::string, Texture> textures;
-
 	std::map<std::string, Shader> shaders;
-
 	std::map<std::string, std::unique_ptr<Geometry>> geometries;
 
 	std::string Manifest;
+
+
 public:
+	std::function<void(float)> loadingDrawCall;
 	std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
 	Resource();
 
 	bool ContainsName(std::string name);
+
+	void SetLoadCall(std::function<void(float)> loadCall);
 
 	Texture addTexture(std::string name, const char *tex);
 	void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);

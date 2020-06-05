@@ -28,6 +28,10 @@ bool Resource::ContainsName(std::string name) {
 		MapContains(geometries, name);
 }
 
+void Resource::SetLoadCall(std::function<void(float)> loadCall) {
+	loadingDrawCall = loadCall;
+}
+
 Texture Resource::addTexture(string name, const char *tex) {
 	string fn = (path + texturePath + string(tex));
 	const char *file = fn.c_str();
@@ -72,7 +76,11 @@ Shader Resource::addShader(string file) {
 	return sh;
 }
 Shader Resource::getShader(string name) {
-	return shaders[name];
+	if (shaders.find(name) != shaders.end()) {
+		return shaders[name];
+	}
+	LOG_F(ERROR, "Could not find shader with name %s!", name.c_str());
+	return Shader();
 }
 
 void Resource::addGeometry(std::string name, Geometry* geom){
@@ -219,6 +227,8 @@ void Resource::batchLoad(std::string manifest) {
 	size_t pos = 0;
 	std::string line;
 	while ((pos = manifest.find(";")) != std::string::npos) {
+		if(loadingDrawCall)
+			loadingDrawCall(0.f);
 		line = manifest.substr(0, pos);
 
 		std::string file,name;

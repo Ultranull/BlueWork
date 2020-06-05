@@ -236,6 +236,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment.frag" />
+    <None Include="assets\shaders\loadingScreen.frag" />
+    <None Include="assets\shaders\loadingScreen.vert" />
     <None Include="assets\shaders\vertex.vert" />
     <None Include="include\glm\detail\func_common.inl" />
     <None Include="include\glm\detail\func_common_simd.inl" />

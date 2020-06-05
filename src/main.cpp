@@ -86,7 +86,7 @@ class Game :public App {
 	SystemManager& systemManager;
 	Resource& R;
 
-	SceneManager level1, level2;
+	SceneManager level1, level2, loadingScreen;
 
 	Renderer renderer;
 
@@ -101,8 +101,7 @@ class Game :public App {
 		glEnable(GL_CULL_FACE);
 	}
 	
-	void loading() {
-	}
+
 
 	void init() {
 		// maybe a good time to make that asset loader
@@ -112,6 +111,47 @@ class Game :public App {
 
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
+		R.batchLoad("test.png:loading;"
+					"loadingScreen.vert:;"
+					"loadingScreen.frag:;"
+					"pass.vert:;"
+					"pass.frag:;");
+
+		ShapeLoader loader;
+		R.addGeometry("xy-plane", loader.MakeZPlane(1, 1));
+
+		Node* lsroot = loadingScreen.GetRoot();
+
+		Material lsmat(vec4(1), vec4(0), 0);
+		lsmat.diffuseMap = R.getTexture("loading");
+		lsmat.shader = Program(R.getShader("loadingScreen.vert"), R.getShader("loadingScreen.frag"));
+
+		lsroot->add(new Entity(R.getGeometry("xy-plane"), lsmat));
+		lsroot->add(new Camera(CameraSettings{
+			.mode = CameraSettings::Mode::Orthographic,
+			.OrthographicData = {
+				.NearPlane = .01,
+				.FarPlane = 1,
+				.Left = -1,
+				.Right = 1,
+				.Bottom = -1,
+				.Top = 1
+			}
+		}));
+
+		renderer = Renderer(
+			Program(R.getShader("pass.vert"), R.getShader("pass.frag")), 
+			width, height);
+		renderer.setup(&loadingScreen);
+
+		R.SetLoadCall([&](float percent) {
+			renderer.SetDimensions(height, width);
+			renderer.render();
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+		});
+
+
 		R.addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
 		Serializer::getInstance().LoadFile("test2.scene", &level2);
@@ -120,13 +160,6 @@ class Game :public App {
 	    player = level1.GetRoot()->findByName<Player>("player");
 		level1.SetMainCamera("camera 1");
 		level2.SetMainCamera("camera 1");
-
-		Shader pass_v = R.getShader("pass.vert");
-		Shader pass_f = R.getShader("pass.frag");
-
-		Program pass(pass_v, pass_f);
-
-		renderer = Renderer(pass, width, height);
 		
 		renderer.setup(&level1);
 
@@ -153,7 +186,6 @@ class Game :public App {
 	}
 
 	void render(float delta) {
-
 		renderer.SetDimensions(height, width);
 		renderer.render();
 	}

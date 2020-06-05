@@ -44,14 +44,13 @@ class Camera: public Node{
 
 public:
 	Camera();
+	Camera(CameraSettings s);
 
 	static std::shared_ptr<UniformBuffer> buildCamera(void);
 
 	void bindCamera(UniformBuffer* buf, Program shader);
 	void updateBuffer();
 
-	void apply(GLFWwindow *window, float delta);
-	void orbit(GLFWwindow *window, float delta, glm::vec3 target);
 	glm::mat4 P();
 	glm::mat4 V();
 

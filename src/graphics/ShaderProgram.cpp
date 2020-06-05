@@ -54,6 +54,11 @@ Program::Program(Shader vert, Shader frag):vertex(vert),fragment(frag) {
 	GLint result = GL_FALSE;
 	int infoLogLength;
 
+	if (vert.id == -1 || frag.id == -1) {
+		LOG_F(FATAL, "Cannot link invalid shaders!");
+		exit(-1);
+	}
+
 	LOG_F(INFO+1, "linking program: %d %d", vertex.id, fragment.id);
 	programID = glCreateProgram();
 	glAttachShader(programID, vertex.id);

@@ -55,10 +55,11 @@ void Renderer::setup(SceneManager* manager) {
 	lightbuf.clear();
 	collectLights();
 
-	lights = UniformBuffer();
-	lights.bind();
-	lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
-	lights.unbind();
+	if (lightbuf.size() > 0) {
+		lights.bind();
+		lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
+		lights.unbind();
+	}
 }
 
 void Renderer::updateLights() {
@@ -105,10 +106,12 @@ void Renderer::traverseGraph() {
 		glm::mat4 finalTransform = entity->ResolveFinalTransform();
 		if (!entity->flags) {
 			material->bind();
-			material->shader.setUniform("numLights", lightbuf.size());
-			material->shader.setUniform("model", &finalTransform);
-			lights.bind();
-			lights.blockBinding(material->shader.getProgramID(), 1, "Lights");
+			material->shader.setUniform("model", &finalTransform); 
+			if (lightbuf.size() > 0) {
+				material->shader.setUniform("numLights", lightbuf.size());
+				lights.bind();
+				lights.blockBinding(material->shader.getProgramID(), 1, "Lights");
+			}
 			camera->bindCamera(CameraBuffer.get(), material->shader);
 
 			entity->geometry->draw(); // add some conditional stuff: castsshadow?
