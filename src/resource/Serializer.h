@@ -35,6 +35,9 @@ public:
 	Node* Parse(std::string type, nlohmann::json json);
 	Node* Parse(std::string type, nlohmann::json json, Node* node, Node* parent);
 
+	void LoadScene(std::string fileName, SceneManager* manager);
+	void LoadManifest(std::string fileName);
+
 	void LoadFile(std::string fileName, SceneManager* manager);
 
 	void SaveFile(std::string fileName, SceneManager* manager);

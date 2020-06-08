@@ -12,7 +12,8 @@
 #include <loguru.hpp>
 
 #include "OBJLoader.h"
-#include "Utilities.h"
+#include "Utilities/Utilities.h"
+#include "Serializer.h"
 
 using namespace std;
 	
@@ -28,8 +29,8 @@ bool Resource::ContainsName(std::string name) {
 		MapContains(geometries, name);
 }
 
-void Resource::SetLoadCall(std::function<void(float)> loadCall) {
-	loadingDrawCall = loadCall;
+void Resource::SetLoadSucessCallback(std::function<void(void)> loadCall) {
+	OnLoadSucess = loadCall;
 }
 
 Texture Resource::addTexture(string name, const char *tex) {
@@ -218,39 +219,74 @@ bool isShader(std::string s) {
 		s.compare("geom") == 0;
 }
 
-void Resource::batchLoad(std::string manifest) {
+void Resource::LoadAssetTask(const void* data, int size) {
+	OBJLoader loader;
+	std::string line((char*)data);
+	std::string file, name;
+	size_t posFile = line.find(":");
+	file = line.substr(0, posFile);
+	name = line.substr(posFile + 1);
+
+	size_t posExt = file.find(".");
+	std::string extension = file.substr(posExt + 1, posFile);
+
+	if (extension.compare("obj") == 0) {
+		LOG_F(INFO, "loading geometry %s as %s", file.c_str(), name.c_str());
+		addGeometry(name, loader.load(path + file));
+	}
+	else if (isImage(extension)) {
+		LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
+		addTexture(name, file.c_str());
+	}
+	else if (isShader(extension)) {
+		LOG_F(INFO, "loading shader %s", file.c_str());
+		addShader(file);
+	}
+}
+
+void Resource::batchLoad(std::string manifest, bool queue) {
 
 	Manifest += manifest;
-
-	OBJLoader loader;
 
 	size_t pos = 0;
 	std::string line;
 	while ((pos = manifest.find(";")) != std::string::npos) {
-		if(loadingDrawCall)
-			loadingDrawCall(0.f);
 		line = manifest.substr(0, pos);
+		if (queue) {
+			Task* task = new Task();
+			task->DataSize = line.size();
 
-		std::string file,name;
-		size_t posFile = line.find(":");
-		file = line.substr(0, posFile);
-		name = line.substr(posFile + 1, pos);
+			task->Data = new char[line.size()+1]; // i dont like this
+			std::memset(task->Data, 0, line.size() + 1);
+			std::memcpy(task->Data, line.c_str(), line.size());
 
-		size_t posExt = file.find(".");
-		std::string extension = file.substr(posExt + 1, posFile);
-
-		if (extension.compare("obj") == 0) {
-			LOG_F(INFO, "loading geometry %s as %s", file.c_str(),name.c_str());
-			addGeometry(name, loader.load(path + file));
+			task->Notify = Task::BindTask<Resource>(&Resource::LoadAssetTask, this);
+			LoadTasks.Queue(task);
 		}
-		else if (isImage(extension)) {
-			LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
-			addTexture(name, file.c_str());
+		else{
+			LoadAssetTask(line.c_str(), line.size());
 		}
-		else if(isShader(extension)){
-			LOG_F(INFO, "loading shader %s", file.c_str());
-			addShader(file);
-		}
+		
 		manifest.erase(0, pos + 1);
 	}
+}
+
+int Resource::LoadQueueSize() {
+	return LoadTasks.NumberOfTasks();
+}
+
+void Resource::ProcessNextLoadTask() {
+	if (LoadTasks.NumberOfTasks() != 0) {
+		LoadTasks.ProcessNext();
+	}
+	else {
+		OnLoadSucess();
+	}
+}
+
+void Resource::ImmediateLoadScene(std::string filename, SceneManager* scene) {
+	Serializer& S = Serializer::getInstance();
+	S.LoadManifest(filename);
+	LoadTasks.Process();
+	S.LoadScene(filename, scene);
 }

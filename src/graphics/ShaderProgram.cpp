@@ -6,7 +6,7 @@
 
 #include "resource/Serializer.h"
 #include "resource/Resource.h"
-#include "Utilities.h"
+#include "Utilities/Utilities.h"
 
 using namespace std;
 

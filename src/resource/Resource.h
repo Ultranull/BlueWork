@@ -8,11 +8,15 @@
 
 #include <glad/glad.h>
 
-#include"../graphics/ShaderProgram.h"
+#include "graphics/ShaderProgram.h"
 #include "graphics/Geometry.h"
 #include "graphics/Material.h"
 
+#include "Utilities/TaskQueue.h"
+
 #define MapContains(MAP, KEY) MAP.find(KEY) != MAP.end()
+
+class SceneManager;
 
 class Resource {
 	std::map<std::string, Texture> textures;
@@ -21,15 +25,27 @@ class Resource {
 
 	std::string Manifest;
 
+	TaskQueue LoadTasks;
+	std::function<void(void)> OnLoadSucess;
+
+	Texture LoadGLTexture(const char *filename);
+	Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
+
+	void LoadAssetTask(const void* data, int size);
 
 public:
-	std::function<void(float)> loadingDrawCall;
 	std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";
 	Resource();
 
 	bool ContainsName(std::string name);
 
-	void SetLoadCall(std::function<void(float)> loadCall);
+	void SetLoadSucessCallback(std::function<void(void)> loadCall);
+	void batchLoad(std::string manifest, bool queue = false);
+
+	int LoadQueueSize();
+	void ProcessNextLoadTask();
+
+	void ImmediateLoadScene(std::string filename, SceneManager* scene);
 
 	Texture addTexture(std::string name, const char *tex);
 	void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);
@@ -46,15 +62,11 @@ public:
 	std::string GetTextureName(Texture tex);
 	std::string GetShaderName(Shader shader);
 
-	Texture LoadGLTexture(const char *filename);
-	Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
 
 	void setPath(std::string texturePath, std::string shaderPath, std::string path);
 	std::string getShaderPath(std::string file);
 
 	std::string GetManifest();
-
-	void batchLoad(std::string manifest);
 
 	void cleanup();
 

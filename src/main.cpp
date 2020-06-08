@@ -28,7 +28,7 @@
 #include "components/input system/InputComponent.h"
 #include "components/input system/InputSystem.h"
 
-#include "errorcheck.h"
+#include "Utilities/errorcheck.h"
 
 #include "scene/Node.h"
 #include "scene/Light.h"
@@ -104,8 +104,6 @@ class Game :public App {
 
 
 	void init() {
-		// maybe a good time to make that asset loader
-
 		Serializer::getInstance().Initialize();
 		Player::RegisterSerializer();
 
@@ -116,6 +114,7 @@ class Game :public App {
 					"loadingScreen.frag:;"
 					"pass.vert:;"
 					"pass.frag:;");
+
 
 		ShapeLoader loader;
 		R.addGeometry("xy-plane", loader.MakeZPlane(1, 1));
@@ -144,29 +143,29 @@ class Game :public App {
 			width, height);
 		renderer.setup(&loadingScreen);
 
-		R.SetLoadCall([&](float percent) {
-			renderer.SetDimensions(height, width);
-			renderer.render();
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-		});
+		Serializer::getInstance().LoadManifest("test.scene");
+		Serializer::getInstance().LoadManifest("test2.scene");
 
 
 		R.addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
-		Serializer::getInstance().LoadFile("test2.scene", &level2);
-		Serializer::getInstance().LoadFile("test.scene", &level1);
-
-	    player = level1.GetRoot()->findByName<Player>("player");
-		level1.SetMainCamera("camera 1");
-		level2.SetMainCamera("camera 1");
+		R.SetLoadSucessCallback(bind(&Game::OnLoadSucess, this));
 		
-		renderer.setup(&level1);
 
 		//Serializer::getInstance().SaveFile("test", &level1);
 
 		systemManager.start();
 	}
+
+	bool loaded = false;
+	void OnLoadSucess() {
+		Serializer::getInstance().LoadScene("test.scene", &level1);
+		Serializer::getInstance().LoadScene("test2.scene", &level2);
+		renderer.setup(&level1);
+		player = level1.GetRoot()->findByName<Player>("player");
+		loaded = true;
+	}
+
 	virtual void onClose() {
 		systemManager.CleanUp();
 		R.cleanup(); 
@@ -179,10 +178,16 @@ class Game :public App {
 
 		glfwSetWindowTitle(window, to_string(fps).c_str());
 
-		level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
-		level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45 ), vec3(0, 1, 0));
-
+		if (loaded) { // temporary
+			level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
+			level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45), vec3(0, 1, 0));
+		}
+		else
+		{
+			R.ProcessNextLoadTask();
+		}
 		renderer.updateLights();
+
 	}
 
 	void render(float delta) {
@@ -193,27 +198,35 @@ class Game :public App {
 	void inputListener(float delta) {
 		running = glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS;
 
-		player->movement(delta, width, height);
+		if (loaded) {// temporary
+			player->movement(delta, width, height);
 
-		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-			level1.SetMainCamera("camera 1");
-		}
+			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+				Serializer::getInstance().LoadManifest("test.scene");
+				renderer.setup(&loadingScreen);
+				loaded = false;
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-			level1.SetMainCamera("camera 2");
-		}
+			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+				level1.SetMainCamera("camera 1");
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-			level1.SetMainCamera("camera 3");
-		}
+			if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+				level1.SetMainCamera("camera 2");
+			}
 
-		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
-			player = level2.GetRoot()->findByName<Player>("player");
-			renderer.setup(&level2);
-		}
-		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
-			player = level1.GetRoot()->findByName<Player>("player");
-			renderer.setup(&level1);
+			if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+				level1.SetMainCamera("camera 3");
+			}
+
+			if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+				player = level2.GetRoot()->findByName<Player>("player");
+				renderer.setup(&level2);
+			}
+			if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+				player = level1.GetRoot()->findByName<Player>("player");
+				renderer.setup(&level1);
+			}
 		}
 	}
 public:

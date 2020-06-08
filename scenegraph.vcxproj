@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Utilities\TaskQueue.cpp" />
     <ClCompile Include="src\resource\CommonSerializers.cpp" />
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
@@ -48,9 +49,10 @@
     <ClCompile Include="src\scene\Light.cpp" />
     <ClCompile Include="src\scene\Node.cpp" />
     <ClCompile Include="src\scene\Transform.cpp" />
-    <ClCompile Include="src\Utilities.cpp" />
+    <ClCompile Include="src\Utilities\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Utilities\TaskQueue.h" />
     <ClInclude Include="src\resource\CommonSerializers.h" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\glad\khrplatform.h" />
@@ -217,7 +219,6 @@
     <ClInclude Include="src\componentSystem\AbstractSystem.h" />
     <ClInclude Include="src\componentSystem\SystemManager.h" />
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\errorcheck.h" />
     <ClInclude Include="src\graphics\Geometry.h" />
     <ClInclude Include="src\graphics\Buffer.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
@@ -232,7 +233,8 @@
     <ClInclude Include="src\scene\Light.h" />
     <ClInclude Include="src\scene\Node.h" />
     <ClInclude Include="src\scene\Transform.h" />
-    <ClInclude Include="src\Utilities.h" />
+    <ClInclude Include="src\Utilities\errorcheck.h" />
+    <ClInclude Include="src\Utilities\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment.frag" />

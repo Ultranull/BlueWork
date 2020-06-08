@@ -65,9 +65,11 @@ void Renderer::setup(SceneManager* manager) {
 void Renderer::updateLights() {
 	lightbuf.clear();
 	collectLights();
-	lights.bind();
-	lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
-	lights.unbind();
+	if (lightbuf.size() > 0) {
+		lights.bind();
+		lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
+		lights.unbind();
+	}
 }
 
 void Renderer::pre() {

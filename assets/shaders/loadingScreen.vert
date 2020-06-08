@@ -20,6 +20,6 @@ uniform mat4 model;
 
 void main(){
 	vec4 pos=model*vec4(vertpos,1);
-    gl_Position=projection*view*pos;
+    gl_Position=pos;
 	uv=vertuv;
 }

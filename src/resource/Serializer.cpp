@@ -6,7 +6,7 @@
 
 #include "scene/SceneManager.h"
 #include "resource/Resource.h"
-#include "Utilities.h"
+#include "Utilities/Utilities.h"
 
 #include "resource/CommonSerializers.h"
 
@@ -44,11 +44,11 @@ Node* Serializer::Parse(std::string type, nlohmann::json json){
 	return Parse(type, json, nullptr, nullptr);
 }
 
-void Serializer::LoadFile(std::string fileName, SceneManager* manager) {
+void Serializer::LoadManifest(std::string fileName) {
 	Resource& R = Resource::getInstance();
 	std::string contents = Utilities::readFile(fileName.c_str());
 	nlohmann::json json = nlohmann::json::parse(contents);
-	
+
 	std::stringstream ss;
 	nlohmann::json manifestArray = json["Manifest"];
 
@@ -63,11 +63,15 @@ void Serializer::LoadFile(std::string fileName, SceneManager* manager) {
 		}
 	}
 	LOG_F(INFO + 1, "loaded manifest: %s", ss.str().c_str());
-	R.batchLoad(ss.str());
+	R.batchLoad(ss.str(), true);
+}
+
+void Serializer::LoadScene(std::string fileName, SceneManager* manager) {
+	std::string contents = Utilities::readFile(fileName.c_str());
+	nlohmann::json json = nlohmann::json::parse(contents);
 
 	Node* root = manager->GetRoot();
 	Parse(root->GetTypeName(), json["Scene"], root, nullptr);
-
 }
 
 void Serializer::SaveFile(std::string fileName, SceneManager* manager) {
