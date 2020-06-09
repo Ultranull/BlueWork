@@ -25,13 +25,13 @@ class Resource {
 
 	std::string Manifest;
 
-	TaskQueue LoadTasks;
+	TaskQueue<std::string> LoadTasks;
 	std::function<void(void)> OnLoadSucess;
 
 	Texture LoadGLTexture(const char *filename);
 	Texture LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height);
 
-	void LoadAssetTask(const void* data, int size);
+	void LoadAssetTask(std::string line);
 
 public:
 	std::string path = "assets/", texturePath = "textures/", shaderPath = "shaders/";

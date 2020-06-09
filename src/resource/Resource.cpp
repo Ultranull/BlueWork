@@ -37,7 +37,7 @@ Texture Resource::addTexture(string name, const char *tex) {
 	string fn = (path + texturePath + string(tex));
 	const char *file = fn.c_str();
 	Texture t = LoadGLTexture(file);
-	textures.insert(make_pair(name, t));
+	textures.insert(make_pair(name, t)); // in critical section
 	return t;
 }
 
@@ -73,7 +73,7 @@ Shader Resource::addShader(string file) {
 		type = GL_COMPUTE_SHADER;
 	else return Shader();
 	Shader sh(path + shaderPath + file, type);
-	shaders.insert({ file,sh });
+	shaders.insert({ file,sh }); // in critical section
 	return sh;
 }
 Shader Resource::getShader(string name) {
@@ -85,7 +85,7 @@ Shader Resource::getShader(string name) {
 }
 
 void Resource::addGeometry(std::string name, Geometry* geom){
-	geometries.insert(make_pair(name,geom));
+	geometries.insert(make_pair(name,geom)); // in critical section
 }
 
 Geometry* Resource::getGeometry(std::string name){
@@ -219,9 +219,8 @@ bool isShader(std::string s) {
 		s.compare("geom") == 0;
 }
 
-void Resource::LoadAssetTask(const void* data, int size) {
+void Resource::LoadAssetTask(std::string line) {
 	OBJLoader loader;
-	std::string line((char*)data);
 	std::string file, name;
 	size_t posFile = line.find(":");
 	file = line.substr(0, posFile);
@@ -232,7 +231,7 @@ void Resource::LoadAssetTask(const void* data, int size) {
 
 	if (extension.compare("obj") == 0) {
 		LOG_F(INFO, "loading geometry %s as %s", file.c_str(), name.c_str());
-		addGeometry(name, loader.load(path + file));
+		addGeometry(name, loader.load(path + file)); // if ever threaded inserting should be in critical sections
 	}
 	else if (isImage(extension)) {
 		LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
@@ -253,18 +252,15 @@ void Resource::batchLoad(std::string manifest, bool queue) {
 	while ((pos = manifest.find(";")) != std::string::npos) {
 		line = manifest.substr(0, pos);
 		if (queue) {
-			Task* task = new Task();
-			task->DataSize = line.size();
-
-			task->Data = new char[line.size()+1]; // i dont like this
-			std::memset(task->Data, 0, line.size() + 1);
-			std::memcpy(task->Data, line.c_str(), line.size());
-
-			task->Notify = Task::BindTask<Resource>(&Resource::LoadAssetTask, this);
-			LoadTasks.Queue(task);
+			if (!LoadTasks.Contains(line)) {
+				Task<std::string>* task = new Task<std::string>();
+				task->Data = line;
+				task->Notify = Task<std::string>::BindTask<Resource>(&Resource::LoadAssetTask, this);
+				LoadTasks.Queue(task);
+			}
 		}
 		else{
-			LoadAssetTask(line.c_str(), line.size());
+			LoadAssetTask(line);
 		}
 		
 		manifest.erase(0, pos + 1);
