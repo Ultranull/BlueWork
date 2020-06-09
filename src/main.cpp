@@ -213,7 +213,7 @@ class Game :public App {
 			player->movement(delta, width, height);
 
 			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-				level1.SetMainCamera("camera 1");
+				level1.SetMainCamera("Main");
 			}
 
 			if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
