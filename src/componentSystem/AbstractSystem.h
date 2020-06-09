@@ -28,6 +28,7 @@ public:
 			(*iter)->CleanUp();
 		}
 		components.clear();
+		components.shrink_to_fit();
 	}
 
 	void Remove(ComponentType* ptr) {
