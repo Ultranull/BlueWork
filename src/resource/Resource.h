@@ -39,6 +39,8 @@ public:
 
 	bool ContainsName(std::string name);
 
+	void QueueLoadTask(Task<std::string>* task);
+
 	void SetLoadSucessCallback(std::function<void(void)> loadCall);
 	void batchLoad(std::string manifest, bool queue = false);
 
@@ -46,6 +48,10 @@ public:
 	void ProcessNextLoadTask();
 
 	void ImmediateLoadScene(std::string filename, SceneManager* scene);
+
+	void LoadManifest(std::string fileName);
+
+	void LoadScene(std::string fileName, SceneManager* manager);
 
 	Texture addTexture(std::string name, const char *tex);
 	void addTextures(std::string name, const char *tar, int sub_width, int sub_height, int ir, int ic);

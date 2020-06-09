@@ -14,6 +14,7 @@
 #include "OBJLoader.h"
 #include "Utilities/Utilities.h"
 #include "Serializer.h"
+#include "scene/SceneManager.h"
 
 using namespace std;
 	
@@ -27,6 +28,10 @@ bool Resource::ContainsName(std::string name) {
 		MapContains(textures, name) ||
 		MapContains(shaders, name) ||
 		MapContains(geometries, name);
+}
+
+void Resource::QueueLoadTask(Task<std::string>* task) {
+	LoadTasks.Queue(task);
 }
 
 void Resource::SetLoadSucessCallback(std::function<void(void)> loadCall) {
@@ -281,8 +286,37 @@ void Resource::ProcessNextLoadTask() {
 }
 
 void Resource::ImmediateLoadScene(std::string filename, SceneManager* scene) {
-	Serializer& S = Serializer::getInstance();
-	S.LoadManifest(filename);
+	LoadManifest(filename);
 	LoadTasks.Process();
-	S.LoadScene(filename, scene);
+	LoadScene(filename, scene);
+}
+
+void Resource::LoadManifest(std::string fileName) {
+	std::string contents = Utilities::readFile(fileName.c_str());
+	nlohmann::json json = nlohmann::json::parse(contents);
+
+	std::stringstream ss;
+	nlohmann::json manifestArray = json["Manifest"];
+
+	for (int i = 0; i < manifestArray.size(); i++) {
+		std::string name = manifestArray[i]["name"].get<std::string>();
+		std::string assetFile = manifestArray[i]["asset"].get<std::string>();
+		if (!ContainsName(name) && !ContainsName(assetFile)) {
+			ss << assetFile;
+			ss << ":";
+			ss << name;
+			ss << ";";
+		}
+	}
+	LOG_F(INFO + 1, "loaded manifest: %s", ss.str().c_str());
+	batchLoad(ss.str(), true);
+}
+
+void Resource::LoadScene(std::string fileName, SceneManager* manager) {
+	Serializer& S = Serializer::getInstance();
+	std::string contents = Utilities::readFile(fileName.c_str());
+	nlohmann::json json = nlohmann::json::parse(contents);
+
+	Node* root = manager->GetRoot();
+	S.Parse(root->GetTypeName(), json["Scene"], root, nullptr);
 }

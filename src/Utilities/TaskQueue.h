@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <deque>
 #include <functional>
 #include <mutex>
 #include <memory>
@@ -26,7 +26,7 @@ template<typename ArgType>
 class TaskQueue {
 	std::mutex Exclusion;
 
-	std::vector<std::unique_ptr<Task<ArgType>>> Events;
+	std::deque<std::unique_ptr<Task<ArgType>>> Events;
 
 public:
 
@@ -52,13 +52,13 @@ public:
 
 	void ProcessNext() {
 		Exclusion.lock();
-		Task<ArgType>* task = Events.back().get();
+		Task<ArgType>* task = Events.front().get();
 		Exclusion.unlock();
 
 		task->Execute();
 
 		Exclusion.lock();
-		Events.pop_back();
+		Events.pop_front();
 		Exclusion.unlock();
 	}
 

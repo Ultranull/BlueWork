@@ -143,9 +143,22 @@ class Game :public App {
 			width, height);
 		renderer.setup(&loadingScreen);
 
-		Serializer::getInstance().LoadManifest("test.scene");
-		Serializer::getInstance().LoadManifest("test2.scene");
+		R.LoadManifest("test.scene");
+		R.LoadManifest("test2.scene");
 
+		Task<std::string>* task = new Task<std::string>();
+		task->Data = "test.scene";
+		task->Notify = [&](std::string data) {
+			R.LoadScene(data, &level1);
+		};
+		R.QueueLoadTask(task);
+
+		Task<std::string>* task2 = new Task<std::string>();
+		task2->Data = "test2.scene";
+		task2->Notify = [&](std::string data) {
+			R.LoadScene(data, &level2);
+		};
+		R.QueueLoadTask(task2);
 
 		R.addGeometry("ground", ShapeLoader().MakePlane(10, 10));
 
@@ -159,8 +172,6 @@ class Game :public App {
 
 	bool loaded = false;
 	void OnLoadSucess() {
-		Serializer::getInstance().LoadScene("test.scene", &level1);
-		Serializer::getInstance().LoadScene("test2.scene", &level2);
 		renderer.setup(&level1);
 		player = level1.GetRoot()->findByName<Player>("player");
 		loaded = true;
@@ -200,12 +211,6 @@ class Game :public App {
 
 		if (loaded) {// temporary
 			player->movement(delta, width, height);
-
-			if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-				Serializer::getInstance().LoadManifest("test.scene");
-				renderer.setup(&loadingScreen);
-				loaded = false;
-			}
 
 			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 				level1.SetMainCamera("camera 1");

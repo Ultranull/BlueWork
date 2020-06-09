@@ -44,36 +44,6 @@ Node* Serializer::Parse(std::string type, nlohmann::json json){
 	return Parse(type, json, nullptr, nullptr);
 }
 
-void Serializer::LoadManifest(std::string fileName) {
-	Resource& R = Resource::getInstance();
-	std::string contents = Utilities::readFile(fileName.c_str());
-	nlohmann::json json = nlohmann::json::parse(contents);
-
-	std::stringstream ss;
-	nlohmann::json manifestArray = json["Manifest"];
-
-	for (int i = 0; i < manifestArray.size(); i++) {
-		std::string name = manifestArray[i]["name"].get<std::string>();
-		std::string assetFile = manifestArray[i]["asset"].get<std::string>();
-		if (!R.ContainsName(name) && !R.ContainsName(assetFile)) {
-			ss << assetFile;
-			ss << ":";
-			ss << name;
-			ss << ";";
-		}
-	}
-	LOG_F(INFO + 1, "loaded manifest: %s", ss.str().c_str());
-	R.batchLoad(ss.str(), true);
-}
-
-void Serializer::LoadScene(std::string fileName, SceneManager* manager) {
-	std::string contents = Utilities::readFile(fileName.c_str());
-	nlohmann::json json = nlohmann::json::parse(contents);
-
-	Node* root = manager->GetRoot();
-	Parse(root->GetTypeName(), json["Scene"], root, nullptr);
-}
-
 void Serializer::SaveFile(std::string fileName, SceneManager* manager) {
 	Resource& R = Resource::getInstance();
 	std::string manifest = R.GetManifest();
