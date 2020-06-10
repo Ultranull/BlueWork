@@ -50,6 +50,12 @@ public:
 		return n;
 	}
 
+	ArgType GetNextTaskData() {
+		if (Events.empty())
+			return ArgType();
+		return Events.front()->Data;
+	}
+
 	void ProcessNext() {
 		Exclusion.lock();
 		Task<ArgType>* task = Events.front().get();

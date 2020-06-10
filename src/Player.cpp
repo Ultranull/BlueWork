@@ -25,6 +25,7 @@ Player::Player(Geometry* geometry, Material mat) :
 	vangle = 0;
 
 	input = SystemManager::getInstance().CreateComponent<InputComponent>();
+	input->SetKeyEvent(std::bind(&Player::OnKeyEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 }
 
 void Player::OnMouseMove(double mouseX, double mouseY) {
@@ -34,55 +35,64 @@ void Player::OnMouseMove(double mouseX, double mouseY) {
 	ypos = mouseY;
 }
 
+void Player::OnKeyEvent(int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_TAB && action == GLFW_RELEASE) {
+		captureMouse = !captureMouse;
+		input->SetCursorMode(CursorInputMode::Normal);
+	}
+}
+
 void Player::movement(float delta, int width, int height) {
 	oldxpos = xpos;
 	oldypos = ypos;
 	input->GetCursorPostion(xpos, ypos);
-	//input->SetCursorPostion(width / 2, height / 2);
-	input->SetCursorMode(CursorInputMode::Disabled);
 
-	hangle += mouseSpeed * float(oldxpos - xpos);//theta
-	vangle += mouseSpeed * float(oldypos - ypos);//phi
+	if (captureMouse) {
+		input->SetCursorMode(CursorInputMode::Disabled);
 
-	constexpr float piHalves = glm::half_pi<float>();
+		hangle += mouseSpeed * float(oldxpos - xpos);//theta
+		vangle += mouseSpeed * float(oldypos - ypos);//phi
 
-	glm::vec3 direction = glm::vec3(cos(vangle) * sin(hangle),
-		sin(vangle),
-		cos(vangle) * cos(hangle));
-	glm::vec3 right(sin(hangle - piHalves),
-		0,
-		cos(hangle - piHalves));
-	glm::vec3 up = glm::cross(right, direction);
-	glm::vec3 front = glm::cross(glm::vec3(0, 1, 0), right);
+		constexpr float piHalves = glm::half_pi<float>();
 
-	glm::vec3 xaxis = glm::cross(up, direction);
-	xaxis = glm::normalize(xaxis);
+		glm::vec3 direction = glm::vec3(cos(vangle) * sin(hangle),
+			sin(vangle),
+			cos(vangle) * cos(hangle));
+		glm::vec3 right(sin(hangle - piHalves),
+			0,
+			cos(hangle - piHalves));
+		glm::vec3 up = glm::cross(right, direction);
+		glm::vec3 front = glm::cross(glm::vec3(0, 1, 0), right);
 
-	glm::mat3 rotation = {
-		xaxis.x, xaxis.y, xaxis.z,
-		up.x, up.y, up.z,
-		direction.x, direction.y, direction.z,
-	};
+		glm::vec3 xaxis = glm::cross(up, direction);
+		xaxis = glm::normalize(xaxis);
 
-	transform.Rotation() = glm::quat_cast(rotation);
+		glm::mat3 rotation = {
+			xaxis.x, xaxis.y, xaxis.z,
+			up.x, up.y, up.z,
+			direction.x, direction.y, direction.z,
+		};
 
-	if (input->GetKeyState(FORWARD) == InputState::Pressed) {
-		transform.Position() += front * delta * speed;
-	}
-	if (input->GetKeyState(BACKWARD) == InputState::Pressed) {
-		transform.Position() -= front * delta * speed;
-	}
-	if (input->GetKeyState(STRAFERIGHT) == InputState::Pressed) {
-		transform.Position() += right * delta * speed;
-	}
-	if (input->GetKeyState(STRAFELEFT) == InputState::Pressed) {
-		transform.Position() -= right * delta * speed;
-	}
-	if (input->GetKeyState(JUMP) == InputState::Pressed) {
-		transform.Position() += glm::vec3(0, 1, 0) * delta * speed;
-	}
-	if (input->GetKeyState(CROUCH) == InputState::Pressed) {
-		transform.Position() -= glm::vec3(0, 1, 0) * delta * speed;
+		transform.Rotation() = glm::quat_cast(rotation);
+
+		if (input->GetKeyState(FORWARD) == InputState::Pressed) {
+			transform.Position() += front * delta * speed;
+		}
+		if (input->GetKeyState(BACKWARD) == InputState::Pressed) {
+			transform.Position() -= front * delta * speed;
+		}
+		if (input->GetKeyState(STRAFERIGHT) == InputState::Pressed) {
+			transform.Position() += right * delta * speed;
+		}
+		if (input->GetKeyState(STRAFELEFT) == InputState::Pressed) {
+			transform.Position() -= right * delta * speed;
+		}
+		if (input->GetKeyState(JUMP) == InputState::Pressed) {
+			transform.Position() += glm::vec3(0, 1, 0) * delta * speed;
+		}
+		if (input->GetKeyState(CROUCH) == InputState::Pressed) {
+			transform.Position() -= glm::vec3(0, 1, 0) * delta * speed;
+		}
 	}
 }
 

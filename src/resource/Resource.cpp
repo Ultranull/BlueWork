@@ -285,6 +285,10 @@ void Resource::ProcessNextLoadTask() {
 	}
 }
 
+std::string Resource::GetNextLoadString() {
+	return LoadTasks.GetNextTaskData();
+}
+
 void Resource::ImmediateLoadScene(std::string filename, SceneManager* scene) {
 	LoadManifest(filename);
 	LoadTasks.Process();

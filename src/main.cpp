@@ -41,7 +41,9 @@
 
 #include "Player.h"
 
-
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 using namespace glm;
 using namespace std;
@@ -104,6 +106,15 @@ class Game :public App {
 
 
 	void init() {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = NULL;
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 130");
+		ImGui::StyleColorsDark();
+
+
 		Serializer::getInstance().Initialize();
 		Player::RegisterSerializer();
 
@@ -162,7 +173,11 @@ class Game :public App {
 		renderer.cleanup();
 		level1.CleanUp();
 		level2.CleanUp();
-		loadingScreen.CleanUp();
+		loadingScreen.CleanUp();    
+		
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	void update(float delta) {
@@ -182,8 +197,52 @@ class Game :public App {
 	}
 
 	void render(float delta) {
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		static float f = 0.0f;
+		static int counter = 0;
+
+		if (!loaded) {
+			ImGuiIO& io = ImGui::GetIO();
+			std::string next = R.GetNextLoadString();
+			ImGuiWindowFlags window_flags = 0;
+			window_flags |= ImGuiWindowFlags_NoTitleBar;
+			window_flags |= ImGuiWindowFlags_NoScrollbar;
+			window_flags |= ImGuiWindowFlags_NoMove;
+			window_flags |= ImGuiWindowFlags_NoResize;
+			window_flags |= ImGuiWindowFlags_NoCollapse;
+			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+			ImGui::SetNextWindowSize(ImVec2(300, 50));
+			ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			ImGui::Begin("Test Window.", nullptr, window_flags);
+			ImGui::Text("Loading %s", next.c_str());
+			ImGui::End();
+		}
+
+		ImGuiWindowFlags window_flags = 0;
+		window_flags |= ImGuiWindowFlags_NoTitleBar;
+		window_flags |= ImGuiWindowFlags_NoScrollbar;
+		window_flags |= ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoResize;
+		window_flags |= ImGuiWindowFlags_NoCollapse;
+		window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+		ImGui::SetNextWindowBgAlpha(0.5f);
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("w1",nullptr, window_flags);		
+		ImGui::Text(
+			"Application average %.3f ms/frame (%.1f FPS, %i engine FPS)",
+			1000.0f / ImGui::GetIO().Framerate,
+			ImGui::GetIO().Framerate,
+			fps);
+		ImGui::End();
+
 		renderer.SetDimensions(height, width);
 		renderer.render();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void inputListener(float delta) {

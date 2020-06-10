@@ -15,7 +15,7 @@ class InputComponent: public AbstractComponent{
 	friend InputSystem;
 	GLFWwindow* Window;
 
-	std::function<void(int, int)> KeyEvent;
+	std::function<void(int, int, int, int)> KeyEvent;
 	
 	void mousebuttonevent();
 
@@ -27,6 +27,8 @@ public:
 
 	virtual void Initialize();
 	virtual void CleanUp();
+
+	void SetKeyEvent(std::function<void(int, int, int, int)> keyEvent);
 
 	void SetCursorMode(CursorInputMode mode);
 

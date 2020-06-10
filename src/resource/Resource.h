@@ -47,6 +47,8 @@ public:
 	int LoadQueueSize();
 	void ProcessNextLoadTask();
 
+	std::string GetNextLoadString();
+
 	void ImmediateLoadScene(std::string filename, SceneManager* scene);
 
 	void LoadManifest(std::string fileName);

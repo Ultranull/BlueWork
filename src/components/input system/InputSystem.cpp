@@ -17,12 +17,13 @@ InputSystem::InputSystem(GLFWwindow* window) :
 
 void InputSystem::callback(int key, int scancode, int action, int mods) {
 	for (int i = 0; i < components.size(); i++) {
-
+		components[i]->KeyEvent(key, scancode, action, mods);
 	}
 }
 
 void InputSystem::OnStart() {
-
+	glfwSetKeyCallback(Window, InputSystem::onKey); 
+	glfwSetWindowUserPointer(Window, this);
 }
 
 void InputSystem::OnUpdate() {

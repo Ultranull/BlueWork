@@ -14,11 +14,15 @@ class Player : public Entity {
 	double xpos, ypos, oldxpos, oldypos;
 	float hangle, vangle;
 
+	bool captureMouse = false;
+
 public:
 
 	Player(Geometry* geometry, Material mat);
 
 	void OnMouseMove(double mouseX, double mouseY);
+
+	void OnKeyEvent(int key, int scancode, int action, int mods);
 
 	void movement(float delta, int width, int height);
 
