@@ -109,34 +109,13 @@ class Game :public App {
 
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
-		R.batchLoad("test.png:loading;"
-					"loadingScreen.vert:;"
-					"loadingScreen.frag:;"
-					"pass.vert:;"
+		R.batchLoad("pass.vert:;"
 					"pass.frag:;");
-
 
 		ShapeLoader loader;
 		R.addGeometry("xy-plane", loader.MakeZPlane(1, 1));
 
-		Node* lsroot = loadingScreen.GetRoot();
-
-		Material lsmat(vec4(1), vec4(0), 0);
-		lsmat.diffuseMap = R.getTexture("loading");
-		lsmat.shader = Program(R.getShader("loadingScreen.vert"), R.getShader("loadingScreen.frag"));
-
-		lsroot->add(new Entity(R.getGeometry("xy-plane"), lsmat));
-		lsroot->add(new Camera(CameraSettings{
-			.mode = CameraSettings::Mode::Orthographic,
-			.OrthographicData = {
-				.NearPlane = .01,
-				.FarPlane = 1,
-				.Left = -1,
-				.Right = 1,
-				.Bottom = -1,
-				.Top = 1
-			}
-		}));
+		R.ImmediateLoadScene("loadingScreen.scene", &loadingScreen);
 
 		renderer = Renderer(
 			Program(R.getShader("pass.vert"), R.getShader("pass.frag")), 
@@ -165,7 +144,7 @@ class Game :public App {
 		R.SetLoadSucessCallback(bind(&Game::OnLoadSucess, this));
 		
 
-		//Serializer::getInstance().SaveFile("test", &level1);
+		//Serializer::getInstance().SaveFile("loadingScreen", &loadingScreen);
 
 		systemManager.start();
 	}
@@ -183,6 +162,7 @@ class Game :public App {
 		renderer.cleanup();
 		level1.CleanUp();
 		level2.CleanUp();
+		loadingScreen.CleanUp();
 	}
 
 	void update(float delta) {
@@ -243,6 +223,7 @@ public:
 
 	}
 };
+
 int main(int argc, char** argv) {
 	loguru::g_preamble_thread = false;
 	loguru::g_preamble_uptime = false;

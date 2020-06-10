@@ -65,8 +65,8 @@
 			double delta = currenttime - lastFrame;
 			lastFrame = currenttime;
 			inputListener(delta);
-			update(delta);
 			render(delta);
+			update(delta);
 			ticks += 1 * delta;
 			glfwSwapBuffers(window);
 			glfwPollEvents();
