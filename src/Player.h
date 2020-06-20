@@ -26,5 +26,7 @@ public:
 
 	void movement(float delta, int width, int height);
 
+	void DebugGuiDraw();
+
 	static void RegisterSerializer();
 };

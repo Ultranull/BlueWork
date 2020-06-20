@@ -32,6 +32,7 @@
     <ClCompile Include="include\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Utilities\DebugGui.cpp" />
     <ClCompile Include="src\Utilities\TaskQueue.cpp" />
     <ClCompile Include="src\resource\CommonSerializers.cpp" />
     <ClCompile Include="include\glad\glad.c" />
@@ -70,6 +71,7 @@
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="include\imgui\imgui_internal.h" />
     <ClInclude Include="include\json.hpp" />
+    <ClInclude Include="src\Utilities\DebugGui.h" />
     <ClInclude Include="src\Utilities\TaskQueue.h" />
     <ClInclude Include="src\resource\CommonSerializers.h" />
     <ClInclude Include="include\glad\glad.h" />

@@ -51,6 +51,7 @@ public:
 	}
 
 	ArgType GetNextTaskData() {
+		std::lock_guard<std::mutex> lock(Exclusion);
 		if (Events.empty())
 			return ArgType();
 		return Events.front()->Data;

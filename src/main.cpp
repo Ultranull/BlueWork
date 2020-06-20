@@ -41,9 +41,7 @@
 
 #include "Player.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "Utilities/DebugGui.h"
 
 using namespace glm;
 using namespace std;
@@ -103,17 +101,13 @@ class Game :public App {
 		glEnable(GL_CULL_FACE);
 	}
 	
-
+#include <thread>
+#include <chrono>
 
 	void init() {
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		io.IniFilename = NULL;
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 130");
-		ImGui::StyleColorsDark();
 
+		DebugGui::Initialize(window);
+		DebugGui::PushDraw(&Game::debugGui, this);
 
 		Serializer::getInstance().Initialize();
 		Player::RegisterSerializer();
@@ -143,10 +137,12 @@ class Game :public App {
 		};
 		R.QueueLoadTask(task);
 
+		using namespace chrono_literals;
 		Task<std::string>* task2 = new Task<std::string>();
 		task2->Data = "test2.scene";
 		task2->Notify = [&](std::string data) {
 			R.LoadScene(data, &level2);
+			std::this_thread::sleep_for(5s);
 		};
 		R.QueueLoadTask(task2);
 
@@ -175,9 +171,7 @@ class Game :public App {
 		level2.CleanUp();
 		loadingScreen.CleanUp();    
 		
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		DebugGui::CleanUp();
 	}
 
 	void update(float delta) {
@@ -196,14 +190,7 @@ class Game :public App {
 
 	}
 
-	void render(float delta) {
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		static float f = 0.0f;
-		static int counter = 0;
-
+	void debugGui() {
 		if (!loaded) {
 			ImGuiIO& io = ImGui::GetIO();
 			std::string next = R.GetNextLoadString();
@@ -230,19 +217,21 @@ class Game :public App {
 		window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
 		ImGui::SetNextWindowBgAlpha(0.5f);
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::Begin("w1",nullptr, window_flags);		
+		ImGui::Begin("w1", nullptr, window_flags);
 		ImGui::Text(
 			"Application average %.3f ms/frame (%.1f FPS, %i engine FPS)",
 			1000.0f / ImGui::GetIO().Framerate,
 			ImGui::GetIO().Framerate,
 			fps);
 		ImGui::End();
+	}
+
+	void render(float delta) {
 
 		renderer.SetDimensions(height, width);
 		renderer.render();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		DebugGui::Render();
 	}
 
 	void inputListener(float delta) {

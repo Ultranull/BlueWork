@@ -1,9 +1,12 @@
 #include "Player.h"
 
+#include <string>
+
 #include <loguru.hpp>
 
 #include "componentSystem/SystemManager.h"
 #include "resource/Serializer.h"
+#include "Utilities/DebugGui.h"
 
 const unsigned int FORWARD = GLFW_KEY_W;//FIX! move to input class
 const unsigned int BACKWARD = GLFW_KEY_S;
@@ -26,6 +29,18 @@ Player::Player(Geometry* geometry, Material mat) :
 
 	input = SystemManager::getInstance().CreateComponent<InputComponent>();
 	input->SetKeyEvent(std::bind(&Player::OnKeyEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+
+	DebugGui::PushDraw(&Player::DebugGuiDraw, this);
+
+}
+
+void Player::DebugGuiDraw() {
+	ImGui::Begin("Player window"); {
+		ImGui::Text("Player: %s", Serializer::getInstance().GeneralCompose(transform).dump(4).c_str());
+		ImGui::ColorEdit3(
+			(std::string("player Color") + std::string("##") + std::to_string(Id)).c_str(),
+			reinterpret_cast<float*>(&material.color));
+	}ImGui::End();
 }
 
 void Player::OnMouseMove(double mouseX, double mouseY) {
