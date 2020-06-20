@@ -31,10 +31,12 @@ class TaskQueue {
 public:
 
 	void Queue(Task<ArgType>* task) {
+		std::lock_guard<std::mutex> lock(Exclusion);
 		Events.push_back(std::unique_ptr<Task<ArgType>>(task));
 	}
 
 	bool Contains(ArgType data) {
+		std::lock_guard<std::mutex> lock(Exclusion);
 		for (int i = 0; i < Events.size();i++) {
 			if (data == Events[i]->Data) {
 				return true;

@@ -100,9 +100,6 @@ class Game :public App {
 		glClearColor(.1f, .1f, .1f, 1.f);
 		glEnable(GL_CULL_FACE);
 	}
-	
-#include <thread>
-#include <chrono>
 
 	void init() {
 
@@ -137,12 +134,10 @@ class Game :public App {
 		};
 		R.QueueLoadTask(task);
 
-		using namespace chrono_literals;
 		Task<std::string>* task2 = new Task<std::string>();
 		task2->Data = "test2.scene";
 		task2->Notify = [&](std::string data) {
 			R.LoadScene(data, &level2);
-			std::this_thread::sleep_for(5s);
 		};
 		R.QueueLoadTask(task2);
 
@@ -175,8 +170,6 @@ class Game :public App {
 	}
 
 	void update(float delta) {
-
-		glfwSetWindowTitle(window, to_string(fps).c_str());
 
 		if (loaded) { // temporary
 			level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
@@ -280,7 +273,7 @@ int main(int argc, char** argv) {
 	loguru::add_file("verbose_log.log", loguru::Truncate, loguru::Verbosity_MAX);
 	loguru::add_file("log.log", loguru::Truncate, loguru::Verbosity_INFO);
 
-	Game* game = new Game(700, 700, "");
+	Game* game = new Game(700, 700, "Game");
 	game->start();
 	delete game;
 	return 0;
