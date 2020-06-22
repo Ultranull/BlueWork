@@ -28,9 +28,9 @@ Player::Player(Geometry* geometry, Material mat) :
 	vangle = 0;
 
 	input = SystemManager::getInstance().CreateComponent<InputComponent>();
-	input->SetKeyEvent(std::bind(&Player::OnKeyEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+	input->SetKeyEvent(&Player::OnKeyEvent, this);
 
-	DebugGui::PushDraw(&Player::DebugGuiDraw, this);
+	//DebugGui::PushDraw(&Player::DebugGuiDraw, this);
 
 }
 

@@ -6,13 +6,12 @@
 #include "graphics/Geometry.h"
 
 class ShapeLoader{
-	Resource* R = &Resource::getInstance();
 
 public:
 
-	Geometry* MakePlane(unsigned int xSegments, unsigned int ySegments);
-	Geometry* MakeZPlane(unsigned int xSegments, unsigned int zSegments);
+	static Geometry* MakePlane(unsigned int xSegments, unsigned int ySegments);
+	static Geometry* MakeZPlane(unsigned int xSegments, unsigned int zSegments);
 
-	Geometry* load(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices);
+	static Geometry* load(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices);
 };
 

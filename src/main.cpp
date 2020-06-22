@@ -114,8 +114,7 @@ class Game :public App {
 		R.batchLoad("pass.vert:;"
 					"pass.frag:;");
 
-		ShapeLoader loader;
-		R.addGeometry("xy-plane", loader.MakeZPlane(1, 1));
+		R.addGeometry("xy-plane", ShapeLoader::MakeZPlane(1, 1));
 
 		R.ImmediateLoadScene("loadingScreen.scene", &loadingScreen);
 
@@ -141,9 +140,9 @@ class Game :public App {
 		};
 		R.QueueLoadTask(task2);
 
-		R.addGeometry("ground", ShapeLoader().MakePlane(10, 10));
+		R.addGeometry("ground", ShapeLoader::MakePlane(10, 10));
 
-		R.SetLoadSucessCallback(bind(&Game::OnLoadSucess, this));
+		R.SetLoadSucessCallback(&Game::OnLoadSucess, this);
 		
 
 		//Serializer::getInstance().SaveFile("loadingScreen", &loadingScreen);

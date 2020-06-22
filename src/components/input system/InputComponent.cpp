@@ -7,9 +7,6 @@ InputComponent::InputComponent(GLFWwindow* window) :
 void InputComponent::Initialize() {}
 void InputComponent::CleanUp() {}
 
-void InputComponent::SetKeyEvent(std::function<void(int, int, int, int)> keyEvent) {
-	KeyEvent = keyEvent;
-}
 
 void InputComponent::SetCursorMode(CursorInputMode mode) {
 	glfwSetInputMode(Window, GLFW_CURSOR, static_cast<int>(mode));

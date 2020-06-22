@@ -1,7 +1,6 @@
 #version 430 core
 out vec4 fragColor;
 
-
 struct Material {
 	sampler2D diffuse;
 	vec4 specular;
@@ -55,8 +54,8 @@ vec3 calcDirLight(Directional light)
 {
     vec4 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir.xyz), 0.0);
-    vec4 reflectDir = reflect(-lightDir, vec4(normal,0));
-	//vec4 reflectDir = normalize(lightDir + direction);
+    //vec4 reflectDir = reflect(-lightDir, vec4(normal,0));
+	vec4 reflectDir = normalize(lightDir + direction);
     float spec = pow(max(dot(direction, reflectDir), 0.0), material.shininess);
 
     vec3 ambient = vec3(light.ambient.xyz * texture(material.diffuse,uv).rgb);
@@ -68,7 +67,7 @@ vec3 calcDirLight(Directional light)
 vec4 calcLight(Point light){
 	
 	float dist=length(light.position.xyz-FragPos);
-	float attun= 1./(1+light.attn.y*dist+light.attn.x*dist*dist);
+	float attun= light.attn.w/(light.attn.z+light.attn.y*dist+light.attn.x*dist*dist);
     // ambient
     vec3 ambient = vec3(light.ambient.xyz * texture(material.diffuse,uv).rgb)* material.color.xyz;
   	
@@ -80,9 +79,9 @@ vec4 calcLight(Point light){
     
     // specular
     vec3 viewDir = normalize(position.xyz - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 reflectDir = reflect(norm, lightDir);
 	//vec3 reflectDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = pow(max(dot(reflectDir, viewDir), 0.0), material.shininess);
     vec3 specular = (light.specular.xyz * material.specular.xyz) * (spec);  
         
     return vec4((ambient + diffuse + specular)*attun,1);

@@ -5,6 +5,8 @@
 
 #include "Node.h"
 
+#include "Utilities/DebugGui.h"
+
 
 enum class LightType {
 	Point,
@@ -17,13 +19,13 @@ struct Light : public Node {
 		float quadratic = 0;
 		float linear = 0;
 		float constant = 0;
+		float intensity = 0;
 	};
 	struct PointData {
 		glm::vec4 ambient;
 		glm::vec4 color;
 		glm::vec4 specular;
 		attunation att;
-		float padd = 0;
 		glm::vec4 position;
 	};
 	struct DirectionalData {
@@ -31,7 +33,6 @@ struct Light : public Node {
 		glm::vec4 color;
 		glm::vec4 specular;
 		attunation att;
-		float padd = 0;
 		glm::vec4 direction;
 	};
 	struct SpotData {
@@ -39,7 +40,10 @@ struct Light : public Node {
 		glm::vec4 color;
 		glm::vec4 specular;
 		attunation att;
-		float cutOff;
+		struct {
+			float cutOff;
+			float padding[3];
+		};
 		glm::vec4 position;
 		glm::vec4 direction;
 	};
@@ -68,13 +72,39 @@ struct PointLight : public Light {
 		Light("PointLight"), data(data){
 		lightType = LightType::Point;
 		transform.Position() = glm::vec3(data.position);
+		DebugGui::PushDraw(&PointLight::guidraw, this);
 	}
 
 	PointData pack() {
 		data.position = transform.FinalTransform(false) * glm::vec4(0, 0, 0, 1.);
 		return data;
 	}
+	void guidraw() {
+		ImGui::Begin("window"); {
+			if (ImGui::TreeNode((name + std::string(":") + std::to_string(Id) + std::string(":") + TypeName).c_str())) {
+				ImGui::Indent();
+				ImGui::DragFloat3(
+					(std::string("position") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&transform.Position()));
 
+				ImGui::ColorEdit3(
+					(std::string("ambient") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&data.ambient));
+				ImGui::ColorEdit3(
+					(std::string("specular") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&data.specular));
+				ImGui::DragFloat4(
+					(std::string("att") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&data.att),.01);
+
+				ImGui::ColorEdit3(
+					(std::string("color") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&data.color));
+				ImGui::Unindent();
+				ImGui::TreePop();
+			}
+		}ImGui::End();
+	}
 };
 
 

@@ -25,8 +25,9 @@ struct Entity : public Node {
 	Entity(Geometry* geom, Material mat) :
 		Entity("Entity", geom, mat) {}
 
-	Entity(std::string typeName, Geometry* geom, Material mat) :
-		geometry(geom), material(mat), flags(0), Node(typeName, NodeType::Entity) {}
+	Entity(std::string typeName, Geometry* geom, Material mat);
+
+	void guidraw();
 
 	void cleanup();
 

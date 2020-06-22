@@ -34,9 +34,6 @@ void Resource::QueueLoadTask(Task<std::string>* task) {
 	LoadTasks.Queue(task);
 }
 
-void Resource::SetLoadSucessCallback(std::function<void(void)> loadCall) {
-	OnLoadSucess = loadCall;
-}
 
 Texture Resource::addTexture(string name, const char *tex) {
 	string fn = (path + texturePath + string(tex));
@@ -225,7 +222,6 @@ bool isShader(std::string s) {
 }
 
 void Resource::LoadAssetTask(std::string line) {
-	OBJLoader loader;
 	std::string file, name;
 	size_t posFile = line.find(":");
 	file = line.substr(0, posFile);
@@ -236,7 +232,7 @@ void Resource::LoadAssetTask(std::string line) {
 
 	if (extension.compare("obj") == 0) {
 		LOG_F(INFO, "loading geometry %s as %s", file.c_str(), name.c_str());
-		addGeometry(name, loader.load(path + file)); // if ever threaded inserting should be in critical sections
+		addGeometry(name, OBJLoader::load(path + file)); // if ever threaded inserting should be in critical sections
 	}
 	else if (isImage(extension)) {
 		LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());

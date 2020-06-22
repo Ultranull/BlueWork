@@ -41,7 +41,10 @@ public:
 
 	void QueueLoadTask(Task<std::string>* task);
 
-	void SetLoadSucessCallback(std::function<void(void)> loadCall);
+	template<typename Class>
+	void SetLoadSucessCallback(void(Class:: *loadCall)(void), Class* source) {
+		OnLoadSucess = std::bind(loadCall, source);
+	}
 	void batchLoad(std::string manifest, bool queue = false);
 
 	int LoadQueueSize();

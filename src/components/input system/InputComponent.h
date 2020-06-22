@@ -28,7 +28,16 @@ public:
 	virtual void Initialize();
 	virtual void CleanUp();
 
-	void SetKeyEvent(std::function<void(int, int, int, int)> keyEvent);
+	template<typename Class>
+	void SetKeyEvent(void(Class::* f)(int, int, int, int), Class* source) {
+		KeyEvent = std::bind(
+			f, 
+			static_cast<Class*>(source), 
+			std::placeholders::_1, 
+			std::placeholders::_2, 
+			std::placeholders::_3, 
+			std::placeholders::_4);
+	}
 
 	void SetCursorMode(CursorInputMode mode);
 

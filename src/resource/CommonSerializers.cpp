@@ -195,6 +195,7 @@ nlohmann::json Serializer::GeneralCompose(Light::attunation object) {
     json["quadratic"] = object.quadratic;
     json["linear"] = object.linear;
     json["constant"] = object.constant;
+    json["intensity"] = object.intensity;
     return json;
 }
 
@@ -204,6 +205,7 @@ Light::attunation Serializer::GeneralParse(nlohmann::json json) {
     att.quadratic = json["quadratic"].get<float>();
     att.linear = json["linear"].get<float>();
     att.constant = json["constant"].get<float>();
+    att.intensity = json["intensity"].get<float>();
     return att;
 }
 

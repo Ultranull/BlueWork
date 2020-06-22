@@ -18,9 +18,7 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 
 	CameraBuffer = Camera::buildCamera();
 
-	ShapeLoader loader;
-
-	plane = loader.MakeZPlane(1, 1);
+	plane = ShapeLoader::MakeZPlane(1, 1);
 }
 
 void Renderer::SetDimensions(int h, int w){
