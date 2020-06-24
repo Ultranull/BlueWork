@@ -69,7 +69,7 @@ vec4 calcLight(Point light){
 	float dist=length(light.position.xyz-FragPos);
 	float attun= light.attn.w/(light.attn.z+light.attn.y*dist+light.attn.x*dist*dist);
     // ambient
-    vec3 ambient = vec3(light.ambient.xyz * texture(material.diffuse,uv).rgb)* material.color.xyz;
+    vec3 ambient = light.ambient.xyz * texture(material.diffuse,uv).rgb * material.color.xyz;
   	
     // diffuse 
     vec3 norm = normalize(normal);

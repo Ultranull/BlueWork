@@ -2,14 +2,13 @@
 #
 #
 
-newmtl Plane_Phong[20]
+newmtl mat
 illum 2
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ns 1.000000
 
-
-map_Kd stonetiles_003_diff.png
-bump stonetiles_003_norm.png
-map_Ks stonetiles_003_disp.png
+map_Kd big_diffus.png
+bump big_normal.png
+map_Ks big_specular.png

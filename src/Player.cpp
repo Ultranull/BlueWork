@@ -30,17 +30,6 @@ Player::Player(Geometry* geometry, Material mat) :
 	input = SystemManager::getInstance().CreateComponent<InputComponent>();
 	input->SetKeyEvent(&Player::OnKeyEvent, this);
 
-	//DebugGui::PushDraw(&Player::DebugGuiDraw, this);
-
-}
-
-void Player::DebugGuiDraw() {
-	ImGui::Begin("Player window"); {
-		ImGui::Text("Player: %s", Serializer::getInstance().GeneralCompose(transform).dump(4).c_str());
-		ImGui::ColorEdit3(
-			(std::string("player Color") + std::string("##") + std::to_string(Id)).c_str(),
-			reinterpret_cast<float*>(&material.color));
-	}ImGui::End();
 }
 
 void Player::OnMouseMove(double mouseX, double mouseY) {
