@@ -32,13 +32,13 @@
     <ClCompile Include="include\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Utilities\DebugGui.cpp" />
     <ClCompile Include="src\Utilities\TaskQueue.cpp" />
     <ClCompile Include="src\resource\CommonSerializers.cpp" />
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="include\loguru.cpp" />
-    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\resource\Serializer.cpp" />
     <ClCompile Include="src\components\input system\InputComponent.cpp" />
     <ClCompile Include="src\components\input system\InputSystem.cpp" />
@@ -53,7 +53,6 @@
     <ClCompile Include="src\graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\graphics\ShaderProgram.cpp" />
     <ClCompile Include="src\graphics\VertexArray.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\graphics\Material.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\resource\OBJLoader.cpp" />
@@ -227,7 +226,6 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\loguru.hpp" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\resource\Serializer.h" />
     <ClInclude Include="src\components\input system\InputComponent.h" />
     <ClInclude Include="src\components\input system\InputEnums.h" />
@@ -382,10 +380,11 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>scenegraph</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>BlueWork</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -482,7 +481,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Leak Detect|Win32'">
