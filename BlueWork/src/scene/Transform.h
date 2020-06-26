@@ -36,6 +36,7 @@ public:
 	const glm::quat& Rotation() const;
 
 	void rotateBy(glm::quat b);
+	void rotateBy(float rads, glm::vec3 axis);
 	void rotate(float rads, glm::vec3 axis);
 	void translate(glm::vec3 t);
 	void scale(glm::vec3 t);

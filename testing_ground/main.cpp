@@ -169,7 +169,7 @@ class Game :public App {
 	void update(float delta) {
 
 		if (loaded) { // temporary
-			level1.GetRoot()->findByName<Entity>("barrel")->transform.rotate(ticks, vec3(0, 1, 0));
+			level1.GetRoot()->findByName<Entity>("barrel")->transform.rotateBy(0.01, vec3(0, 1, 0));
 		}
 		else
 		{

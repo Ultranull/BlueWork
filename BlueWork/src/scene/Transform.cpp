@@ -76,6 +76,11 @@
 	 _Rotation = b * _Rotation;
  }
 
+ void Transform::rotateBy(float rads, glm::vec3 axis) {
+     SetValid(false);
+     _Rotation = glm::angleAxis(rads, axis) * _Rotation;
+ }
+
  void Transform::rotate(float rads, glm::vec3 axis) {
      SetValid(false);
 	 _Rotation = glm::angleAxis(rads, axis);
