@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+#include <glm/gtx/euler_angles.hpp>
+
 #include "Utilities/DebugGui.h"
 
 Entity::Entity(std::string typeName, Geometry* geom, Material mat) :

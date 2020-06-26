@@ -2,7 +2,7 @@
 #
 #
 
-newmtl Plane_Phong[20]
+newmtl mat
 illum 2
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000

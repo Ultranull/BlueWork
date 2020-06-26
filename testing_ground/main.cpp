@@ -140,8 +140,6 @@ class Game :public App {
 		};
 		R.QueueLoadTask(task2);
 
-		R.addGeometry("ground", ShapeLoader::MakePlane(10, 10));
-
 		R.SetLoadSucessCallback(&Game::OnLoadSucess, this);
 		
 
@@ -171,14 +169,12 @@ class Game :public App {
 	void update(float delta) {
 
 		if (loaded) { // temporary
-			level1.GetRoot()->findByName<Entity>("monkey")->transform.rotate(radians(ticks * 30), vec3(0, 1, 0));
-			level1.GetRoot()->findByName<Entity>("monkey2")->transform.rotate(radians(ticks * 45), vec3(0, 1, 0));
+			level1.GetRoot()->findByName<Entity>("barrel")->transform.rotate(ticks, vec3(0, 1, 0));
 		}
 		else
 		{
 			R.ProcessNextLoadTask();
 		}
-		renderer.updateLights();
 
 	}
 
@@ -234,14 +230,6 @@ class Game :public App {
 
 			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 				level1.SetMainCamera("Main");
-			}
-
-			if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-				level1.SetMainCamera("camera 2");
-			}
-
-			if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-				level1.SetMainCamera("camera 3");
 			}
 
 			if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {

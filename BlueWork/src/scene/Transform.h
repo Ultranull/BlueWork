@@ -13,6 +13,8 @@ class Transform {
 	bool ValidFinalTransform;
 	glm::mat4 _FinalTransform;
 
+	void SetValid(bool valid);
+
 public:
 
 	glm::mat4 FinalTransform(bool force, glm::mat4 parent = glm::mat4(1));

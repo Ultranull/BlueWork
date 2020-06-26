@@ -18,14 +18,15 @@ Node::Node(unsigned int id, std::string typeName, NodeType t):
 
 glm::mat4 Node::ResolveFinalTransform() {
 	glm::mat4 parentTransform = glm::mat4(1);
-	bool shouldForce = false;
 	if (parent != nullptr) {
-		shouldForce = !parent->transform.IsValid();
-		if (!transform.IsValid() || shouldForce) {
+		if (!transform.IsValid()) {
 			parentTransform = parent->ResolveFinalTransform();
 		}
+		else{
+			parentTransform = parent->transform.FinalTransform(false);
+		}
 	}
-	return transform.FinalTransform(shouldForce, parentTransform);
+	return transform.FinalTransform(true, parentTransform);
 }
 
 void Node::add(Node* child) {

@@ -1,0 +1,14 @@
+#
+#
+#
+
+newmtl mat
+illum 2
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 1.000000
+
+map_Kd big_diffus.png
+bump big_normal.png
+map_Ks big_specular.png

@@ -17,10 +17,10 @@ void Geometry::drawWire() {
 	vaObject->bind();
 	if (indexed)
 		glDrawElementsInstancedBaseVertexBaseInstance(
-			GL_LINES, size, GL_UNSIGNED_INT, nullptr, instances, 0, 0);
+			GL_LINE_LOOP, size, GL_UNSIGNED_INT, nullptr, instances, 0, 0);
 	else
 		glDrawArraysInstancedBaseInstance(
-			GL_LINES, 0, size, instances, 0);
+			GL_LINE_LOOP, 0, size, instances, 0);
 	vaObject->unbind();
 }
 

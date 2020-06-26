@@ -50,14 +50,6 @@ void Renderer::collectLights() {
 
 void Renderer::setup(SceneManager* manager) {
 	Manager = manager;
-	lightbuf.clear();
-	collectLights();
-
-	if (lightbuf.size() > 0) {
-		lights.bind();
-		lights.setData<Light::PointData>(lightbuf, GL_DYNAMIC_DRAW);
-		lights.unbind();
-	}
 }
 
 void Renderer::updateLights() {
@@ -97,6 +89,8 @@ void Renderer::post() {
 }
 
 void Renderer::traverseGraph() {
+	updateLights();
+
 	int numberOfEntities = Manager->GetNumberOfEntities();
 
 	for (int i = 0; i < numberOfEntities; i++) {

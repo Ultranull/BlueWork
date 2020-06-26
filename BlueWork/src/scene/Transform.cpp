@@ -8,10 +8,14 @@
 	return T() * R() * S();
 }
 
+ void Transform::SetValid(bool valid) {
+     ValidFinalTransform = valid;
+ }
+
  glm::mat4 Transform::FinalTransform(bool force, glm::mat4 parent) {
     if (!ValidFinalTransform || force) {
         _FinalTransform = parent * Model();
-        ValidFinalTransform = true;
+        SetValid(true);
     }
 
     return _FinalTransform;
@@ -40,17 +44,17 @@
  }
 
  glm::vec3& Transform::Position(){
-     ValidFinalTransform = false;
+     SetValid(false);
      return _Position;
  }
 
  glm::vec3& Transform::Scale() {
-     ValidFinalTransform = false;
+     SetValid(false);
      return _Scale;
  }
 
  glm::quat& Transform::Rotation() {
-     ValidFinalTransform = false;
+     SetValid(false);
      return _Rotation;
  }
 
@@ -68,22 +72,22 @@
 
 
  void Transform::rotateBy(glm::quat b) {
-     ValidFinalTransform = false;
+     SetValid(false);
 	 _Rotation = b * _Rotation;
  }
 
  void Transform::rotate(float rads, glm::vec3 axis) {
-     ValidFinalTransform = false;
+     SetValid(false);
 	 _Rotation = glm::angleAxis(rads, axis);
  }
 
  void Transform::translate(glm::vec3 t) {
-     ValidFinalTransform = false;
+     SetValid(false);
 	 _Position += t;
  }
 
  void Transform::scale(glm::vec3 t) {
-     ValidFinalTransform = false;
+     SetValid(false);
 	 _Scale = t;
  }
 
