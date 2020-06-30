@@ -3,6 +3,7 @@ out vec4 fragColor;
 
 struct Material {
 	sampler2D diffuse;
+	sampler2D normal;
 	vec4 specular;
 	vec4 color;
 	float shininess;
@@ -49,6 +50,7 @@ in vec2 uv;
 in vec3 FragPos;  
 
 uniform Material material;
+uniform mat4 model;
 
 vec3 calcDirLight(Directional light)
 {
@@ -72,7 +74,7 @@ vec4 calcLight(Point light){
     vec3 ambient = light.ambient.xyz * texture(material.diffuse,uv).rgb * material.color.xyz;
   	
     // diffuse 
-    vec3 norm = normalize(normal);
+    vec3 norm = mat3(transpose(inverse(model))) * normalize(normal);
     vec3 lightDir = normalize(light.position.xyz - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = (light.color.xyz * material.color.xyz) * (diff * texture(material.diffuse,uv).rgb);

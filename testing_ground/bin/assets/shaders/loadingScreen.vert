@@ -2,7 +2,7 @@
 precision highp float;
 
 layout(location = 0) in vec3 vertpos;
-layout(location = 2) in vec2 vertuv;
+layout(location = 1) in vec2 vertuv;
 
 out vec2 uv;
 

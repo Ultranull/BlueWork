@@ -31,7 +31,6 @@ struct Texture {
 
 	Texture(TextureTraits t):
 		params(t), width(0), height(0), id(0){
-		glGenTextures(1, &id);
 	}
 
 	void load();
@@ -48,6 +47,8 @@ struct Texture {
 
 struct Material { // needs to handle more stuff
 	Texture diffuseMap;
+	Texture normalMap;
+	Texture specularMap;
 	glm::vec4 color;
 	glm::vec4 specular;
 	float shininess;

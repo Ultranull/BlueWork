@@ -26,9 +26,14 @@ void Entity::guidraw() {
 			ImGui::DragFloat3(
 				(std::string("scale") + std::string("##") + std::to_string(Id)).c_str(),
 				reinterpret_cast<float*>(&transform.Scale()));
+
 			ImGui::DragFloat(
 				(std::string("shine") + std::string("##") + std::to_string(Id)).c_str(),
 				&material.shininess, 1,0);
+
+			ImGui::ColorEdit3(
+				(std::string("specular") + std::string("##") + std::to_string(Id)).c_str(),
+				reinterpret_cast<float*>(&material.specular));
 
 			ImGui::ColorEdit3(
 				(std::string("color") + std::string("##") + std::to_string(Id)).c_str(),

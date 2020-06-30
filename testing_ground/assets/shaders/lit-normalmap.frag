@@ -4,6 +4,7 @@ out vec4 fragColor;
 struct Material {
 	sampler2D diffuse;
 	sampler2D normal;
+	sampler2D specularMap;
 	vec4 specular;
 	vec4 color;
 	float shininess;
@@ -48,9 +49,20 @@ layout(std140,binding=0)uniform camera{
 in vec3 normal;
 in vec2 uv;
 in vec3 FragPos;  
+in vec3 tangent;  
 
 uniform Material material;
 uniform mat4 model;
+
+mat3 calcTBN(vec3 normal){
+	mat3 MVP=mat3(view*model);
+	mat3 normalMatrix=transpose(inverse(mat3(model)));
+	vec3 T = normalize(normalMatrix * tangent);
+	vec3 N = normalize(normalMatrix * normal);
+	T = normalize(T - dot(T,N) * N);
+	vec3 B = normalize(cross(T,N));
+	return transpose(mat3(T,B,N));
+}
 
 vec3 calcDirLight(Directional light)
 {
@@ -66,25 +78,25 @@ vec3 calcDirLight(Directional light)
     return (ambient + diffuse + specular);
 }  
 
-vec4 calcLight(Point light){
+vec4 calcLight(Point light,vec3 normal, mat3 TBN){
 	
-	float dist=length(light.position.xyz-FragPos);
+	float dist=length(TBN*(light.position.xyz-FragPos));
 	float attun= light.attn.w/(light.attn.z+light.attn.y*dist+light.attn.x*dist*dist);
     // ambient
     vec3 ambient = light.ambient.xyz * texture(material.diffuse,uv).rgb * material.color.xyz;
   	
     // diffuse 
-    vec3 norm = mat3(transpose(inverse(model))) * normalize(normal);
-    vec3 lightDir = normalize(light.position.xyz - FragPos);
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(TBN*(light.position.xyz - FragPos));
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = (light.color.xyz * material.color.xyz) * (diff * texture(material.diffuse,uv).rgb);
     
     // specular
-    vec3 viewDir = normalize(position.xyz - FragPos);
-    vec3 reflectDir = reflect(norm, lightDir);
+    vec3 viewDir = normalize(TBN*(position.xyz - FragPos));
+    vec3 reflectDir = reflect(-lightDir, norm);
 	//vec3 reflectDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(reflectDir, viewDir), 0.0), material.shininess);
-    vec3 specular = (light.specular.xyz * material.specular.xyz) * (spec);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = (light.specular.xyz * material.specular.xyz) * (spec* texture(material.specularMap,uv).rgb);  
         
     return vec4((ambient + diffuse + specular)*attun,1);
 }
@@ -92,8 +104,10 @@ vec4 calcLight(Point light){
 void main(){
 	
 	vec4 result=vec4(0);
+	vec3 mapnormal = normalize((texture(material.normal,uv).rgb*2.)-1.);
+	mat3 TBN = calcTBN(normal);
 	for(int i=0;i<numLights;i++)
-		result+=calcLight(lights[i]);
+		result+=calcLight(lights[i],mapnormal,TBN);
     fragColor = result;
 }
 

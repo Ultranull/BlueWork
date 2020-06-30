@@ -28,6 +28,10 @@ public:
 	glm::vec3 Up();
 	glm::vec3 Forward();
 
+	glm::vec3 FinalUp();
+	glm::vec3 FinalForward();
+	glm::vec3 FinalPosition();
+
 	glm::vec3& Position();
 	const glm::vec3& Position() const;
 	glm::vec3& Scale();

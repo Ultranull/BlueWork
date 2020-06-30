@@ -2,6 +2,7 @@
 
 #include "resource/Resource.h"
 #include "resource/Serializer.h"
+#include "Engine.h"
 
 void Texture::load(){
 	glTexParameteri(params.target, GL_TEXTURE_MAG_FILTER, params.FILTER);
@@ -19,6 +20,9 @@ void Texture::setSize(int w, int h){
 }
 
 void Texture::bind(){
+	if (id == 0) {
+		glGenTextures(1, &id);
+	}
 	glBindTexture(params.target, id);
 }
 
@@ -43,7 +47,9 @@ bool Texture::operator==(const Texture& rhs) {
 
 void Material::bind() {
 	shader.bind();
-	shader.setUniform("material.diffuse", diffuseMap.activate(GL_TEXTURE0)); // add to spec: diffuse map always tex0
+	shader.setUniform("material.diffuse", diffuseMap.activate(Engine::DIFFUSE));
+	shader.setUniform("material.specularMap", specularMap.activate(Engine::SPECULAR));
+	shader.setUniform("material.normal", normalMap.activate(Engine::NORMALMAP));
 	shader.setUniform("material.specular", &specular);
 	shader.setUniform("material.color", &color);
 	shader.setUniform("material.shininess", shininess);

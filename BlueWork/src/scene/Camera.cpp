@@ -50,13 +50,14 @@ std::shared_ptr<UniformBuffer> Camera::buildCamera(void) {
 }
 
 void Camera::updateBuffer(){
+
 	if (buffer != nullptr) {
 		buffer->bind();
 		buffer->setSubData(index_proj, sizeof(glm::mat4), glm::value_ptr(P()));
 		buffer->setSubData(index_view, sizeof(glm::mat4), glm::value_ptr(V()));
-		buffer->setSubData(index_up, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Up(), 1)));
-		buffer->setSubData(index_dir, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Forward(), 1)));
-		buffer->setSubData(index_pos, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.Position(), 1)));
+		buffer->setSubData(index_up, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.FinalUp(), 1)));
+		buffer->setSubData(index_dir, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.FinalForward(), 1)));
+		buffer->setSubData(index_pos, sizeof(glm::vec4), glm::value_ptr(glm::vec4(transform.FinalPosition(), 1)));
 		buffer->unbind();
 	}
 }

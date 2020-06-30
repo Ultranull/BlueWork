@@ -1,8 +1,8 @@
 #include "Transform.h"
 
+#include <loguru.hpp>
+
 #include "resource/Serializer.h"
-
-
 
  glm::mat4 Transform::Model() {
 	return T() * R() * S();
@@ -41,6 +41,23 @@
  glm::vec3 Transform::Forward() {
      glm::vec4 unitAxis(0, 0, 1, 1);
      return glm::normalize(glm::vec3(R() * unitAxis));
+ }
+
+ glm::vec3 Transform::FinalUp() {
+     glm::vec4 unitAxis(0, 1, 0, 1);
+     glm::mat4 trans = FinalTransform(false);
+     return glm::normalize(glm::vec3(trans * unitAxis));
+ }
+
+ glm::vec3 Transform::FinalForward() {
+     glm::vec4 unitAxis(0, 0, 1, 1);
+     glm::mat4 trans = FinalTransform(false);
+     return glm::normalize(glm::vec3(trans * unitAxis));
+ }
+
+ glm::vec3 Transform::FinalPosition() {
+     glm::mat4 trans = FinalTransform(false);
+     return glm::vec3(trans * glm::vec4(0,0,0,1));
  }
 
  glm::vec3& Transform::Position(){

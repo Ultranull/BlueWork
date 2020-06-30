@@ -15,7 +15,7 @@ Geometry* ShapeLoader::MakeZPlane(unsigned int xSegments, unsigned int ySegments
 			glm::vec3 pos(dX * x * 2.0f - 1.0f, dY * y * 2.0f - 1.0f, 0);
 			glm::vec2 uv(dX * x, y * dY);
 			glm::vec3 norm(0.0f, 0.0f, 1.0f);
-			vertices.push_back(Engine::Vertex(pos, glm::vec3(1), uv, norm));
+			vertices.push_back(Engine::Vertex(pos, uv, norm));
 		}
 	}
 	for (int y = 0; y < ySegments; ++y) {
@@ -49,7 +49,7 @@ Geometry* ShapeLoader::MakePlane(unsigned int xSegments, unsigned int zSegments)
 			glm::vec3 pos(dX * x * 2.0f - 1.0f, 0, dZ * z * 2.0f - 1.0f);
 			glm::vec2 uv(dX * x, 1.0f - z * dZ);
 			glm::vec3 norm(0.0f, 1.0f, 0.0f);
-			vertices.push_back(Engine::Vertex(pos, glm::vec3(1), uv, norm));
+			vertices.push_back(Engine::Vertex(pos, uv, norm));
 		}
 	}
 	for (int z = 0; z < zSegments; ++z) {
@@ -76,7 +76,6 @@ Geometry* ShapeLoader::load(std::vector<Engine::Vertex> vertices, std::vector<un
 	Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
 	vbuffer->setData(vertices, GL_STATIC_DRAW);
 	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));
-	vbuffer->bindPointer(Engine::COLOR, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Color));
 	vbuffer->bindPointer(Engine::TEXTURECOORD, 2, GL_FLOAT, (void*)offsetof(Engine::Vertex, TextureCoord));
 	vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Normal));
 

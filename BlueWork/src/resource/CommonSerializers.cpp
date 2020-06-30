@@ -17,7 +17,7 @@ nlohmann::json Serializer::GeneralCompose(glm::vec3 object) {
 
 template <>
 glm::vec3 Serializer::GeneralParse(nlohmann::json json) {
-    return glm::vec3(json[0].get<double>(), json[1].get<double>(), json[2].get<double>());
+    return glm::vec3(json[0].get<float>(), json[1].get<float>(), json[2].get<float>());
 }
 
 template <> 
@@ -29,7 +29,7 @@ nlohmann::json Serializer::GeneralCompose(glm::vec4 object) {
 
 template <>
 glm::vec4 Serializer::GeneralParse(nlohmann::json json) {
-    return glm::vec4(json[0].get<double>(), json[1].get<double>(), json[2].get<double>(), json[3].get<double>());
+    return glm::vec4(json[0].get<float>(), json[1].get<float>(), json[2].get<float>(), json[3].get<float>());
 }
 
 template <> 
@@ -41,7 +41,7 @@ nlohmann::json Serializer::GeneralCompose(glm::quat object) {
 
 template <>
 glm::quat Serializer::GeneralParse(nlohmann::json json) {
-    return glm::quat(json[3].get<double>() , json[0].get<double>(), json[1].get<double>(), json[2].get<double>());
+    return glm::quat(json[3].get<float>() , json[0].get<float>(), json[1].get<float>(), json[2].get<float>());
 }
 
 template<>
@@ -84,8 +84,18 @@ Program Serializer::GeneralParse(nlohmann::json json) {
 template<>
 nlohmann::json Serializer::GeneralCompose(Material object) {
     nlohmann::json json;
-    json["DiffuseMap"] = Resource::getInstance()
-        .GetTextureName(object.diffuseMap);
+    if (object.diffuseMap.id != 0) {
+        json["DiffuseMap"] = Resource::getInstance()
+            .GetTextureName(object.diffuseMap);
+    }
+    if (object.normalMap.id != 0) {
+        json["NormalMap"] = Resource::getInstance()
+            .GetTextureName(object.normalMap);
+    }
+    if (object.specularMap.id != 0) {
+        json["SpecularMap"] = Resource::getInstance()
+            .GetTextureName(object.specularMap);
+    }
 
     json["Color"] = Serializer::GeneralCompose(object.color);
     json["Specular"] = Serializer::GeneralCompose(object.specular);
@@ -100,7 +110,9 @@ nlohmann::json Serializer::GeneralCompose(Material object) {
 template <>
 Material Serializer::GeneralParse(nlohmann::json json) {
     Material mat;
-    mat.diffuseMap = Resource::getInstance().getTexture(json["DiffuseMap"]);
+    mat.diffuseMap = Resource::getInstance().getTexture(json.value("DiffuseMap", ""));
+    mat.normalMap = Resource::getInstance().getTexture(json.value("NormalMap", ""));
+    mat.specularMap = Resource::getInstance().getTexture(json.value("SpecularMap", ""));
     mat.color = Serializer::GeneralParse<glm::vec4>(json["Color"]);
     mat.specular = Serializer::GeneralParse<glm::vec4>(json["Specular"]);
     mat.shininess = json["Shininess"].get<float>();

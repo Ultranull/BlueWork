@@ -54,8 +54,13 @@ void Resource::addTextures(string name, const char *tar, int sub_width, int sub_
 		}
 
 }
+
 Texture Resource::getTexture(string name) {
-	return textures[name];
+	if (MapContains(textures, name)) {
+		return textures[name];
+	}
+	LOG_F(INFO + 1, "Could not find texture with name %s!", name.c_str());
+	return Texture();
 }
 
 GLint Resource::bindTexture(std::string name, GLuint sample){
