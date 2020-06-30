@@ -7,6 +7,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Utilities/DebugGui.h"
+
 #include "resource/Serializer.h"
 
 using namespace glm;
@@ -20,6 +22,7 @@ size_t index_pos = index_dir + sizeof(glm::vec4);
 Camera::Camera(CameraSettings s):
 	settings(s),buffer(nullptr), Node("Camera", NodeType::Camera) {
 
+	DebugGui::PushDraw(&Camera::guidraw, this);
 }
 
 Camera::Camera():
@@ -158,4 +161,21 @@ void Camera::SetSettings(CameraSettings cs) { settings = cs; }
 
 void Camera::cleanup(){
 	//buffer->cleanup();
+}
+
+void Camera::guidraw() {
+	ImGui::Begin("window"); {
+		if (ImGui::TreeNode((name + std::string(":") + std::to_string(Id) + std::string(":") + TypeName).c_str())) {
+			ImGui::Indent();
+			ImGui::DragFloat3(
+				(std::string("position") + std::string("##") + std::to_string(Id)).c_str(),
+				reinterpret_cast<float*>(&transform.Position()));
+			ImGui::DragFloat4(
+				(std::string("rotation") + std::string("##") + std::to_string(Id)).c_str(),
+				reinterpret_cast<float*>(&transform.Rotation()));
+
+			ImGui::Unindent();
+			ImGui::TreePop();
+		}
+	}ImGui::End();
 }

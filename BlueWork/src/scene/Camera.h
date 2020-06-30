@@ -64,4 +64,5 @@ public:
 	void SetSettings(CameraSettings cs);
 
 	void cleanup();
+	void guidraw();
 };
