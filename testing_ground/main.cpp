@@ -40,6 +40,7 @@
 #include "scene/SceneManager.h"
 
 #include "Player.h"
+#include "Lamp.h"
 
 #include "Utilities/DebugGui.h"
 
@@ -108,6 +109,7 @@ class Game :public App {
 
 		Serializer::getInstance().Initialize();
 		Player::RegisterSerializer();
+		Lamp::RegisterSerializer();
 
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
