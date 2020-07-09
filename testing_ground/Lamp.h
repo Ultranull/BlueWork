@@ -14,9 +14,14 @@ class Lamp: public Node{
 public:
 
 	Lamp::Lamp() :
-		Node("Lamp",NodeType::Node) {}
+		Node("Lamp",NodeType::Node) {
+
+		DebugGui::PushDraw(&Lamp::guidraw, this);
+	}
 
 	void BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData);
+
+	void guidraw();
 
 	static void RegisterSerializer();
 };

@@ -2,7 +2,6 @@
 
 
 
-
 void Lamp::BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData) {
 	LightSource = new PointLight(lightData);
 	Mesh = new Entity(geometry, mat);
@@ -13,6 +12,31 @@ void Lamp::BuildSubTree(Geometry* geometry, Material mat, Light::PointData light
 
 	add(LightSource);
 	add(Mesh);
+}
+
+void Lamp::guidraw() {
+	ImGui::Begin("window"); {
+		if (parent != nullptr) {
+			if (ImGui::TreeNode((name + std::string(":") + std::to_string(Id) + std::string(":") + TypeName).c_str())) {
+				ImGui::Indent();
+				ImGui::DragFloat3(
+					(std::string("position") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&transform.Position()));
+
+				ImGui::ColorEdit3(
+					(std::string("specular") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&LightSource->data.specular));
+
+				if (ImGui::ColorEdit3(
+					(std::string("color") + std::string("##") + std::to_string(Id)).c_str(),
+					reinterpret_cast<float*>(&LightSource->data.color))) {
+					Mesh->material.color = LightSource->data.color;
+				}
+				ImGui::Unindent();
+				ImGui::TreePop();
+			}
+		}
+	}ImGui::End();
 }
 
 void Lamp::RegisterSerializer() {
