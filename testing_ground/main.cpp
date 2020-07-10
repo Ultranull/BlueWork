@@ -114,7 +114,10 @@ class Game :public App {
 		systemManager.RegisterSystem(InputSystem::Name, new InputSystem(window));
 
 		R.batchLoad("pass.vert:;"
-					"pass.frag:;");
+					"pass.frag:;"
+					"depthPoint.vert:;"
+					"depthPoint.geom:;"
+					"depthPoint.frag:;");
 
 		R.addGeometry("xy-plane", ShapeLoader::MakeZPlane(1, 1));
 
@@ -123,6 +126,9 @@ class Game :public App {
 		renderer = Renderer(
 			Program(R.getShader("pass.vert"), R.getShader("pass.frag")), 
 			width, height);
+
+		renderer.shadowProgram =
+			Program(R.getShader("depthPoint.vert"), R.getShader("depthPoint.frag"), R.getShader("depthPoint.geom"));
 		renderer.setup(&loadingScreen);
 
 		R.LoadManifest("test.scene");

@@ -21,12 +21,21 @@
 
 */
 
+struct ShadowData {
+	FrameBuffer DepthPass;
+	Program DepthPassProgram;
+	float FarPlane;
+	std::vector<glm::mat4> Projecttions;
+};
 
 struct Renderer {
 	std::shared_ptr<UniformBuffer> CameraBuffer;
 
 	UniformBuffer lights;
 	std::vector<Light::PointData> lightbuf;
+	std::map<unsigned int, ShadowData> ShadowMap;
+	Program shadowProgram;
+
 
 	FrameBuffer passthrough;
 	Geometry* plane;
@@ -54,6 +63,7 @@ struct Renderer {
 
 	void render();
 	void traverseGraph();
+	void ShadowPass(unsigned int id, glm::vec3 position);
 
 	void post();
 };

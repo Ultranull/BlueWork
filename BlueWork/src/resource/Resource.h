@@ -14,8 +14,6 @@
 
 #include "Utilities/TaskQueue.h"
 
-#define MapContains(MAP, KEY) MAP.find(KEY) != MAP.end()
-
 class SceneManager;
 
 class Resource {

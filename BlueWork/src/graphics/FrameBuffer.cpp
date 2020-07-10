@@ -5,8 +5,7 @@
 FrameBuffer::FrameBuffer():FrameBuffer(500,500){
 }
 
-FrameBuffer::FrameBuffer(GLuint w, GLuint h):width(w),height(h) {
-	glGenFramebuffers(1, &id);
+FrameBuffer::FrameBuffer(GLuint w, GLuint h):id(0),width(w),height(h) {
 }
 
 FrameBuffer::~FrameBuffer()
@@ -14,6 +13,8 @@ FrameBuffer::~FrameBuffer()
 }
 
 void FrameBuffer::bind(){
+	if(id == 0)
+		glGenFramebuffers(1, &id);
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
 	glViewport(0, 0, width, height);
 }

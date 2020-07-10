@@ -5,6 +5,8 @@
 #include <iterator>
 #include <vector>
 
+#define MapContains(MAP, KEY) (MAP.find(KEY) != MAP.end())
+
 class Utilities{
 public:
 	static std::string readFile(const char* file);

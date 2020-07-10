@@ -10,13 +10,15 @@ struct Entity : public Node {
 	Geometry* geometry;
 	Material material;
 
+	bool CastShadow;
+
 	union {
 		unsigned char flags;
-		struct {
-			unsigned Instanced : 1;
-			unsigned Indexed : 1;
-			unsigned res : 6;
-		};
+		//struct { should probably be in geometry
+		//	unsigned Instanced : 1;
+		//	unsigned Indexed : 1;
+		//	unsigned res : 6;
+		//};
 	};
 
 

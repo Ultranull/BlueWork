@@ -27,6 +27,11 @@ struct Light : public Node {
 		glm::vec4 specular;
 		attunation att;
 		glm::vec4 position;
+		float FarPlane;
+		int shadowId;
+		bool shadow;
+		float p=42.;
+
 	};
 	struct DirectionalData {
 		glm::vec4 ambient;
@@ -50,8 +55,10 @@ struct Light : public Node {
 
 	LightType lightType;
 
+	bool CreatesShadow;
+
 	Light(std::string typeName):
-		Node(typeName, NodeType::Light){}
+		CreatesShadow(false), Node(typeName, NodeType::Light){}
 
 	void cleanup() {
 		Node::cleanup();

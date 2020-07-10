@@ -22,6 +22,6 @@
             "verifyBufferAccess": true
         },
         "queuedFrameCap": 60,
-        "workingDir": ""
+        "workingDir": "A:/Projects/cpp stuff/Framework/testing_ground"
     }
 }

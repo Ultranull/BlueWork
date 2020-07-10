@@ -28,8 +28,8 @@ void Texture::bind(){
 
 GLint Texture::activate(GLenum texture) {
 	glActiveTexture(texture);
-	glBindTexture(params.target, id);
-	load();
+	bind();
+	//load();
 	return texture - GL_TEXTURE0;
 }
 

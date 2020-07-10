@@ -347,6 +347,9 @@ void CommonSerializers::CommonParsers() {
             light->data.color = S.GeneralParse<glm::vec4>(data["Color"]);
             light->data.specular = S.GeneralParse<glm::vec4>(data["Specular"]);
             light->data.att = S.GeneralParse<Light::attunation>(data["Att"]);
+            light->data.shadow = false;
+            light->data.shadowId = -1;
+            light->data.FarPlane = 100;
 
             S.Parse("Node", data, light, parent);
 
