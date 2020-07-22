@@ -29,7 +29,7 @@ struct Light : public Node {
 		glm::vec4 position;
 		float FarPlane;
 		int shadowId;
-		bool shadow;
+		int shadow=false;
 		float p=42.;
 
 	};
@@ -80,10 +80,12 @@ struct PointLight : public Light {
 		lightType = LightType::Point;
 		transform.Position() = glm::vec3(data.position);
 		DebugGui::PushDraw(&PointLight::guidraw, this);
+		data.shadow = false;
 	}
 
 	PointData pack() {
 		data.position = transform.FinalTransform(false) * glm::vec4(0, 0, 0, 1.);
+		data.shadow = CreatesShadow;
 		return data;
 	}
 	void guidraw() {
@@ -107,6 +109,8 @@ struct PointLight : public Light {
 				ImGui::ColorEdit3(
 					(std::string("color") + std::string("##") + std::to_string(Id)).c_str(),
 					reinterpret_cast<float*>(&data.color));
+
+				ImGui::Checkbox("shadow", &CreatesShadow);
 				ImGui::Unindent();
 				ImGui::TreePop();
 			}

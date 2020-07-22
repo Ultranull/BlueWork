@@ -61,8 +61,7 @@ void Renderer::collectLights() {
 		case LightType::Point:
 			PointLight* pointLight = (PointLight*)light;
 			unsigned int id = pointLight->GetId();
-			//if (pointLight->CreatesShadow)
-			{
+			if (pointLight->CreatesShadow){
 				if (!MapContains(ShadowMap, id)) {
 					ShadowMap.insert(std::make_pair(id, ShadowData()));
 					ShadowMap[id].DepthPass = FrameBuffer(900, 900);
@@ -79,10 +78,16 @@ void Renderer::collectLights() {
 					ShadowMap[id]);
 
 				pointLight->data.FarPlane = ShadowMap[id].FarPlane;
-				pointLight->data.shadow = true;
 				pointLight->data.shadowId = std::distance(ShadowMap.begin(), ShadowMap.find(id));
 
 				ShadowPass(id, position);
+			}
+			else {
+				if (MapContains(ShadowMap, id)) {
+					ShadowMap[id].DepthPass.cleanup();
+					ShadowMap[id].Projecttions.clear();
+					ShadowMap.erase(id);
+				}
 			}
 			lightbuf.push_back(pointLight->pack());
 		}
@@ -182,7 +187,7 @@ void Renderer::traverseGraph() {
 				material->shader.setUniform(std::string("depthmaps[") + std::to_string(idx)+"]",tid);
 			}
 
-			entity->geometry->draw(); // add some conditional stuff: castsshadow?
+			entity->geometry->draw();// dont give geometry this responsibility 
 		}
 	}
 }

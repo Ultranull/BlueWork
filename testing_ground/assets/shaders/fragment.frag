@@ -19,7 +19,8 @@ struct Point{
 	vec4 position;
 	float FarPlane;
 	int shadowId;
-	bool shadow;
+	int shadow;
+	float p;
 };
 
 #define maxNumLights 50
@@ -53,8 +54,8 @@ uniform samplerCube depthmaps[10];
 
 vec4 calcLight(Point light, samplerCube shadowmap,vec3 normal, mat3 TBN){
 	
-	float shadow = 0.0;
-	if(light.shadow){
+	float shadow = 1.0;
+	if(light.shadow==1){
 		vec3 fragToLight = FragPos - light.position.xyz;
 		float currentDepth = length(fragToLight);
 		float bias = 0.15; 

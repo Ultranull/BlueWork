@@ -86,14 +86,14 @@ float luma(vec3 col){
 }
 
 vec3 dither8x8(vec2 position, vec3 color) {
-  return color * dither8x8(position, luma(color));
+  return color + color * (1-dither8x8(position, luma(color)));
 }
 
 void main(){
 	vec2 raster=vec2(1,1)*100;
 	vec2 id=fract(floor(uv*raster)/raster);
+    vec3 pcol=texture(passthrough,uv).xyz;
+	vec3 col=dither8x8(gl_FragCoord.yx,pcol);
 
-	vec3 col=dither8x8(gl_FragCoord.yx,texture(passthrough,uv).xyz);
-
-	fragcolor=vec4(texture(passthrough,uv).xyz,1);
+	fragcolor=vec4(pcol,1);
 }
