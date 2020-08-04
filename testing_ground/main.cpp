@@ -93,6 +93,7 @@ class Game :public App {
 
 	Player* player;
 
+
 	void initGL() {
 		glEnable(GL_MULTISAMPLE); // move to a context class
 		glEnable(GL_BLEND);
@@ -223,7 +224,6 @@ class Game :public App {
 	}
 
 	void render(float delta) {
-
 		renderer.SetDimensions(height, width);
 		renderer.render();
 

@@ -87,3 +87,93 @@ public:
 	void operator=(Resource const&) = delete;
 
 };
+
+
+#ifdef gg
+
+#include <algorithm>
+
+#include "Utilities/Utilities.h"
+
+
+/*
+
+keep file type reading impl seperate
+
+instance counts for resources 
+	-if level 1 loads file A 
+		- create one instance of A with a count of 1
+	-if level 2 loads file A
+		- increment count on A
+	-if level 1 unloads 
+		- if count > 1? decrement A.count : unload A
+
+	resource types:
+		geometry
+		shader
+		material
+		texture
+		audio
+		scene
+
+	gltf2
+		-can hold multiple resource types
+	obj
+		-obj + mtl
+			-materials, images, geometries
+	images
+	shaders
+		-identify type
+	audio
+	misc
+		-user can define a resource type and make impl for it
+
+*/
+
+
+template<typename ResourceType>
+class ResourceLibrary{
+	std::map<std::string, ResourceType> Resources;
+
+public:
+	ResourceType Get(std::string name) {
+		if(MapContains(Resources, name))
+			return Resources[name];
+		return ResourceType();
+	}
+
+};
+
+template<typename ResourceType>
+class AbstractLoader {
+protected:
+	std::vector<std::string> Extentions;
+
+public:
+	virtual ResourceType LoadFile(std::string fileName) = 0;
+	virtual ResourceType Parse(std::string data) = 0;
+
+	bool HasExtention(std::string ext) {
+		return std::find(Extentions.begin(), Extentions.end(), ext) != Extentions.end();
+	}
+};
+
+class ObjLoader: public AbstractLoader<Geometry>{};
+
+template<typename ResourceType>
+class ResourceManager {
+	std::string ResourcePath;
+	std::vector<AbstractLoader<ResourceType>> Loaders;
+
+
+public:
+
+	ResourceType LoadFile(std::string   fileName) {
+		for (int i = 0; i < Loaders.size(); i++) {
+			if (Loaders[i].HasExtention(fileName.substr(fileName.find_last_of(".")))) {
+				return Loaders.LoadFile(ResourcePath  + fileName);
+			}
+		}
+	}
+};
+#endif // gg
