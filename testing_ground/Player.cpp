@@ -29,6 +29,7 @@ Player::Player(Geometry* geometry, Material mat) :
 
 	input = SystemManager::getInstance().CreateComponent<InputComponent>();
 	input->SetKeyEvent(&Player::OnKeyEvent, this);
+	input->SetMouseMoveEvent(&Player::OnMouseMove, this);
 
 }
 
@@ -47,9 +48,6 @@ void Player::OnKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 void Player::movement(float delta, int width, int height) {
-	oldxpos = xpos;
-	oldypos = ypos;
-	input->GetCursorPostion(xpos, ypos);
 
 	if (captureMouse) {
 		input->SetCursorMode(CursorInputMode::Disabled);
@@ -71,11 +69,7 @@ void Player::movement(float delta, int width, int height) {
 		glm::vec3 xaxis = glm::cross(up, direction);
 		xaxis = glm::normalize(xaxis);
 
-		glm::mat3 rotation = {
-			xaxis.x, xaxis.y, xaxis.z,
-			up.x, up.y, up.z,
-			direction.x, direction.y, direction.z,
-		};
+		glm::mat3 rotation(xaxis,up,direction);
 
 		transform.Rotation() = glm::quat_cast(rotation);
 
@@ -97,6 +91,9 @@ void Player::movement(float delta, int width, int height) {
 		if (input->GetKeyState(CROUCH) == InputState::Pressed) {
 			transform.Position() -= glm::vec3(0, 1, 0) * delta * speed;
 		}
+
+		oldxpos = xpos;
+		oldypos = ypos;
 	}
 }
 

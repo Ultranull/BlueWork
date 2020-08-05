@@ -15,14 +15,21 @@ InputSystem::InputSystem(GLFWwindow* window) :
 	AbstractSystem(){
 }
 
-void InputSystem::callback(int key, int scancode, int action, int mods) {
+void InputSystem::KeyboardCallback(int key, int scancode, int action, int mods) {
 	for (int i = 0; i < components.size(); i++) {
 		components[i]->KeyEvent(key, scancode, action, mods);
 	}
 }
 
+void InputSystem::MouseMoveCallback(double xpos, double ypos) {
+	for (int i = 0; i < components.size(); i++) {
+		components[i]->MouseMoveEvent(xpos, ypos);
+	}
+}
+
 void InputSystem::OnStart() {
 	glfwSetKeyCallback(Window, InputSystem::onKey); 
+	glfwSetCursorPosCallback(Window, InputSystem::OnMouseMove);
 	glfwSetWindowUserPointer(Window, this);
 }
 

@@ -18,10 +18,16 @@ class InputSystem :
 
 	static void onKey(GLFWwindow* window, int key, int scancode, int actions, int mods) {
 		InputSystem* obj = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
-		obj->callback(key, scancode, actions, mods);
+		obj->KeyboardCallback(key, scancode, actions, mods);
 	}
 
-	void callback(int key, int scancode, int action, int mods);
+	static void OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
+		InputSystem* obj = static_cast<InputSystem*>(glfwGetWindowUserPointer(window));
+		obj->MouseMoveCallback(xpos, ypos);
+	}
+
+	void KeyboardCallback(int key, int scancode, int action, int mods);
+	void MouseMoveCallback(double xpos, double ypos);
 
 public:
 	inline static const std::string Name = "InputSystem";

@@ -16,10 +16,9 @@ class InputComponent: public AbstractComponent{
 	GLFWwindow* Window;
 
 	std::function<void(int, int, int, int)> KeyEvent;
+	std::function<void(double, double)> MouseMoveEvent;
 	
 	void mousebuttonevent();
-
-	void mousemoveevent();
 
 public:
 
@@ -37,6 +36,15 @@ public:
 			std::placeholders::_2, 
 			std::placeholders::_3, 
 			std::placeholders::_4);
+	}
+
+	template<typename Class>
+	void SetMouseMoveEvent(void(Class::* f)(double, double), Class* source) {
+		MouseMoveEvent = std::bind(
+			f,
+			static_cast<Class*>(source),
+			std::placeholders::_1,
+			std::placeholders::_2);
 	}
 
 	void SetCursorMode(CursorInputMode mode);
