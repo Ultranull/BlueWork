@@ -53,6 +53,47 @@ public:
 	Serializer(Serializer const&) = delete;
 	void operator=(Serializer const&) = delete;
 };
+
+/* new structure
+
+	{
+		"Manifest": [
+			{
+				"asset": "whatever.txt",
+				"name": "whatever", // optional, if empty use filename
+				"metadata": "this is extra args maybe" // optional, maybe more json
+			},
+
+
+		],
+
+		"Scene": [
+			{
+				"Parsers":[ "Node", "Entity" ],
+				"Transform":{
+					"position":{"x":0.0, "y":0.0, "z":0.0},
+					"scale":{"x":0.0, "y":0.0, "z":0.0},
+					"rotation":{"x":0.0, "y":0.0, "z":0.0, "w":0.0},
+				},
+				"name":"bob",
+				"parent": <id>
+				"children":[<id>, <id>, <id>, ...]
+				"flags":0b0,
+				"Geometry": "name of geometry",
+				"Material"{
+					"diffuseMap": "name",
+					"shader": "name",
+					"resource":"mat from manifest", // optional, if here use mat from manifest
+					<other values>
+				}
+			}
+		]
+	
+	
+	}
+
+*/
+
 /* scene file structure
 
 {
@@ -103,4 +144,6 @@ public:
 		}
 
 */
+
+
 
