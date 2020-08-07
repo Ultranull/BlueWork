@@ -38,6 +38,34 @@ void Player::OnMouseMove(double mouseX, double mouseY) {
 	oldypos = ypos;
 	xpos = mouseX;
 	ypos = mouseY;
+
+	if (captureMouse) {
+		input->SetCursorMode(CursorInputMode::Disabled);
+
+		hangle += mouseSpeed * float(oldxpos - xpos);//theta
+		vangle += mouseSpeed * float(oldypos - ypos);//phi
+
+		constexpr float piHalves = glm::half_pi<float>();
+
+		glm::vec3 direction = glm::vec3(
+			cos(vangle) * sin(hangle),
+			sin(vangle),
+			cos(vangle) * cos(hangle));
+
+		glm::vec3 right(
+			sin(hangle - piHalves),
+			0,
+			cos(hangle - piHalves));
+
+		glm::vec3 up = glm::cross(right, direction);
+
+		glm::vec3 xaxis = glm::cross(up, direction);
+		xaxis = glm::normalize(xaxis);
+
+		glm::mat3 rotation(xaxis, up, direction);
+
+		transform.Rotation() = glm::quat_cast(rotation);
+	}
 }
 
 void Player::OnKeyEvent(int key, int scancode, int action, int mods) {
@@ -50,28 +78,9 @@ void Player::OnKeyEvent(int key, int scancode, int action, int mods) {
 void Player::movement(float delta, int width, int height) {
 
 	if (captureMouse) {
-		input->SetCursorMode(CursorInputMode::Disabled);
 
-		hangle += mouseSpeed * float(oldxpos - xpos);//theta
-		vangle += mouseSpeed * float(oldypos - ypos);//phi
-
-		constexpr float piHalves = glm::half_pi<float>();
-
-		glm::vec3 direction = glm::vec3(cos(vangle) * sin(hangle),
-			sin(vangle),
-			cos(vangle) * cos(hangle));
-		glm::vec3 right(sin(hangle - piHalves),
-			0,
-			cos(hangle - piHalves));
-		glm::vec3 up = glm::cross(right, direction);
+		glm::vec3 right = glm::cross(transform.Forward(), transform.Up());
 		glm::vec3 front = glm::cross(glm::vec3(0, 1, 0), right);
-
-		glm::vec3 xaxis = glm::cross(up, direction);
-		xaxis = glm::normalize(xaxis);
-
-		glm::mat3 rotation(xaxis,up,direction);
-
-		transform.Rotation() = glm::quat_cast(rotation);
 
 		if (input->GetKeyState(FORWARD) == InputState::Pressed) {
 			transform.Position() += front * delta * speed;
@@ -91,9 +100,6 @@ void Player::movement(float delta, int width, int height) {
 		if (input->GetKeyState(CROUCH) == InputState::Pressed) {
 			transform.Position() -= glm::vec3(0, 1, 0) * delta * speed;
 		}
-
-		oldxpos = xpos;
-		oldypos = ypos;
 	}
 }
 
