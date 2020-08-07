@@ -46,6 +46,7 @@ struct Texture {
 };
 
 struct Material { // needs to handle more stuff
+				  // no it needs to have an abstract to derive other types from 
 	Texture diffuseMap;
 	Texture normalMap;
 	Texture specularMap;
