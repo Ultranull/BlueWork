@@ -47,8 +47,8 @@ public:
 	}
 
 	virtual ComponentType* Register() = 0;
-	//{
- //       components.push_back(ComponentType());
- //       return &components.back();
- //   }
+	{
+        components.push_back(ComponentType());
+        return &components.back();
+    }
 };

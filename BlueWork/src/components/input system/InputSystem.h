@@ -34,9 +34,9 @@ public:
 
 	InputSystem(GLFWwindow* window);
 
-	virtual void OnStart();
+	void OnStart() override;
 
-	virtual void OnUpdate();
+	void OnUpdate() override;
 
-	virtual InputComponent* Register();
+	InputComponent* Register() override;
 };

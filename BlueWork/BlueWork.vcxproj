@@ -27,6 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\components\geometry system\GeometryComponent.cpp" />
+    <ClCompile Include="src\components\geometry system\GeometrySystem.cpp" />
     <ClCompile Include="include\imgui\imgui.cpp" />
     <ClCompile Include="include\imgui\imgui_draw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_glfw.cpp" />
@@ -65,6 +67,8 @@
     <ClCompile Include="src\Utilities\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\components\geometry system\GeometryComponent.h" />
+    <ClInclude Include="src\components\geometry system\GeometrySystem.h" />
     <ClInclude Include="include\imgui\imgui.h" />
     <ClInclude Include="include\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />
@@ -255,6 +259,7 @@
     <ClInclude Include="src\Utilities\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\ClassDiagram.cd" />
     <None Include="assets\shaders\fragment.frag" />
     <None Include="assets\shaders\loadingScreen.frag" />
     <None Include="assets\shaders\loadingScreen.vert" />
