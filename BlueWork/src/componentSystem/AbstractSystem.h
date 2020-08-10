@@ -46,6 +46,15 @@ public:
 		}
 	}
 
+
+	int NumberOfComponents() {
+		return components.size();
+	}
+
+	ComponentType* Get(int i) {
+		return components[i].get();
+	}
+
 	virtual ComponentType* Register() = 0;
 	{
         components.push_back(ComponentType());
