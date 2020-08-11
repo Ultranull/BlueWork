@@ -233,12 +233,12 @@ void CommonSerializers::CommonParsers() {
             json["Transform"] = S.GeneralCompose<Transform>(node->transform);
             json["name"] = node->getName();
 
-            nlohmann::json childrenArray = nlohmann::json::array();
-            for (int i = 0; i < node->getNumberOfChildren(); i++) {
-                Node* child = node->child(i);
-                childrenArray.push_back(S.Compose(child));
-            }
-            json["children"] = childrenArray;
+            //nlohmann::json childrenArray = nlohmann::json::array(); // handle nodes one at a time
+            //for (int i = 0; i < node->getNumberOfChildren(); i++) {
+            //    Node* child = node->child(i);
+            //    childrenArray.push_back(S.Compose(child));
+            //}
+            //json["children"] = childrenArray;
             return json;
         };
         ParseFunction nodeParse = [&](nlohmann::json data, Node* node, Node* parent) -> Node* {
@@ -249,19 +249,19 @@ void CommonSerializers::CommonParsers() {
             node->setName(data["name"].get<std::string>());
             node->transform = S.GeneralParse<Transform>(data["Transform"]);
 
-            if (parent != nullptr) {
+            if (parent != nullptr) { 
                 parent->add(node);
             }   
 
-            nlohmann::json childrenArray = data["children"];
-            for (int i = 0; i < childrenArray.size(); i++) {
-                nlohmann::json childJson = childrenArray[i];
-                std::string type = childJson["Type"].get<std::string>();
-                Node* child = S.Parse(type, childJson, nullptr, node);
-                if (child == nullptr) {
-                    LOG_F(ERROR, "got nullptr with %s: %s", type.c_str(), childJson.dump().c_str());
-                }
-            }
+            //nlohmann::json childrenArray = data["children"];// handle nodes one at a time
+            //for (int i = 0; i < childrenArray.size(); i++) {
+            //    nlohmann::json childJson = childrenArray[i];
+            //    std::string type = childJson["Type"].get<std::string>();
+            //    Node* child = S.Parse(type, childJson, nullptr, node);
+            //    if (child == nullptr) {
+            //        LOG_F(ERROR, "got nullptr with %s: %s", type.c_str(), childJson.dump().c_str());
+            //    }
+            //}
             return node;
         };
         S.RegisterParser("Node", nodeCompose, nodeParse);

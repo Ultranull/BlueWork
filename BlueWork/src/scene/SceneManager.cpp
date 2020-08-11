@@ -5,24 +5,26 @@
 
 SceneManager::SceneManager():
 	Root(nullptr), MainCamera(nullptr){
-	Root = PushNode(new Node());
-	Root->setManager(this);
 }
 
 Node* SceneManager::PushNode(Node* node) {
+	Node* out = nullptr;
 	switch (node->GetType()){
 
 		case NodeType::Node:
 			Nodes.push_back(std::unique_ptr<Node>(node));
-			return Nodes.back().get();
+			out = Nodes.back().get();
+			break;
 
 		case NodeType::Entity:
 			Entities.push_back(std::unique_ptr<Entity>((Entity*)node));
-			return Entities.back().get();
+			out = Entities.back().get();
+			break;
 
 		case NodeType::Light:
 			Lights.push_back(std::unique_ptr<Light>((Light*)node));
-			return Lights.back().get();
+			out = Lights.back().get();
+			break;
 
 		case NodeType::Camera: {
 			Cameras.push_back(std::unique_ptr<Camera>((Camera*)node));
@@ -30,17 +32,27 @@ Node* SceneManager::PushNode(Node* node) {
 			if (MainCamera == nullptr) {
 				MainCamera = camera;
 			}
-			return camera;
+			out = camera;
+			break;
 		}
 
 		default:
 			LOG_F(ERROR, "not a node %u", static_cast<int>(node->GetType()));
 			break;
 	}
-	return nullptr;
+
+	if (Root == nullptr && out != nullptr) {
+		Root = out;
+	}
+
+	return out;
 }
 
 Node* SceneManager::GetRoot(void){
+	if (Root == nullptr) {
+		Root = PushNode(new Node());
+		Root->setManager(this);
+	}
 	return Root;
 }
 

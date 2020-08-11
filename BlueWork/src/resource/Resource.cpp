@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stack>
 
 #include <loguru.hpp>
 
@@ -56,10 +57,12 @@ void Resource::addTextures(string name, const char *tar, int sub_width, int sub_
 }
 
 Texture Resource::getTexture(string name) {
-	if (MapContains(textures, name)) {
-		return textures[name];
+	if (!name.empty()) {
+		if (MapContains(textures, name)) {
+			return textures[name];
+		}
+		LOG_F(INFO + 1, "Could not find texture with name %s!", name.c_str());
 	}
-	LOG_F(INFO + 1, "Could not find texture with name %s!", name.c_str());
 	return Texture();
 }
 
@@ -318,10 +321,37 @@ void Resource::LoadManifest(std::string fileName) {
 }
 
 void Resource::LoadScene(std::string fileName, SceneManager* manager) {
+
+	// holds the json pointer and parent node pointer
+	typedef std::pair<nlohmann::json::json_pointer, Node*> NodeJsonPointer;
+	typedef nlohmann::json::json_pointer jpointer; // easier to type
+
 	Serializer& S = Serializer::getInstance();
 	std::string contents = Utilities::readFile(fileName.c_str());
 	nlohmann::json json = nlohmann::json::parse(contents);
 
-	Node* root = manager->GetRoot();
-	S.Parse(root->GetTypeName(), json["Scene"], root, nullptr);
+	NodeJsonPointer current = std::make_pair(jpointer("/Scene"), nullptr);
+
+	std::stack<NodeJsonPointer> stack;
+	stack.push(current);
+
+	while (!stack.empty()){
+		current = stack.top();
+		LOG_F(INFO + 1, "\tloading %s", current.first.to_string().c_str());
+		Node* parent = current.second;
+		Node* node = S.Parse(json[current.first]["Type"].get<std::string>(), json[current.first], nullptr, parent);
+		if (parent == nullptr) {
+			manager->PushNode(node);
+			node->setManager(manager);
+		}
+		stack.pop();
+
+		int numberOfKids = json[current.first]["children"].size();
+		for (int i = 0; i < numberOfKids; i++) {
+			std::stringstream ss;
+			ss << current.first.to_string() << "/children/"  << i;
+			stack.push(std::make_pair(jpointer(ss.str()), node));
+		}
+	}
+	
 }

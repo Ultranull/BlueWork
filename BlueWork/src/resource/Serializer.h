@@ -32,7 +32,7 @@ public:
 
 	nlohmann::json Compose(Node* node);
 	nlohmann::json Compose(std::string type, Node* node);
-	Node* Parse(std::string type, nlohmann::json json);
+	Node* Parse(std::string type, nlohmann::json json); // should use json pointer maybe?
 	Node* Parse(std::string type, nlohmann::json json, Node* node, Node* parent);
 
 
@@ -69,14 +69,14 @@ public:
 
 		"Scene": [
 			{
-				"Parsers":[ "Node", "Entity" ],
+				"Parsers":[ "Node", "Entity" ], // not going to do bad idea
 				"Transform":{
 					"position":{"x":0.0, "y":0.0, "z":0.0},
 					"scale":{"x":0.0, "y":0.0, "z":0.0},
 					"rotation":{"x":0.0, "y":0.0, "z":0.0, "w":0.0},
 				},
 				"name":"bob",
-				"parent": <id>
+				"parent": <id> // got noped
 				"children":[<id>, <id>, <id>, ...]
 				"flags":0b0,
 				"Geometry": "name of geometry",
