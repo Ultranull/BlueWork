@@ -101,6 +101,7 @@ void Renderer::ShadowPass(unsigned int id, glm::vec3 position) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < numberOfEntities; i++) {
 		Entity* entity = Manager->GetEntity(i);
+		if (entity->geometry == nullptr)continue;
 		//if (!entity->CastShadow) continue;
 
 		ShadowMap[id].DepthPassProgram.bind();
@@ -168,6 +169,7 @@ void Renderer::traverseGraph() {
 		Camera* camera = Manager->GetMainCamera();
 		Material* material = &entity->material;
 		glm::mat4 finalTransform = entity->ResolveFinalTransform();
+		if (entity->geometry == nullptr)continue;
 		if (!entity->flags) {
 			material->bind();
 			material->shader.setUniform("model", &finalTransform); 

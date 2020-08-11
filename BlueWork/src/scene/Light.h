@@ -79,7 +79,7 @@ struct PointLight : public Light {
 		Light("PointLight"), data(data){
 		lightType = LightType::Point;
 		transform.Position() = glm::vec3(data.position);
-		DebugGui::PushDraw(&PointLight::guidraw, this);
+		//DebugGui::PushDraw(&PointLight::guidraw, this);
 		data.shadow = false;
 	}
 

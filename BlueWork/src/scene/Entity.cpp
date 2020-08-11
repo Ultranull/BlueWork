@@ -7,7 +7,7 @@
 Entity::Entity(std::string typeName, Geometry* geom, Material mat) :
 	geometry(geom), material(mat), CastShadow(false), flags(0), Node(typeName, NodeType::Entity) {
 
-	DebugGui::PushDraw(&Entity::guidraw, this);
+	//DebugGui::PushDraw(&Entity::guidraw, this);
 }
 
 void Entity::cleanup() {

@@ -25,7 +25,7 @@ void Geometry::drawWire() {
 }
 
 void Geometry::cleanup() {
-	if (vaObject != nullptr && !deleted) {
+	if (this != nullptr && vaObject != nullptr && !deleted) {
 		vaObject->cleanup();
 		deleted = true;
 	}

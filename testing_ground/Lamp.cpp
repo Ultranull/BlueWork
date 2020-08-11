@@ -46,7 +46,7 @@ void Lamp::RegisterSerializer() {
 		Lamp* lamp = (Lamp*)node;
 		nlohmann::json json;
 
-		nlohmann::json lightJson = S.Compose("PointLight", lamp->findByName<PointLight>("_PointLight"));
+		nlohmann::json lightJson = S.Compose("PointLight", lamp->findByName<PointLight>(lamp->getName()+"_PointLight"));
 
 
 

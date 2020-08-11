@@ -22,7 +22,7 @@ size_t index_pos = index_dir + sizeof(glm::vec4);
 Camera::Camera(CameraSettings s):
 	settings(s),buffer(nullptr), Node("Camera", NodeType::Camera) {
 
-	DebugGui::PushDraw(&Camera::guidraw, this);
+	//DebugGui::PushDraw(&Camera::guidraw, this);
 }
 
 Camera::Camera():

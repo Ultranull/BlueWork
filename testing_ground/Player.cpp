@@ -122,8 +122,6 @@ void Player::RegisterSerializer() {
 			player = new Player(nullptr, Material());
 		}
 
-		LOG_F(INFO, "info from the player: %s", data["info"].dump().c_str());
-
 		S.Parse("Entity", data, player, parent);
 
 		return player;

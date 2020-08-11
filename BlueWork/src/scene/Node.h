@@ -48,6 +48,8 @@ public:
 	NodeType GetType();
 	void cleanup();
 
+	void debuggui();
+
 	unsigned int GetParentId();
 	unsigned int GetId();
 

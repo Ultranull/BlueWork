@@ -332,6 +332,7 @@ void CommonSerializers::CommonParsers() {
             json["Color"] = S.GeneralCompose(light->data.color);
             json["Specular"] = S.GeneralCompose(light->data.specular);
             json["Att"] = S.GeneralCompose(light->data.att);
+            json["Shadow"] = (bool)light->CreatesShadow;
 
             json.merge_patch(S.Compose("Node", node));
 
@@ -347,7 +348,7 @@ void CommonSerializers::CommonParsers() {
             light->data.color = S.GeneralParse<glm::vec4>(data["Color"]);
             light->data.specular = S.GeneralParse<glm::vec4>(data["Specular"]);
             light->data.att = S.GeneralParse<Light::attunation>(data["Att"]);
-            light->data.shadow = false;
+            light->CreatesShadow = data.value("Shadow", false);
             light->data.shadowId = -1;
             light->data.FarPlane = 100;
 

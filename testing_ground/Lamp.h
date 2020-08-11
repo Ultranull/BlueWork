@@ -16,7 +16,7 @@ public:
 	Lamp::Lamp() :
 		Node("Lamp",NodeType::Node) {
 
-		DebugGui::PushDraw(&Lamp::guidraw, this);
+		//DebugGui::PushDraw(&Lamp::guidraw, this);
 	}
 
 	void BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData);
