@@ -103,7 +103,7 @@ void Node::debuggui() {
 				S.Parse(TypeName, data, this, nullptr);
 			}
 
-			//ImGui::Text("%s", data.dump(4).c_str());
+			ImGui::TextWrapped("%s", data.dump().c_str());
 
 			ImGui::Unindent();
 			ImGui::TreePop();

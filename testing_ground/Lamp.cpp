@@ -1,13 +1,14 @@
 #include "Lamp.h"
 
-
+const std::string Lamp::LightName = "_PointLight";
+const std::string Lamp::MeshName = "_Mesh";
 
 void Lamp::BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData) {
 	LightSource = new PointLight(lightData);
 	Mesh = new Entity(geometry, mat);
 
-	LightSource->setName(name + "_PointLight");
-	Mesh->setName(name + "_Entity");
+	LightSource->setName(name + Lamp::LightName);
+	Mesh->setName(name + Lamp::MeshName);
 	Mesh->transform.scale(glm::vec3(.5));
 
 	add(LightSource);
@@ -39,6 +40,14 @@ void Lamp::guidraw() {
 	}ImGui::End();
 }
 
+inline PointLight* Lamp::GetLightSource() const {
+	return LightSource;
+}
+
+inline Entity* Lamp::GetMesh() const {
+	return Mesh;
+}
+
 void Lamp::RegisterSerializer() {
 	Serializer& S = Serializer::getInstance();
 	Resource& R = Resource::getInstance();
@@ -46,9 +55,11 @@ void Lamp::RegisterSerializer() {
 		Lamp* lamp = (Lamp*)node;
 		nlohmann::json json;
 
-		nlohmann::json lightJson = S.Compose("PointLight", lamp->findByName<PointLight>(lamp->getName()+"_PointLight"));
+		PointLight* light = lamp->GetLightSource();
+		Entity* mesh = lamp->GetMesh();
 
-
+		json.merge_patch(S.Compose(light));
+		json.merge_patch(S.Compose(mesh));
 
 		json.merge_patch(S.Compose("Node", node));
 
@@ -60,7 +71,9 @@ void Lamp::RegisterSerializer() {
 			lamp = new Lamp();
 		}
 
-		std::string geometryName = data["Geometry"].get<std::string>();
+		S.Parse("Node", data, lamp, parent);
+
+		std::string geometryName = data.value("Geometry", "");
 		Material material = S.GeneralParse<Material>(data["Material"]);
 		Light::PointData lightData;
 
@@ -68,10 +81,24 @@ void Lamp::RegisterSerializer() {
 		lightData.color = S.GeneralParse<glm::vec4>(data["Color"]);
 		lightData.specular = S.GeneralParse<glm::vec4>(data["Specular"]);
 		lightData.att = S.GeneralParse<Light::attunation>(data["Att"]);
+		lightData.shadowId = -1;
+		lightData.FarPlane = 100;
 
-		S.Parse("Node", data, lamp, parent);
 
-		lamp->BuildSubTree(R.getGeometry(geometryName), material, lightData);
+		if (lamp->getNumberOfChildren() == 0) {
+			lamp->BuildSubTree(R.getGeometry(geometryName), material, lightData);
+		}
+		else {
+			PointLight* light = lamp->GetLightSource();
+			light->data = lightData;
+			light->CreatesShadow = data.value("Shadow", false);
+			//S.Parse(light->GetTypeName(), data, light, nullptr); // nice but doesnt work right now. it parses the transform
+
+			Entity* mesh = lamp->GetMesh();
+			mesh->material = material;
+			mesh->geometry = R.getGeometry(geometryName);
+		}
+
 
 		return lamp;
 	};

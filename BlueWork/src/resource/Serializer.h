@@ -54,6 +54,39 @@ public:
 	void operator=(Serializer const&) = delete;
 };
 
+
+/* redesign maybe
+
+
+example:
+	struct SerializationData{
+		bool registered;
+		string typeName;
+
+	}
+
+	class ISerializable{
+		registerSerializer(parser, composer,&SerialMetaData){
+			if(!SerialMetaData.registered){
+				Serializer singleton;
+				singleton.register(SerialMetaData.typename, parser,composer);
+				SerialMetaData.registered=true;
+			}
+		}
+	}
+
+	class lamp: public Node, public ISerializable{
+		static SerializationData SerialMetaData;
+
+		lamp(){
+			registerSerializer(parser, composer, SerialMetaData);
+		}
+	}
+
+
+*/
+
+
 /* new structure
 
 	{

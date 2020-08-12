@@ -8,10 +8,13 @@
 #include "resource/Resource.h"
 
 class Lamp: public Node{
+
 	PointLight* LightSource;
 	Entity* Mesh;
 	
 public:
+	static const std::string LightName;
+	static const std::string MeshName;
 
 	Lamp::Lamp() :
 		Node("Lamp",NodeType::Node) {
@@ -22,6 +25,10 @@ public:
 	void BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData);
 
 	void guidraw();
+
+	PointLight* GetLightSource() const;
+
+	Entity* GetMesh() const;
 
 	static void RegisterSerializer();
 };
