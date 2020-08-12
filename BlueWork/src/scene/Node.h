@@ -25,6 +25,8 @@ class Node{
 
 	static unsigned int NextId;
 
+	bool IsDependant;
+
 protected:
 	std::vector<Node*> children;
 	Node* parent;
@@ -59,6 +61,10 @@ public:
 	Node* setName(std::string name);
 
 	std::string GetTypeName();
+
+	void SetDependancy(bool dependant);
+
+	bool GetIsDependant();
 
 	void setManager(SceneManager* sceneManager);
 

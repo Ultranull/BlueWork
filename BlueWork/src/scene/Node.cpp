@@ -16,7 +16,7 @@ Node::Node(std::string typeName, NodeType t) :
 {}
 
 Node::Node(unsigned int id, std::string typeName, NodeType t):
-	children(), parent(nullptr), type(t), Id(id), TypeName(typeName)
+	children(), parent(nullptr), type(t), Id(id), TypeName(typeName),IsDependant(false)
 {
 	DebugGui::PushDraw(&Node::debuggui, this);
 }
@@ -173,6 +173,14 @@ Node* Node::setName(std::string name) {
 }
 
 std::string Node::GetTypeName() { return TypeName; }
+
+void Node::SetDependancy(bool dependant) {
+	IsDependant = dependant;
+}
+
+ bool Node::GetIsDependant() {
+	return IsDependant;
+}
 
 void Node::setManager(SceneManager* sceneManager) {
 	manager = sceneManager;

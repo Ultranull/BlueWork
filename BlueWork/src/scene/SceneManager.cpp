@@ -1,5 +1,8 @@
 #include "SceneManager.h"
 
+#include <stack>
+#include <sstream>
+
 #include <loguru.hpp>
 
 
@@ -106,10 +109,39 @@ void SceneManager::CleanUp(void) {
 
 
 template<>
-nlohmann::json Serializer::GeneralCompose(SceneManager* object) {
+nlohmann::json Serializer::GeneralCompose(SceneManager* object) {	
+	// holds the json pointer and parent node pointer
+	typedef std::pair<nlohmann::json::json_pointer, Node*> NodeJsonPointer;
+	typedef nlohmann::json::json_pointer jpointer; // easier to type
+
 	Serializer& s = Serializer::getInstance();
 	nlohmann::json json;
-	json["Scene"] = s.Compose(object->GetRoot());
+
+
+	std::stack<NodeJsonPointer> stack;
+	stack.push(std::make_pair(jpointer("/Scene"), object->GetRoot()));
+
+	NodeJsonPointer current;
+	while (!stack.empty()) {
+		current = stack.top();
+		stack.pop();
+		
+		json[current.first] = s.Compose(current.second);
+
+			jpointer childrenLocation = current.first;
+			childrenLocation.push_back("children");
+			json[childrenLocation] = nlohmann::json::array();
+
+		for (int i = 0; i < current.second->getNumberOfChildren(); i++) {
+			if (!current.second->child(i)->GetIsDependant()) {
+				jpointer location = current.first;
+				location.push_back("children");
+				location.push_back(std::to_string(i));
+				stack.push(std::make_pair(location, current.second->child(i)));
+			}
+		}
+	}
+
 
 	return json;
 }

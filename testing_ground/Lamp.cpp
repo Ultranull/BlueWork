@@ -10,6 +10,8 @@ void Lamp::BuildSubTree(Geometry* geometry, Material mat, Light::PointData light
 	LightSource->setName(name + Lamp::LightName);
 	Mesh->setName(name + Lamp::MeshName);
 	Mesh->transform.scale(glm::vec3(.5));
+	LightSource->SetDependancy(true);
+	Mesh->SetDependancy(true);
 
 	add(LightSource);
 	add(Mesh);

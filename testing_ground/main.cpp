@@ -161,7 +161,8 @@ class Game :public App {
 	void OnLoadSucess() {
 		renderer.setup(&level1);
 		player = level1.GetRoot()->findByName<Player>("player");
-		loaded = true;
+		loaded = true; 
+		Serializer::getInstance().SaveFile("level1", &level1);
 	}
 
 	virtual void onClose() {
