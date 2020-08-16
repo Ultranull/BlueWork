@@ -82,6 +82,7 @@ using namespace std;
 //}
 
 
+#include "resource/ResourceManager.h"
 
 class Game :public App {
 	SystemManager& systemManager;
@@ -92,6 +93,8 @@ class Game :public App {
 	Renderer renderer;
 
 	Player* player;
+
+	ResourceManager<Geometry*> rman;
 
 
 	void initGL() {
@@ -155,6 +158,9 @@ class Game :public App {
 		//Serializer::getInstance().SaveFile("loadingScreen", &loadingScreen);
 
 		systemManager.start();
+		rman.Loaders.push_back(make_unique<ObjLoader2>());
+		rman.LoadFile(R.path + "objects.obj");
+
 	}
 
 	bool loaded = false;
@@ -162,7 +168,7 @@ class Game :public App {
 		renderer.setup(&level1);
 		player = level1.GetRoot()->findByName<Player>("player");
 		loaded = true; 
-		Serializer::getInstance().SaveFile("level1", &level1);
+		//Serializer::getInstance().SaveFile("level1", &level1);
 	}
 
 	virtual void onClose() {
@@ -238,7 +244,7 @@ class Game :public App {
 			player->movement(delta, width, height);
 
 			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-				level1.SetMainCamera("Main");
+				level2.SetMainCamera("1");
 			}
 
 			if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {

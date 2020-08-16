@@ -11,6 +11,7 @@
 
 struct CameraSettings {
 	enum class Mode {
+		Unknown,
 		Orthographic,
 		Perspective
 	};

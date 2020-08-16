@@ -103,7 +103,7 @@ vec4 calcLight(Point light, samplerCube shadowmap,vec3 normal, mat3 TBN){
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = (light.specular.xyz * material.specular.xyz) * (spec* texture(material.specularMap,uv).rgb);  
         
-    return vec4((ambient + diffuse + specular)*(attun*visibility),1);
+    return vec4(ambient + (diffuse + specular)*(attun*visibility),1);
 }
 
 void main(){

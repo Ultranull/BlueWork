@@ -27,12 +27,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\resource\AbstractLoader.cpp" />
     <ClCompile Include="include\imgui\imgui.cpp" />
     <ClCompile Include="include\imgui\imgui_draw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\resource\MeshProcessing.cpp" />
+    <ClCompile Include="src\resource\ResourceManager.cpp" />
     <ClCompile Include="src\Utilities\DebugGui.cpp" />
     <ClCompile Include="src\Utilities\TaskQueue.cpp" />
     <ClCompile Include="src\resource\CommonSerializers.cpp" />
@@ -65,11 +68,14 @@
     <ClCompile Include="src\Utilities\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\resource\AbstractLoader.h" />
     <ClInclude Include="include\imgui\imgui.h" />
     <ClInclude Include="include\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="include\imgui\imgui_internal.h" />
     <ClInclude Include="include\json.hpp" />
+    <ClInclude Include="src\resource\MeshProcessing.h" />
+    <ClInclude Include="src\resource\ResourceManager.h" />
     <ClInclude Include="src\Utilities\DebugGui.h" />
     <ClInclude Include="src\Utilities\TaskQueue.h" />
     <ClInclude Include="src\resource\CommonSerializers.h" />

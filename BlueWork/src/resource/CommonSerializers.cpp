@@ -146,6 +146,7 @@ nlohmann::json Serializer::GeneralCompose(CameraSettings object) {
             {"Top", object.OrthographicData.Top},
         };
         break;
+
     }
 
     return json;
@@ -160,6 +161,9 @@ CameraSettings Serializer::GeneralParse(nlohmann::json json) {
     }
     else if (modeStr.compare("Perspective") == 0) {
         settings.mode = CameraSettings::Mode::Perspective;
+    }
+    else{
+        settings.mode = CameraSettings::Mode::Unknown;
     }
 
     switch (settings.mode)

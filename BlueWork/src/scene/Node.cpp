@@ -90,6 +90,7 @@ void JsonToDear(nlohmann::json& data, bool& updated) {
 }
 
 void Node::debuggui() {
+	if (IsDependant)return;
 	ImGui::Begin("window"); {
 
 		if (ImGui::TreeNode((name + std::string(":") + std::to_string(Id) + std::string(":") + TypeName).c_str())) {

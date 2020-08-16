@@ -93,7 +93,7 @@ example:
 		"Manifest": [
 			{
 				"asset": "whatever.txt",
-				"name": "whatever", // optional, if empty use filename
+				"name": "whatever", // optional, if empty use filename or name from file
 				"metadata": "this is extra args maybe" // optional, maybe more json
 			},
 
