@@ -13,29 +13,38 @@ class ResourceManager {
 	std::string ResourcePath;
 
 	std::map<std::string, ResourceType> Resources;
+	std::vector<std::unique_ptr<AbstractLoader<ResourceType>>> Loaders;
 
 
 public:
-	std::vector<std::unique_ptr<AbstractLoader<ResourceType>>> Loaders;
 
 	ResourceManager() {
 
 	}
 
+	void SetPath(std::string path) {
+		ResourcePath = path;
+	}
+
 	ResourceType Get(std::string name) {
-		if(MapContains(Resources, name))
+		if (MapContains(Resources, name))
 			return Resources[name];
 		return ResourceType();
 	}
 
-	void LoadFile(std::string   fileName) {
+	void LoadFile(std::string fileName, std::string defaultName, std::string metaData = "") {
 		for (int i = 0; i < Loaders.size(); i++) {
 			if (Loaders[i]->HasExtention(fileName.substr(fileName.find_last_of(".")))) {
-				std::map<std::string, ResourceType> parsed = Loaders[i]->Parse(Loaders[i]->LoadFile(ResourcePath + fileName));
+				std::map<std::string, ResourceType> parsed = Loaders[i]->Parse(Loaders[i]->LoadFile(ResourcePath + fileName, defaultName, metaData));
 				Resources.insert(parsed.begin(), parsed.end());
 				break;
 			}
 		}
+	}
+
+	template<typename LoaderClass>
+	void RegisterLoader() {
+		Loaders.push_back(std::make_unique<LoaderClass>());
 	}
 };
 
@@ -73,3 +82,5 @@ instance counts for resources
 		-user can define a resource type and make impl for it
 
 */
+
+

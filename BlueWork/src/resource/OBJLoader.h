@@ -5,18 +5,18 @@
 
 #include <glm/glm.hpp>
 
-#include "../Engine.h"
-#include "Resource.h"
-#include "../graphics/VertexArray.h"
+#include "resource/MeshProcessing.h"
+#include "resource/AbstractLoader.h"
+
 #include "graphics/Geometry.h"
 
-class OBJLoader{
+class ObjLoader : public AbstractLoader<std::shared_ptr<Geometry>> {
+
 
 public:
 
-	static Geometry* load(std::string fn);
+	ObjLoader();
 
-	static std::vector<Engine::Vertex> parseOBJ(std::string fn, int& numberOfFaces);
-
+	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::string data) override;
 };
 

@@ -14,12 +14,17 @@
 
 #include "Utilities/TaskQueue.h"
 
+#include "ResourceManager.h"
+
+
 class SceneManager;
 
 class Resource {
 	std::map<std::string, Texture> textures;
 	std::map<std::string, Shader> shaders;
 	std::map<std::string, std::unique_ptr<Geometry>> geometries;
+
+	ResourceManager<std::shared_ptr<Geometry>> GeometryManager;
 
 	std::string Manifest;
 
@@ -66,6 +71,8 @@ public:
 
 	void addGeometry(std::string name,Geometry* geom);
 	Geometry* getGeometry(std::string name);
+
+	void AddAssetOfType(std::string extention, std::string data, std::string name = "");
 
 	std::string GetGeometryName(Geometry* geom);
 	std::string GetTextureName(Texture tex);

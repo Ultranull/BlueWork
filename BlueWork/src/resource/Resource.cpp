@@ -13,6 +13,8 @@
 #include <loguru.hpp>
 
 #include "OBJLoader.h"
+#include "ShapeLoader.h"
+
 #include "Utilities/Utilities.h"
 #include "Serializer.h"
 #include "scene/SceneManager.h"
@@ -21,7 +23,9 @@ using namespace std;
 	
 Resource::Resource():
 	Manifest(""){
-
+	GeometryManager.SetPath(path);
+	GeometryManager.RegisterLoader<ObjLoader>();
+	GeometryManager.RegisterLoader<ShapeLoader>();
 }
 
 bool Resource::ContainsName(std::string name) {
@@ -99,7 +103,7 @@ void Resource::addGeometry(std::string name, Geometry* geom){
 }
 
 Geometry* Resource::getGeometry(std::string name){
-	return geometries[name].get();
+	return GeometryManager.Get(name).get();
 }
 
 Texture Resource::LoadGLTexture(const char *filename) {
@@ -238,17 +242,29 @@ void Resource::LoadAssetTask(std::string line) {
 	size_t posExt = file.find(".");
 	std::string extension = file.substr(posExt + 1, posFile);
 
-	if (extension.compare("obj") == 0) {
-		LOG_F(INFO, "loading geometry %s as %s", file.c_str(), name.c_str());
-		addGeometry(name, OBJLoader::load(path + file)); // if ever threaded inserting should be in critical sections
-	}
-	else if (isImage(extension)) {
+	if (isImage(extension)) {
 		LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
 		addTexture(name, file.c_str());
 	}
 	else if (isShader(extension)) {
 		LOG_F(INFO, "loading shader %s", file.c_str());
 		addShader(file);
+	}
+	else {
+		GeometryManager.LoadFile(file, name);
+	}
+}
+
+
+void Resource::AddAssetOfType(std::string extension, std::string data, std::string name) {
+	if (isImage(extension)) {
+		
+	}
+	else if (isShader(extension)) {
+		
+	}
+	else {
+		GeometryManager.LoadFile(extension, name, data);
 	}
 }
 

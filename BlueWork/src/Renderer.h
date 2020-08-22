@@ -38,7 +38,7 @@ struct Renderer {
 
 
 	FrameBuffer passthrough;
-	Geometry* plane;
+	std::shared_ptr<Geometry> plane;
 	Program pass;
 
 	SceneManager* Manager;

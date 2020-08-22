@@ -10,7 +10,7 @@ class MeshProcessing{
 
 public:
 
-	static Geometry* BuildGeometry(std::vector<Engine::Vertex> vertices){
+	static Geometry* BuildGeometry(std::vector<Engine::Vertex> vertices, unsigned int topology = GL_TRIANGLES){
 		Geometry* geom = new Geometry();
 		geom->vaObject = std::unique_ptr<VertexArray>(new VertexArray());
 		Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
@@ -20,7 +20,26 @@ public:
 		vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Normal));
 		vbuffer->bindPointer(Engine::TANGENT, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Tangent));
 		geom->size = vertices.size();
-		geom->topology =  GL_TRIANGLES;
+		geom->topology = topology;
+		return geom;
+	}
+
+	static Geometry* BuildIndexedGeometry(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices, unsigned int topology = GL_TRIANGLES) {
+		Geometry* geom = new Geometry();
+		geom->vaObject = std::unique_ptr<VertexArray>(new VertexArray());;
+		Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
+		vbuffer->setData(vertices, GL_STATIC_DRAW);
+		vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));
+		vbuffer->bindPointer(Engine::TEXTURECOORD, 2, GL_FLOAT, (void*)offsetof(Engine::Vertex, TextureCoord));
+		vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Normal));
+
+		Buffer* ebuffer = geom->vaObject->bindBuffer<unsigned int>("indides", GL_ELEMENT_ARRAY_BUFFER);
+		ebuffer->setData(indices, GL_STATIC_DRAW);
+
+		geom->size = indices.size();
+		geom->indexed = true;
+		geom->topology = topology;
+
 		return geom;
 	}
 

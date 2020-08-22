@@ -94,8 +94,6 @@ class Game :public App {
 
 	Player* player;
 
-	ResourceManager<Geometry*> rman;
-
 
 	void initGL() {
 		glEnable(GL_MULTISAMPLE); // move to a context class
@@ -123,7 +121,14 @@ class Game :public App {
 					"depthPoint.geom:;"
 					"depthPoint.frag:;");
 
-		R.addGeometry("xy-plane", ShapeLoader::MakeZPlane(1, 1));
+		nlohmann::json data = {
+			{
+				{"type","zplane"},
+				{"xSegments", 1},
+				{"ySegments", 1}
+			},
+		};
+		R.AddAssetOfType(".shape", data.dump());
 
 		R.ImmediateLoadScene("loadingScreen.scene", &loadingScreen);
 
@@ -158,8 +163,6 @@ class Game :public App {
 		//Serializer::getInstance().SaveFile("loadingScreen", &loadingScreen);
 
 		systemManager.start();
-		rman.Loaders.push_back(make_unique<ObjLoader2>());
-		rman.LoadFile(R.path + "objects.obj");
 
 	}
 

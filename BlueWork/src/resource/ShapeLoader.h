@@ -1,17 +1,45 @@
 #pragma once
 
-#include "../Engine.h"
-#include "Resource.h"
-#include "../graphics/VertexArray.h"
+#include <fstream>
+#include <sstream>
+
+#include <glm/glm.hpp>
+
+#include <json.hpp>
+
+#include "resource/MeshProcessing.h"
+#include "resource/AbstractLoader.h"
+
 #include "graphics/Geometry.h"
 
-class ShapeLoader{
+class ShapeLoader: public AbstractLoader<std::shared_ptr<Geometry>> {
 
 public:
 
-	static Geometry* MakePlane(unsigned int xSegments, unsigned int ySegments);
-	static Geometry* MakeZPlane(unsigned int xSegments, unsigned int zSegments);
+	ShapeLoader();
 
-	static Geometry* load(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices);
+	std::string LoadFile(std::string fileName, std::string name = "", std::string metaData = "") override;
+
+	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::string data) override;
+
+	Geometry* MakePlane(unsigned int xSegments, unsigned int ySegments);
+	Geometry* MakeZPlane(unsigned int xSegments, unsigned int zSegments);
 };
 
+/* shape file format:
+* 
+* [
+*	{
+*		"type":"plane",
+*		"xSegments": 5,
+*		"ySegments": 5
+*	},
+*	{
+*		"type": "uvsphere",
+*		"parallels": some number idk,
+*		"meridians":  some number idk
+*	}
+* ]
+* 
+* 
+*/

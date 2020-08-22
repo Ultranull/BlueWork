@@ -2,6 +2,49 @@
 
 #include <glm/glm.hpp>
 
+
+
+ShapeLoader::ShapeLoader() {
+	Extentions = {
+		".shape"
+	};
+}
+
+std::string ShapeLoader::LoadFile(std::string fileName, std::string name, std::string metaData) {
+	// if given the filename ".shape", it will assume the metadata is the actual data.
+	int endOfPath = fileName.find_last_of("/") + 1;
+	std::string noExtention = fileName.substr(endOfPath, endOfPath - fileName.find_last_of("."));
+	if (noExtention.empty()) {
+		DefaultName = name;
+		return metaData;
+	}
+	return AbstractLoader<std::shared_ptr<Geometry>>::LoadFile(fileName, name, metaData);
+}
+
+std::map<std::string, std::shared_ptr<Geometry>> ShapeLoader::Parse(std::string data) {
+	std::map<std::string, std::shared_ptr<Geometry>> output;
+	nlohmann::json shapeFile = nlohmann::json::parse(data);
+
+	if (shapeFile.is_array()) {
+		for (auto& shape : shapeFile) {
+			Geometry* geom = nullptr;
+			if (shape["type"].get<std::string>() == "plane") {
+				geom = MakePlane(
+					shape["xSegments"].get<unsigned int>(),
+					shape["zSegments"].get<unsigned int>());
+			}
+			else if (shape["type"].get<std::string>() == "zplane") {
+				geom = MakeZPlane(
+					shape["xSegments"].get<unsigned int>(),
+					shape["ySegments"].get<unsigned int>());
+			}
+
+			output.insert(std::make_pair(DefaultName + shape["type"].get<std::string>(), geom));
+		}
+	}
+	return output;
+}
+
 Geometry* ShapeLoader::MakeZPlane(unsigned int xSegments, unsigned int ySegments) {
 	std::vector<Engine::Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -33,7 +76,7 @@ Geometry* ShapeLoader::MakeZPlane(unsigned int xSegments, unsigned int ySegments
 		}
 		oddRow = !oddRow;
 	}
-	return load(vertices, indices);
+	return MeshProcessing::BuildIndexedGeometry(vertices, indices, GL_TRIANGLE_STRIP);
 }
 
 Geometry* ShapeLoader::MakePlane(unsigned int xSegments, unsigned int zSegments) {
@@ -67,24 +110,5 @@ Geometry* ShapeLoader::MakePlane(unsigned int xSegments, unsigned int zSegments)
 		}
 		oddRow = !oddRow;
 	}
-	return load(vertices, indices);
-}
-
-Geometry* ShapeLoader::load(std::vector<Engine::Vertex> vertices, std::vector<unsigned int> indices) {
-	Geometry* geom = new Geometry();
-	geom->vaObject = std::unique_ptr<VertexArray>(new VertexArray());;
-	Buffer* vbuffer = geom->vaObject->bindBuffer<Engine::Vertex>("vertexes", GL_ARRAY_BUFFER);
-	vbuffer->setData(vertices, GL_STATIC_DRAW);
-	vbuffer->bindPointer(Engine::POSITION, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Position));
-	vbuffer->bindPointer(Engine::TEXTURECOORD, 2, GL_FLOAT, (void*)offsetof(Engine::Vertex, TextureCoord));
-	vbuffer->bindPointer(Engine::NORMAL, 3, GL_FLOAT, (void*)offsetof(Engine::Vertex, Normal));
-
-	Buffer* ebuffer = geom->vaObject->bindBuffer<unsigned int>("indides", GL_ELEMENT_ARRAY_BUFFER);
-	ebuffer->setData(indices, GL_STATIC_DRAW);
-
-	geom->size = indices.size();
-	geom->indexed = true;
-	geom->topology = GL_TRIANGLE_STRIP;
-
-	return geom;
+	return MeshProcessing::BuildIndexedGeometry(vertices, indices, GL_TRIANGLE_STRIP);
 }

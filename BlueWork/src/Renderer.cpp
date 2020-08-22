@@ -20,7 +20,15 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 
 	CameraBuffer = Camera::buildCamera();
 
-	plane = ShapeLoader::MakeZPlane(1, 1);
+	ShapeLoader loader;
+	nlohmann::json data = {
+		{
+			{"type","zplane"},
+			{"xSegments", 1},
+			{"ySegments", 1}
+		},
+	};
+	plane = loader.Parse(data.dump())["zplane"];
 }
 
 void Renderer::SetDimensions(int h, int w){
@@ -32,7 +40,6 @@ void Renderer::cleanup() {
 	lights.cleanup();
 	//Manager->CleanUp();
 	plane->cleanup();
-	delete plane;
 }
 
 void updateShadowMatrices(glm::vec3 lightPosition, ShadowData& data) {

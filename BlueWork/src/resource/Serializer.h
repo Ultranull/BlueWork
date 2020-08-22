@@ -66,6 +66,8 @@ example:
 	}
 
 	class ISerializable{
+		static SerializationData SerialMetaData;
+
 		registerSerializer(parser, composer,&SerialMetaData){
 			if(!SerialMetaData.registered){
 				Serializer singleton;
@@ -76,7 +78,6 @@ example:
 	}
 
 	class lamp: public Node, public ISerializable{
-		static SerializationData SerialMetaData;
 
 		lamp(){
 			registerSerializer(parser, composer, SerialMetaData);

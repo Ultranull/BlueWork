@@ -1,7 +1,7 @@
 # Blender v2.82 (sub 7) OBJ File: ''
 # www.blender.org
 mtllib big_wood_barrel.mtl
-o big_wood_barrel
+o barrel
 v 0.056580 0.038947 -0.476136
 v -0.056580 0.038947 0.476136
 v -0.257564 0.038947 0.404435
