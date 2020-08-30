@@ -1,7 +1,6 @@
 #include "Resource.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+//#include <stb_image.h>
 
 #include <sstream>
 #include <vector>
@@ -14,6 +13,7 @@
 
 #include "OBJLoader.h"
 #include "ShapeLoader.h"
+#include "ImageLoader.h"
 
 #include "Utilities/Utilities.h"
 #include "Serializer.h"
@@ -26,6 +26,9 @@ Resource::Resource():
 	GeometryManager.SetPath(path);
 	GeometryManager.RegisterLoader<ObjLoader>();
 	GeometryManager.RegisterLoader<ShapeLoader>();
+
+	TextureManager.SetPath(path + texturePath);
+	TextureManager.RegisterLoader<ImageLoader>();
 }
 
 bool Resource::ContainsName(std::string name) {
@@ -61,13 +64,13 @@ void Resource::addTextures(string name, const char *tar, int sub_width, int sub_
 }
 
 Texture Resource::getTexture(string name) {
-	if (!name.empty()) {
-		if (MapContains(textures, name)) {
-			return textures[name];
-		}
-		LOG_F(INFO + 1, "Could not find texture with name %s!", name.c_str());
-	}
-	return Texture();
+	//if (!name.empty()) {
+	//	if (MapContains(textures, name)) {
+	//		return textures[name];
+	//	}
+	//	LOG_F(INFO + 1, "Could not find texture with name %s!", name.c_str());
+	//}
+	return TextureManager.Get(name);
 }
 
 GLint Resource::bindTexture(std::string name, GLuint sample){
@@ -109,28 +112,29 @@ Geometry* Resource::getGeometry(std::string name){
 Texture Resource::LoadGLTexture(const char *filename) {
 	//glEnable(GL_TEXTURE_2D);
 
-	Texture t;
-	t.bind();
-	t.load();
-	int w, h, bpp;
-	unsigned char *data = stbi_load(filename, &w, &h, &bpp, 0);
-	if (data == NULL) {
-		LOG_F(FATAL, "error loading texture %s!", filename);
-		exit(-1);
-	}
-	t.setSize(w, h);
-	if (bpp == 3) {
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexImage2D(t.params.target, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	}
-	else if (bpp == 4)
-		glTexImage2D(t.params.target, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	stbi_image_free(data);
-	Texture::unbind();
-	return t;
+	//Texture t;
+	//t.bind();
+	//t.load();
+	//int w, h, bpp;
+	//unsigned char *data = stbi_load(filename, &w, &h, &bpp, 0);
+	//if (data == NULL) {
+	//	LOG_F(FATAL, "error loading texture %s!", filename);
+	//	exit(-1);
+	//}
+	//t.setSize(w, h);
+	//if (bpp == 3) {
+	//	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	//	glTexImage2D(t.params.target, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	//}
+	//else if (bpp == 4)
+	//	glTexImage2D(t.params.target, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	//stbi_image_free(data);
+	//Texture::unbind();
+	//return t;
+	return Texture();
 }
 Texture Resource::LoadGLsubTexture(const char *filename, int sub_x, int sub_y, int sub_width, int sub_height) {
-	glEnable(GL_TEXTURE_2D);
+	/*glEnable(GL_TEXTURE_2D);
 
 	unsigned char *data;
 	int width, height;
@@ -151,7 +155,8 @@ Texture Resource::LoadGLsubTexture(const char *filename, int sub_x, int sub_y, i
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	stbi_image_free(data);
 	Texture::unbind();
-	return t;
+	return t;*/
+	return Texture();
 }
 
 void Resource::setPath(string texturePath, string shaderPath, string path="assets/"){
@@ -242,9 +247,9 @@ void Resource::LoadAssetTask(std::string line) {
 	size_t posExt = file.find(".");
 	std::string extension = file.substr(posExt + 1, posFile);
 
-	if (isImage(extension)) {
+	if (TextureManager.LoadFile(file,name)) {
 		LOG_F(INFO, "loading image %s as %s", file.c_str(), name.c_str());
-		addTexture(name, file.c_str());
+		//addTexture(name, file.c_str());
 	}
 	else if (isShader(extension)) {
 		LOG_F(INFO, "loading shader %s", file.c_str());

@@ -9,14 +9,14 @@ ObjLoader::ObjLoader() {
 	};
 }
 
-std::map<std::string, std::shared_ptr<Geometry>> ObjLoader::Parse(std::string data) {
+std::map<std::string, std::shared_ptr<Geometry>> ObjLoader::Parse(std::vector<unsigned char> data) {
 	std::map<std::string, std::shared_ptr<Geometry>> output;
 	std::vector<glm::vec3> verts_;
 	std::vector<glm::vec3> norms_;
 	std::vector<glm::vec2> uv_;
 	std::vector<Engine::Vertex> verts;
 
-	std::stringstream in(data);
+	std::stringstream in(std::string(data.begin(), data.end()));
 
 	std::string currentName = DefaultName;
 

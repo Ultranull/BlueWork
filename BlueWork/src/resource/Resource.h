@@ -25,6 +25,7 @@ class Resource {
 	std::map<std::string, std::unique_ptr<Geometry>> geometries;
 
 	ResourceManager<std::shared_ptr<Geometry>> GeometryManager;
+	ResourceManager<Texture> TextureManager;
 
 	std::string Manifest;
 

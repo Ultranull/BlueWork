@@ -82,8 +82,6 @@ using namespace std;
 //}
 
 
-#include "resource/ResourceManager.h"
-
 class Game :public App {
 	SystemManager& systemManager;
 	Resource& R;

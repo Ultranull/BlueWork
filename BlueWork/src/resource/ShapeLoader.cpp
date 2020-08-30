@@ -10,18 +10,18 @@ ShapeLoader::ShapeLoader() {
 	};
 }
 
-std::string ShapeLoader::LoadFile(std::string fileName, std::string name, std::string metaData) {
+std::vector<unsigned char> ShapeLoader::LoadFile(std::string fileName, std::string name, std::string metaData) {
 	// if given the filename ".shape", it will assume the metadata is the actual data.
 	int endOfPath = fileName.find_last_of("/") + 1;
 	std::string noExtention = fileName.substr(endOfPath, endOfPath - fileName.find_last_of("."));
 	if (noExtention.empty()) {
 		DefaultName = name;
-		return metaData;
+		return std::vector<unsigned char>(metaData.begin(), metaData.end());
 	}
 	return AbstractLoader<std::shared_ptr<Geometry>>::LoadFile(fileName, name, metaData);
 }
 
-std::map<std::string, std::shared_ptr<Geometry>> ShapeLoader::Parse(std::string data) {
+std::map<std::string, std::shared_ptr<Geometry>> ShapeLoader::Parse(std::vector<unsigned char> data) {
 	std::map<std::string, std::shared_ptr<Geometry>> output;
 	nlohmann::json shapeFile = nlohmann::json::parse(data);
 

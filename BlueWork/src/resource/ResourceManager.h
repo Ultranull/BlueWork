@@ -32,14 +32,15 @@ public:
 		return ResourceType();
 	}
 
-	void LoadFile(std::string fileName, std::string defaultName, std::string metaData = "") {
+	bool LoadFile(std::string fileName, std::string defaultName, std::string metaData = "") {
 		for (int i = 0; i < Loaders.size(); i++) {
 			if (Loaders[i]->HasExtention(fileName.substr(fileName.find_last_of(".")))) {
 				std::map<std::string, ResourceType> parsed = Loaders[i]->Parse(Loaders[i]->LoadFile(ResourcePath + fileName, defaultName, metaData));
 				Resources.insert(parsed.begin(), parsed.end());
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	template<typename LoaderClass>

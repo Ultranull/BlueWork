@@ -18,9 +18,9 @@ public:
 
 	ShapeLoader();
 
-	std::string LoadFile(std::string fileName, std::string name = "", std::string metaData = "") override;
+	std::vector<unsigned char> LoadFile(std::string fileName, std::string name = "", std::string metaData = "") override;
 
-	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::string data) override;
+	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::vector<unsigned char> data) override;
 
 	Geometry* MakePlane(unsigned int xSegments, unsigned int ySegments);
 	Geometry* MakeZPlane(unsigned int xSegments, unsigned int zSegments);

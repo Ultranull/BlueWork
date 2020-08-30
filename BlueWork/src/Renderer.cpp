@@ -28,7 +28,8 @@ Renderer::Renderer(Program passShader, GLuint w, GLuint h):
 			{"ySegments", 1}
 		},
 	};
-	plane = loader.Parse(data.dump())["zplane"];
+	std::string datastr = data.dump();
+	plane = loader.Parse(std::vector<unsigned char>(datastr.begin(), datastr.end()))["zplane"];
 }
 
 void Renderer::SetDimensions(int h, int w){

@@ -10,6 +10,7 @@
 class Utilities{
 public:
 	static std::string readFile(const char* file);
+	static std::vector<unsigned char> readFileBytes(const char* file);
 	static void SaveFile(const char* file, const char* content);
 
 	template<typename K, typename V>

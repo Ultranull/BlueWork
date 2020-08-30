@@ -17,6 +17,6 @@ public:
 
 	ObjLoader();
 
-	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::string data) override;
+	std::map<std::string, std::shared_ptr<Geometry>> Parse(std::vector<unsigned char> data) override;
 };
 
