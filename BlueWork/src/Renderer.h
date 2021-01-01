@@ -19,6 +19,33 @@
 		-loop over entities and render
 
 
+	Renderer class is given render elements and has its own implementations:
+
+	steps:
+		-resolve all transforms
+		-collect list of each node type needed
+		-bind lights
+		-loop over entities and render
+			-material class goes to renderer class
+			-renderer class renders based on material class
+
+	AbstractMaterial:
+		-defines shader inputs
+		-can have as many things as it needs
+		-binds itself to a given shader program
+		-library should have shared pointers so owners can have subclasses
+
+	the only real difference here is the material
+	baic:
+		-color, specular, normal maps and variables 
+		-simple phong + uvs
+
+	PBR:
+		-like basic but PBR stuff
+
+	simple:
+		-no lighting just uv or color
+		
 */
 
 struct ShadowData {

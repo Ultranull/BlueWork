@@ -32,6 +32,14 @@ public:
 		return ResourceType();
 	}
 
+	std::string GetTextureName(ResourceType r) {
+		std::vector<std::string> values;
+		if (Utilities::findByValue(values, Resources, r)) {
+			return values[0];
+		}
+		return "";
+	}
+
 	bool LoadFile(std::string fileName, std::string defaultName, std::string metaData = "") {
 		for (int i = 0; i < Loaders.size(); i++) {
 			if (Loaders[i]->HasExtention(fileName.substr(fileName.find_last_of(".")))) {

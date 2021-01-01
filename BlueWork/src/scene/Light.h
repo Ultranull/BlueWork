@@ -58,7 +58,7 @@ struct Light : public Node {
 	bool CreatesShadow;
 
 	Light(std::string typeName):
-		CreatesShadow(false), Node(typeName, NodeType::Light){}
+		CreatesShadow(true), Node(typeName, NodeType::Light){}
 
 	void cleanup() {
 		Node::cleanup();
