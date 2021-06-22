@@ -7,7 +7,7 @@
 
 struct Entity : public Node {
 
-	Geometry* geometry;
+	std::shared_ptr<Geometry> geometry;
 	Material material;
 
 	bool CastShadow;
@@ -24,10 +24,10 @@ struct Entity : public Node {
 
 	Entity(): Entity("Entity",nullptr, Material()) {}
 
-	Entity(Geometry* geom, Material mat) :
+	Entity(std::shared_ptr<Geometry> geom, Material mat) :
 		Entity("Entity", geom, mat) {}
 
-	Entity(std::string typeName, Geometry* geom, Material mat);
+	Entity(std::string typeName, std::shared_ptr<Geometry> geom, Material mat);
 
 	void guidraw();
 

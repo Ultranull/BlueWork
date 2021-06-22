@@ -163,7 +163,8 @@ void Renderer::post() {
 	glViewport(0, 0, width, height);
 
 	pass.bind();
-	pass.setUniform("model", &glm::mat4(1));
+	glm::mat4 I(1);
+	pass.setUniform("model", &I);
 	pass.setUniform("passthrough", passthrough.getTexture("passthrough").activate(Engine::PASSMAP));
 	plane->draw();
 }

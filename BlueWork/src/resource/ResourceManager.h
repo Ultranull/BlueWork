@@ -32,7 +32,7 @@ public:
 		return ResourceType();
 	}
 
-	std::string GetTextureName(ResourceType r) {
+	std::string GetName(ResourceType r) {
 		std::vector<std::string> values;
 		if (Utilities::findByValue(values, Resources, r)) {
 			return values[0];

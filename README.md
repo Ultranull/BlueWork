@@ -1,53 +1,11 @@
-# scenegraph
+# BlueWork
+This was an idea. A messy, over thought, and ambitious idea. Its not the most performant or the most intuitive. It is missing many major features that would make it useful, but it was a damn good learning experience. Hopefully someone will find it useful in learning some interesting ideas and learning from some bad ideas.
 
+### It has:
+* a basic scene loading system
+* shadows
+* over-thought scene graph
+* under-thought shadow rendering (but the soft shadows look pretty decent)
+* a no-entity component system, because who needs entities anyway... or memory management, or performance, or a component system that makes sense
 
-## plan:
-
-- responsabilities of geometry system
-	- hold all vaos
-	- heap vaos built in loader given to system
-	- 
-
-
-# what does the renderer have?
-- list of entities
-
-# what does the renderer need?
-- transform
-	- where'd it come from?
-		- resolved through the scene graph 
-		- node resolves with parents (inverse traversal)
-	- where is it?
-		- Entitys got it, owned by node
-	- how do we get it?
-		- entity resolves transform
-
-- geometry
-	- where'd it come from?
-		- loaded from the mesh loader
-	- where is it?
-		- stored in system, entity has a ptr
-	- how do we get it?
-		- from entity
-
-- material
-	- where'd it come from?
-		- built from R
-	- where is it?
-		- R has it, entity has ptr
-	- textures
-		- where'd it come from?
-			- loaded from R
-		- where is it?
-			stored in R, mat has a ref
-	- parameters
-		- where'd it come from?
-			- loaded from R
-		- where is it?
-			- here
-	- shaders
-		- where'd it come from?
-			- loaded from R
-		- where is it?
-			- R has it, mat has ptr
-		
+![screenshot](screenshot.png)

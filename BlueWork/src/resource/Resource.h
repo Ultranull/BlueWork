@@ -71,11 +71,11 @@ public:
 	Shader getShader(std::string name);
 
 	void addGeometry(std::string name,Geometry* geom);
-	Geometry* getGeometry(std::string name);
+	std::shared_ptr<Geometry> getGeometry(std::string name);
 
 	void AddAssetOfType(std::string extention, std::string data, std::string name = "");
 
-	std::string GetGeometryName(Geometry* geom);
+	std::string GetGeometryName(std::shared_ptr<Geometry> geom);
 	std::string GetTextureName(Texture tex);
 	std::string GetShaderName(Shader shader);
 

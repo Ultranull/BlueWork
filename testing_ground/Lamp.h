@@ -16,13 +16,13 @@ public:
 	static const std::string LightName;
 	static const std::string MeshName;
 
-	Lamp::Lamp() :
+	Lamp() :
 		Node("Lamp",NodeType::Node) {
 
 		//DebugGui::PushDraw(&Lamp::guidraw, this);
 	}
 
-	void BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData);
+	void BuildSubTree(std::shared_ptr<Geometry> geometry, Material mat, Light::PointData lightData);
 
 	void guidraw();
 

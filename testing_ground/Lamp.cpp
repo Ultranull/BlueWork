@@ -3,7 +3,7 @@
 const std::string Lamp::LightName = "_PointLight";
 const std::string Lamp::MeshName = "_Mesh";
 
-void Lamp::BuildSubTree(Geometry* geometry, Material mat, Light::PointData lightData) {
+void Lamp::BuildSubTree(std::shared_ptr<Geometry> geometry, Material mat, Light::PointData lightData) {
 	LightSource = new PointLight(lightData);
 	Mesh = new Entity(geometry, mat);
 

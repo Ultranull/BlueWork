@@ -23,8 +23,8 @@ public:
     virtual void OnStart() {}
 
 	virtual void CleanUp() {
-		std::vector<std::unique_ptr<ComponentType>>::iterator iter;
-		for (iter = components.begin(); iter != components.end(); iter++) {
+		//std::vector<std::unique_ptr<ComponentType>>::iterator iter;
+		for (auto iter = components.begin(); iter != components.end(); iter++) {
 			(*iter)->CleanUp();
 		}
 		components.clear();
@@ -32,8 +32,8 @@ public:
 	}
 
 	void Remove(ComponentType* ptr) {
-		std::vector<std::unique_ptr<ComponentType>>::iterator iter;
-		for (iter = components.begin(); iter != components.end(); ) {
+		//std::vector<std::unique_ptr<ComponentType>>::iterator iter;
+		for (auto iter = components.begin(); iter != components.end(); ) {
 			if (&(*iter) == ptr) {
 				iter->CleanUp();
 				ptr = nullptr;

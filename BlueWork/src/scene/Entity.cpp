@@ -4,7 +4,7 @@
 
 #include "Utilities/DebugGui.h"
 
-Entity::Entity(std::string typeName, Geometry* geom, Material mat) :
+Entity::Entity(std::string typeName, std::shared_ptr<Geometry> geom, Material mat) :
 	geometry(geom), material(mat), CastShadow(false), flags(0), Node(typeName, NodeType::Entity) {
 
 	//DebugGui::PushDraw(&Entity::guidraw, this);

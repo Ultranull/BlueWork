@@ -18,7 +18,7 @@ class Player : public Entity {
 
 public:
 
-	Player(Geometry* geometry, Material mat);
+	Player(std::shared_ptr<Geometry> geometry, Material mat);
 
 	void OnMouseMove(double mouseX, double mouseY);
 

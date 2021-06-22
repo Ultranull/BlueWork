@@ -15,7 +15,7 @@ const unsigned int STRAFELEFT = GLFW_KEY_A;
 const unsigned int JUMP = GLFW_KEY_SPACE;
 const unsigned int CROUCH = GLFW_KEY_LEFT_SHIFT;
 
-Player::Player(Geometry* geometry, Material mat) :
+Player::Player(std::shared_ptr<Geometry> geometry, Material mat) :
 	Entity("Player", geometry, mat) {
 
 	speed = 3.f;

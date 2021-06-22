@@ -105,8 +105,8 @@ void Resource::addGeometry(std::string name, Geometry* geom){
 	geometries.insert(make_pair(name,geom)); // in critical section
 }
 
-Geometry* Resource::getGeometry(std::string name){
-	return GeometryManager.Get(name).get();
+std::shared_ptr<Geometry> Resource::getGeometry(std::string name){
+	return GeometryManager.Get(name);
 }
 
 Texture Resource::LoadGLTexture(const char *filename) {
@@ -191,22 +191,12 @@ void Resource::cleanup() {
 	geometries.clear();
 }
 
-std::string Resource::GetGeometryName(Geometry* geom) {
-	map<string, std::unique_ptr<Geometry>>::iterator geomit = geometries.begin();
-	for (; geomit != geometries.end(); geomit++) {
-		if (geomit->second.get() == geom) {
-			return geomit->first;
-		}
-	}
-	return "";
+std::string Resource::GetGeometryName(std::shared_ptr<Geometry> geom) {
+	return GeometryManager.GetName(geom);
 }
 
 std::string Resource::GetTextureName(Texture tex) {
-	std::vector<std::string> values;
-	if (Utilities::findByValue(values, textures, tex)) {
-		return values[0];
-	}
-	return "";
+	return TextureManager.GetName(tex);
 }
 
 std::string Resource::GetShaderName(Shader shader) {
